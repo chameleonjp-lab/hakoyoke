@@ -14,6 +14,7 @@ import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import "@babylonjs/core/Rendering/edgesRenderer";
 import { GameWorld } from "./GameWorld";
 import { AudioManager, type SoundSignal } from "./AudioManager";
 import { loadPuzzles } from "./puzzles";
@@ -30,7 +31,9 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   scene.clearColor = new Color4(0.008, 0.015, 0.035, 1);
   scene.ambientColor = new Color3(0.08, 0.11, 0.18);
   let quality = resolveQuality();
-  engine.setHardwareScalingLevel(quality === "LOW" ? 1.6 : quality === "HIGH" ? 1 : 1.25);
+  engine.setHardwareScalingLevel(quality === "LOW" ? 1.25 : quality === "HIGH" ? 0.85 : 1);
+  scene.imageProcessingConfiguration.contrast = 1.12;
+  scene.imageProcessingConfiguration.exposure = 1.05;
 
   const camera = new ArcRotateCamera("observatory-camera", -Math.PI / 2, 0.91, 16, new Vector3(2, 0, 6), scene);
   camera.fov = 0.69;
@@ -39,15 +42,16 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   camera.lowerBetaLimit = 0.72;
   camera.upperBetaLimit = 1.12;
   camera.wheelPrecision = 80;
+  camera.panningSensibility = 0;
   camera.attachControl(canvas, false);
 
   const fill = new HemisphericLight("void-fill", new Vector3(0, 1, 0), scene);
-  fill.intensity = 0.58;
-  fill.diffuse = Color3.FromHexString("#9AB2CF");
+  fill.intensity = 0.76;
+  fill.diffuse = Color3.FromHexString("#B9D9F0");
   fill.groundColor = Color3.FromHexString("#030812");
   const key = new DirectionalLight("survey-key", new Vector3(-0.4, -1, 0.36), scene);
   key.position = new Vector3(4, 12, -3);
-  key.intensity = 1.72;
+  key.intensity = 2.05;
   key.diffuse = Color3.FromHexString("#D3E8FF");
   let shadows: ShadowGenerator | null = null;
   let glow: { intensity: number; dispose(): void } | null = null;
@@ -72,7 +76,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     if (detail.key === "audio") audio.setEnabled(detail.value !== "OFF");
     if (detail.key === "quality") {
       quality = detail.value === "AUTO" ? detectQuality() : detail.value as "LOW" | "NORMAL" | "HIGH";
-      engine.setHardwareScalingLevel(quality === "LOW" ? 1.6 : quality === "HIGH" ? 1 : 1.25);
+      engine.setHardwareScalingLevel(quality === "LOW" ? 1.25 : quality === "HIGH" ? 0.85 : 1);
       if (glow) glow.intensity = quality === "LOW" ? 0.24 : quality === "HIGH" ? 0.54 : 0.42;
       shadows?.setDarkness(quality === "LOW" ? 0.18 : 0.32);
     }
@@ -89,6 +93,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     (signal) => window.dispatchEvent(new CustomEvent<SoundSignal>("cubic:signal", { detail: signal as SoundSignal })),
   );
 
+  let lastCameraBasis = "";
   scene.onBeforeRenderObservable.add(() => {
     if (!world) return;
     world.update(scene.getEngine().getDeltaTime() / 1000);
@@ -102,10 +107,19 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     camera.setTarget(boardCenter.add(effects.cameraShake));
     camera.radius = lerp(camera.radius, Math.max(11.4, latest.stats.platformRows * 0.68 + 4), 0.025);
     if (latest.phase === "CRUSHED") camera.radius = Math.min(25, camera.radius + 0.08);
+    const forwardX = -Math.cos(camera.alpha);
+    const forwardZ = -Math.sin(camera.alpha);
+    const rightX = forwardZ;
+    const rightZ = -forwardX;
+    const serializedBasis = `${forwardX.toFixed(3)}:${forwardZ.toFixed(3)}:${rightX.toFixed(3)}:${rightZ.toFixed(3)}`;
+    if (serializedBasis !== lastCameraBasis) {
+      lastCameraBasis = serializedBasis;
+      window.dispatchEvent(new CustomEvent("cubic:camera-basis", { detail: { forwardX, forwardZ, rightX, rightZ } }));
+    }
   });
   const stopDeferredEnhancement = deferVisualEnhancement(() => {
     if (disposed) return;
-    const resolution = quality === "LOW" ? 512 : 1024;
+    const resolution = quality === "LOW" ? 768 : quality === "HIGH" ? 2048 : 1536;
     void Promise.all([
       import("@babylonjs/core/Lights/Shadows/shadowGenerator"),
       import("@babylonjs/core/Layers/glowLayer"),
@@ -114,11 +128,16 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
       if (disposed) return;
       shadows = new ShadowGenerator(resolution, key);
       shadows.useBlurExponentialShadowMap = quality !== "LOW";
-      shadows.blurKernel = 12;
+      shadows.blurKernel = quality === "LOW" ? 10 : quality === "HIGH" ? 28 : 18;
       shadows.setDarkness(quality === "LOW" ? 0.18 : 0.32);
       player.getChildMeshes().forEach((mesh) => shadows?.addShadowCaster(mesh));
       cubes.forEach((rendered) => shadows?.addShadowCaster(rendered.core));
-      material.tile.diffuseTexture = new Texture(BASALT_TILE, scene, true, false);
+      const basalt = new Texture(BASALT_TILE, scene, true, false);
+      basalt.uScale = 1.15;
+      basalt.vScale = 1.15;
+      basalt.level = 0.86;
+      basalt.hasAlpha = false;
+      material.tile.diffuseTexture = basalt;
       glow = new GlowLayer("signal-glow", scene, { mainTextureFixedSize: quality === "HIGH" ? 1024 : 512, blurKernelSize: 32 });
       glow.intensity = quality === "LOW" ? 0.28 : 0.48;
     }).catch(() => undefined);
@@ -149,10 +168,10 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
 
 function makeMaterials(scene: Scene) {
   const tile = new StandardMaterial("basalt-tile", scene);
-  tile.diffuseColor = Color3.FromHexString("#294C68");
-  tile.emissiveColor = Color3.FromHexString("#0B263A");
-  tile.specularColor = Color3.FromHexString("#7ECDEB");
-  tile.specularPower = 44;
+  tile.diffuseColor = Color3.FromHexString("#426F8D");
+  tile.emissiveColor = Color3.FromHexString("#16405C");
+  tile.specularColor = Color3.FromHexString("#A7EAFF");
+  tile.specularPower = 64;
   const normal = new StandardMaterial("limestone-cube", scene);
   normal.diffuseColor = Color3.FromHexString("#BFC6C6");
   normal.specularColor = Color3.FromHexString("#7D97A8");
@@ -183,20 +202,38 @@ function makeMaterials(scene: Scene) {
 
 class PlatformRenderer {
   private source: Mesh;
+  private readonly inlayAcross: Mesh;
+  private readonly inlayAlong: Mesh;
   private instances: InstancedMesh[] = [];
+  private inlays: InstancedMesh[] = [];
   private grid: LinesMesh | null = null;
   private width = 0;
   private rows = 0;
   constructor(private readonly scene: Scene, tileMaterial: StandardMaterial) {
     this.source = MeshBuilder.CreateBox("tile-source", { width: 0.86, depth: 0.86, height: 0.24 }, scene);
     this.source.material = tileMaterial;
+    this.source.enableEdgesRendering();
+    this.source.edgesWidth = 1.45;
+    this.source.edgesColor = new Color4(0.42, 0.88, 1, 0.72);
     this.source.isVisible = false;
+    const inlay = new StandardMaterial("tile-survey-inlay", scene);
+    inlay.diffuseColor = Color3.FromHexString("#1C91B9");
+    inlay.emissiveColor = Color3.FromHexString("#0A6A8C");
+    inlay.alpha = 0.78;
+    this.inlayAcross = MeshBuilder.CreateBox("tile-inlay-across", { width: 0.52, depth: 0.018, height: 0.012 }, scene);
+    this.inlayAcross.material = inlay;
+    this.inlayAcross.isVisible = false;
+    this.inlayAlong = MeshBuilder.CreateBox("tile-inlay-along", { width: 0.018, depth: 0.28, height: 0.012 }, scene);
+    this.inlayAlong.material = inlay;
+    this.inlayAlong.isVisible = false;
   }
   sync(snapshot: GameSnapshot, tileMaterial: StandardMaterial): void {
     const width = snapshot.boardWidth;
     if (width === this.width && snapshot.stats.platformRows === this.rows) return;
     this.instances.forEach((instance) => instance.dispose());
+    this.inlays.forEach((instance) => instance.dispose());
     this.instances = [];
+    this.inlays = [];
     this.width = width;
     this.rows = snapshot.stats.platformRows;
     this.source.material = tileMaterial;
@@ -205,17 +242,22 @@ class PlatformRenderer {
     for (let z = -0.5; z <= this.rows - 0.5; z += 1) lines.push([new Vector3(-0.5, 0.018, z), new Vector3(this.width - 0.5, 0.018, z)]);
     for (let x = -0.5; x <= this.width - 0.5; x += 1) lines.push([new Vector3(x, 0.019, -0.5), new Vector3(x, 0.019, this.rows - 0.5)]);
     this.grid = MeshBuilder.CreateLineSystem("platform-grid", { lines }, this.scene);
-    this.grid.color = Color3.FromHexString("#7DD9FA");
+    this.grid.color = Color3.FromHexString("#A8EAFF");
     for (let z = 0; z < this.rows; z += 1) {
       for (let x = 0; x < this.width; x += 1) {
         const instance = this.source.createInstance(`tile-${x}-${z}`);
         instance.position.set(x, -0.12, z);
         instance.receiveShadows = true;
         this.instances.push(instance);
+        const across = this.inlayAcross.createInstance(`tile-inlay-across-${x}-${z}`);
+        across.position.set(x + 0.06, 0.012, z - 0.27);
+        const along = this.inlayAlong.createInstance(`tile-inlay-along-${x}-${z}`);
+        along.position.set(x - 0.28, 0.012, z - 0.1);
+        this.inlays.push(across, along);
       }
     }
   }
-  dispose(): void { this.instances.forEach((instance) => instance.dispose()); this.grid?.dispose(); this.source.dispose(); }
+  dispose(): void { this.instances.forEach((instance) => instance.dispose()); this.inlays.forEach((instance) => instance.dispose()); this.grid?.dispose(); this.source.dispose(); this.inlayAcross.dispose(); this.inlayAlong.dispose(); }
 }
 
 class MarkerRenderer {
@@ -291,6 +333,9 @@ function syncCubes(scene: Scene, rendered: Map<string, RenderCube>, snapshot: Ga
       core.parent = root;
       core.position.set(0, ROLL_HALF, ROLL_HALF);
       core.material = materials[cube.type];
+      core.enableEdgesRendering();
+      core.edgesWidth = 2.2;
+      core.edgesColor = cube.type === "void" ? new Color4(1, 0.24, 0.76, 0.88) : new Color4(0.9, 0.98, 1, 0.9);
       shadows?.addShadowCaster(core);
       const outline = MeshBuilder.CreateBox(`cube-outline-${cube.id}`, { size: ROLL_SIZE * 1.018 }, scene);
       outline.parent = root;

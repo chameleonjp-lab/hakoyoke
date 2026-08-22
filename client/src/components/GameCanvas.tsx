@@ -11,7 +11,7 @@ export default function GameCanvas({ onReady, onFirstFrame }: { onReady(): void;
     const canvas = canvasRef.current;
     if (!canvas || startedRef.current) return;
     startedRef.current = true;
-    const engine = new Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, adaptToDeviceRatio: false });
+    const engine = new Engine(canvas, true, { preserveDrawingBuffer: false, stencil: true, adaptToDeviceRatio: true, powerPreference: "high-performance" });
     let handle: GameHandle | null = null;
     let alive = true;
     let firstFrame = false;
@@ -19,5 +19,5 @@ export default function GameCanvas({ onReady, onFirstFrame }: { onReady(): void;
     const resize = () => engine.resize(); window.addEventListener("resize", resize);
     return () => { alive = false; window.removeEventListener("resize", resize); handle?.dispose(); engine.dispose(); startedRef.current = false; };
   }, []);
-  return <><canvas ref={canvasRef} className="game-canvas" style={{ touchAction: "none" }} />{error && <section className="engine-failure" role="alert" aria-live="assertive"><span>RENDERER // INITIALIZATION FAILED</span><p>3D描画を開始できませんでした。ゲームの保存データは保持されています。</p><button type="button" onClick={() => window.location.reload()}>RETRY</button></section>}</>;
+  return <><canvas ref={canvasRef} className="game-canvas" style={{ touchAction: "none" }} />{error && <section className="engine-failure" role="alert" aria-live="assertive"><span>RENDERER // INITIALIZATION FAILED</span><p>3D描画を開始できませんでした。ゲームの保存データは保持されています。</p>{import.meta.env.DEV && <code className="engine-error-detail">{error.message}</code>}<button type="button" onClick={() => window.location.reload()}>RETRY</button></section>}</>;
 }

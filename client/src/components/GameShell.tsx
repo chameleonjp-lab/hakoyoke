@@ -141,29 +141,34 @@ function ResultOverlay({ snapshot, onContinue }: { snapshot: GameSnapshot; onCon
 
 function TouchControls() {
   const [stick, setStick] = useState<{ originX: number; originY: number; x: number; y: number } | null>(null);
+  const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
   const activePointer = useRef<number | null>(null);
   useEffect(() => {
-    const isAction = (target: EventTarget | null) => target instanceof HTMLElement && Boolean(target.closest(".touch-actions"));
-    const update = (event: globalThis.PointerEvent) => {
+    const updateBasis = (event: Event) => { basis.current = (event as CustomEvent<typeof basis.current>).detail; };
+    window.addEventListener("cubic:camera-basis", updateBasis);
+    return () => window.removeEventListener("cubic:camera-basis", updateBasis);
+  }, []);
+  const begin = (event: PointerEvent<HTMLDivElement>) => {
+    if (activePointer.current !== null) return;
+    activePointer.current = event.pointerId;
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* synthetic pointer events do not own a capture target */ }
+    setStick({ originX: event.clientX, originY: event.clientY, x: 0, y: 0 });
+    command({ type: "touch-move", x: 0, z: 0 });
+  };
+  const update = (event: PointerEvent<HTMLDivElement>) => {
       if (activePointer.current !== event.pointerId) return;
       setStick((origin) => {
         if (!origin) return null;
         const dx = Math.max(-52, Math.min(52, event.clientX - origin.originX));
         const dy = Math.max(-52, Math.min(52, event.clientY - origin.originY));
         const next = { ...origin, x: dx / 52, y: dy / 52 };
-        command({ type: "touch-move", x: -next.x, z: -next.y });
+        const screenForward = -next.y;
+        const worldX = basis.current.rightX * next.x + basis.current.forwardX * screenForward;
+        const worldZ = basis.current.rightZ * next.x + basis.current.forwardZ * screenForward;
+        command({ type: "touch-move", x: worldX, z: worldZ });
         return next;
       });
-    };
-    const begin = (event: globalThis.PointerEvent) => {
-      if (activePointer.current !== null || event.button !== 0 || isAction(event.target)) return;
-      activePointer.current = event.pointerId;
-      setStick({ originX: event.clientX, originY: event.clientY, x: 0, y: 0 });
-      command({ type: "touch-move", x: 0, z: 0 });
-    };
-    const release = (event: globalThis.PointerEvent) => { if (activePointer.current === event.pointerId) { activePointer.current = null; setStick(null); command({ type: "touch-move", x: 0, z: 0 }); } };
-    window.addEventListener("pointerdown", begin, true); window.addEventListener("pointermove", update, true); window.addEventListener("pointerup", release, true); window.addEventListener("pointercancel", release, true);
-    return () => { window.removeEventListener("pointerdown", begin, true); window.removeEventListener("pointermove", update, true); window.removeEventListener("pointerup", release, true); window.removeEventListener("pointercancel", release, true); };
-  }, []);
-  return <div className="touch-controls" aria-label="タッチ操作"><div className="touch-zone" aria-label="フローティング移動キー">{stick && <div className="touch-stick floating" style={{ left: stick.originX, top: stick.originY }}><div className="touch-knob" style={{ transform: `translate(${stick.x * 35}px, ${stick.y * 35}px)` }} /></div>}</div><div className="touch-actions"><button className="area" onPointerDown={(event) => { event.stopPropagation(); command({ type: "touch-press", action: "area" }); }}>AREA</button><button className="fast" onPointerDown={(event) => { event.stopPropagation(); command({ type: "touch-fast", active: true }); }} onPointerUp={() => command({ type: "touch-fast", active: false })} onPointerCancel={() => command({ type: "touch-fast", active: false })}>FAST</button><button className="mark" onPointerDown={(event) => { event.stopPropagation(); command({ type: "touch-press", action: "mark" }); }}>MARK<br /><span>CAPTURE</span></button></div></div>;
+  };
+  const release = (event: PointerEvent<HTMLDivElement>) => { if (activePointer.current === event.pointerId) { activePointer.current = null; setStick(null); command({ type: "touch-move", x: 0, z: 0 }); } };
+  return <div className="touch-controls" aria-label="タッチ操作"><div className="touch-zone" aria-label="画面下半分のフローティング移動キー" onPointerDown={begin} onPointerMove={update} onPointerUp={release} onPointerCancel={release}>{stick && <div className="touch-stick floating" style={{ left: stick.originX, top: stick.originY }}><div className="touch-knob" style={{ transform: `translate(${stick.x * 35}px, ${stick.y * 35}px)` }} /></div>}<span className="touch-zone-label">MOVE // LOWER FIELD</span></div><div className="touch-actions"><button className="area" onPointerDown={(event) => { event.stopPropagation(); command({ type: "touch-press", action: "area" }); }}>AREA</button><button className="fast" onPointerDown={(event) => { event.stopPropagation(); command({ type: "touch-fast", active: true }); }} onPointerUp={() => command({ type: "touch-fast", active: false })} onPointerCancel={() => command({ type: "touch-fast", active: false })}>FAST</button><button className="mark" onPointerDown={(event) => { event.stopPropagation(); command({ type: "touch-press", action: "mark" }); }}>MARK<br /><span>CAPTURE</span></button></div></div>;
 }

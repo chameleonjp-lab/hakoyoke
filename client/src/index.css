@@ -67,8 +67,9 @@ h2 { margin: 8px 0 22px; font-size: clamp(23px, 3vw, 34px); line-height: 1; lett
 
 /* Mobile-first instrument surface: the movement key appears only at the exact touch origin. */
 @media (max-width: 720px), (max-height: 520px) and (orientation: landscape) {
-  .touch-controls { position: fixed; inset: 0; z-index: 12; display: block; padding: 0; pointer-events: auto; touch-action: none; background: none; }
-  .touch-zone { position: fixed; inset: 54px 0 0; z-index: 1; pointer-events: auto; touch-action: none; }
+  .touch-controls { position: fixed; inset: 0; z-index: 12; display: block; padding: 0; pointer-events: none; touch-action: auto; background: none; }
+  .touch-zone { position: fixed; inset: 50dvh 0 0; z-index: 1; pointer-events: auto; touch-action: none; background: linear-gradient(180deg, rgba(2, 9, 16, 0), rgba(2, 9, 16, .18)); }
+  .touch-zone-label { position: absolute; left: 14px; bottom: max(18px, env(safe-area-inset-bottom)); color: rgba(146, 214, 234, .48); font: 500 8px/1 "IBM Plex Mono", monospace; letter-spacing: .14em; pointer-events: none; }
   .touch-stick.floating { position: fixed; z-index: 2; width: 104px; height: 104px; margin: -52px 0 0 -52px; border: 1px solid rgba(107,225,255,.88); border-radius: 50%; background: radial-gradient(circle, rgba(38,174,215,.28) 0 21%, rgba(4,19,31,.66) 62%, rgba(4,11,20,.1) 100%); box-shadow: 0 0 0 1px rgba(1,7,14,.85), 0 0 24px rgba(40,190,235,.26), inset 0 0 26px rgba(40,190,235,.18); pointer-events: none; }
   .touch-stick.floating::before, .touch-stick.floating::after { content: ""; position: absolute; left: 50%; top: 50%; background: rgba(157,233,255,.36); transform: translate(-50%,-50%); }.touch-stick.floating::before { width: 76px; height: 1px; }.touch-stick.floating::after { width: 1px; height: 76px; }
   .touch-stick.floating .touch-knob { left: 34px; top: 34px; width: 36px; height: 36px; border: 1px solid #d9faff; border-radius: 50%; background: rgba(40,190,235,.54); box-shadow: 0 0 12px rgba(78,219,255,.62); transition: transform 40ms linear; }

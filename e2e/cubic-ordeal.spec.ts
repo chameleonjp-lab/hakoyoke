@@ -84,7 +84,7 @@ test("スマートフォン縦画面でタップ地点に移動キーが出現�
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByRole("button", { name: "AREA" })).toBeVisible();
   await page.evaluate(() => { (window as Window & { latestSnapshot?: { player: { z: number } } }).latestSnapshot = undefined; window.addEventListener("cubic:snapshot", (event) => { (window as Window & { latestSnapshot?: unknown }).latestSnapshot = (event as CustomEvent).detail; }); });
-  const touchLayer = page.locator(".touch-controls");
+  const touchLayer = page.locator(".touch-zone");
   await touchLayer.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "touch", isPrimary: true, button: 0, clientX: 112, clientY: 500 });
   await expect(page.locator(".touch-stick.floating")).toBeVisible();
   await page.waitForTimeout(3900);
@@ -92,6 +92,24 @@ test("スマートフォン縦画面でタップ地点に移動キーが出現�
   await expect.poll(() => page.evaluate(() => (window as Window & { latestSnapshot?: { player: { z: number } } }).latestSnapshot?.player.z ?? 0)).toBeGreaterThan(0.7);
   await touchLayer.dispatchEvent("pointerup", { pointerId: 7, pointerType: "touch", isPrimary: true, button: 0, clientX: 112, clientY: 450 });
   await expect(page.locator(".touch-stick.floating")).toHaveCount(0);
+});
+
+test("縦画面の上半分スワイプはカメラだけを動かし、下半分の上スワイプは画面奥へ移動する", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.addInitScript(() => { (window as Window & { cameraBasis?: unknown }).cameraBasis = undefined; window.addEventListener("cubic:camera-basis", (event) => { (window as Window & { cameraBasis?: unknown }).cameraBasis = (event as CustomEvent).detail; }); });
+  await page.goto("/");
+  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await page.waitForTimeout(3_900);
+  await page.locator("canvas").dispatchEvent("pointerdown", { pointerId: 31, pointerType: "touch", isPrimary: true, button: 0, clientX: 180, clientY: 170 });
+  await page.locator("canvas").dispatchEvent("pointermove", { pointerId: 31, pointerType: "touch", isPrimary: true, button: 0, clientX: 242, clientY: 170 });
+  await page.locator("canvas").dispatchEvent("pointerup", { pointerId: 31, pointerType: "touch", isPrimary: true, button: 0, clientX: 242, clientY: 170 });
+  await expect.poll(() => page.evaluate(() => (window as Window & { cameraBasis?: unknown }).cameraBasis)).not.toBeUndefined();
+  await page.evaluate(() => { (window as Window & { latestSnapshot?: { player: { z: number } } }).latestSnapshot = undefined; window.addEventListener("cubic:snapshot", (event) => { (window as Window & { latestSnapshot?: unknown }).latestSnapshot = (event as CustomEvent).detail; }); });
+  const touchLayer = page.locator(".touch-zone");
+  await touchLayer.dispatchEvent("pointerdown", { pointerId: 32, pointerType: "touch", isPrimary: true, button: 0, clientX: 170, clientY: 650 });
+  await touchLayer.dispatchEvent("pointermove", { pointerId: 32, pointerType: "touch", isPrimary: true, button: 0, clientX: 170, clientY: 590 });
+  await expect.poll(() => page.evaluate(() => (window as Window & { latestSnapshot?: { player: { z: number } } }).latestSnapshot?.player.z ?? 0)).toBeGreaterThan(0.7);
+  await touchLayer.dispatchEvent("pointerup", { pointerId: 32, pointerType: "touch", isPrimary: true, button: 0, clientX: 170, clientY: 590 });
 });
 
 test("870×400横画面でタッチ操作を開始・解除してもHUDと盤面が維持される", async ({ page }) => {
