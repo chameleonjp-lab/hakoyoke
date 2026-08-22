@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("productionで3D盤面・HUD・外部アセットを正常に初期化できる", async ({ page }) => {
+test("productionで3D盤面・HUD・外部アセットプロキシの設定済み／未設定経路を確認できる", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
@@ -12,7 +12,15 @@ test("productionで3D盤面・HUD・外部アセットを正常に初期化で�
   await page.waitForTimeout(2_000);
 
   const asset = await page.request.get("/manus-storage/cubic-ordeal-logo_b0288b12.png", { maxRedirects: 0 });
-  expect(asset.status()).toBe(307);
-  expect(asset.headers().location).toBeTruthy();
+  const hasStorageProxyConfig = Boolean(process.env.BUILT_IN_FORGE_API_URL && process.env.BUILT_IN_FORGE_API_KEY);
+
+  if (hasStorageProxyConfig) {
+    expect(asset.status()).toBe(307);
+    expect(asset.headers().location).toBeTruthy();
+  } else {
+    expect(asset.status()).toBe(503);
+    expect(asset.headers().location).toBeUndefined();
+  }
+
   expect(pageErrors).toEqual([]);
 });
