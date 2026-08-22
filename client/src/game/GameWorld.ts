@@ -80,7 +80,7 @@ export class GameWorld {
       this.fixedUpdate(FIXED_STEP);
       this.accumulator -= FIXED_STEP;
     }
-    if (this.mode === "CAMPAIGN" && Math.floor(this.elapsed) !== this.lastCampaignSaveSecond) { this.lastCampaignSaveSecond = Math.floor(this.elapsed); this.saveCampaign(); }
+    if (this.mode === "CAMPAIGN" && this.phase !== "TITLE" && this.phase !== "MENU" && Math.floor(this.elapsed) !== this.lastCampaignSaveSecond) { this.lastCampaignSaveSecond = Math.floor(this.elapsed); this.saveCampaign(); }
     this.publish();
   }
 

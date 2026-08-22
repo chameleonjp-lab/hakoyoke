@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { validatePuzzle } from "@/game/puzzleValidation";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { calculateMindIndex } from "@/game/rules";
+import type { CubicCommand } from "@/game/GameWorld";
 import type { Difficulty, GameMode, GameSnapshot, PuzzleDescriptor } from "@/game/types";
 
 const PANEL = "/manus-storage/cubic-ordeal-signal-panel_78bc2974.png";
@@ -14,9 +15,10 @@ type EditorCell = "empty" | "normal" | "veil" | "void";
 function command(detail: unknown): void { window.dispatchEvent(new CustomEvent("cubic:command", { detail })); }
 function setting(key: "quality" | "audio", value: string): void { window.dispatchEvent(new CustomEvent("cubic:settings", { detail: { key, value } })); }
 
-export default function GameShell() {
+export default function GameShell({ onLaunch }: { onLaunch(command: CubicCommand): void }) {
   const [snapshot, setSnapshot] = useState<GameSnapshot | null>(null);
   const [panel, setPanel] = useState<Panel>("title");
+  const [launching, setLaunching] = useState(false);
   const [chosenMode, setChosenMode] = useState<GameMode>("CAMPAIGN");
   const [difficulty, setDifficulty] = useState<Difficulty>("NORMAL");
   const [practice, setPractice] = useState({ stage: 1, wave: 1, ordinal: 1 });
@@ -29,9 +31,10 @@ export default function GameShell() {
 
   const playing = snapshot && ["PLAYING", "TUTORIAL", "CAPTURE_PAUSE", "COUNTDOWN", "STAGE_INTRO", "PAUSED", "CRUSHED"].includes(snapshot.phase);
   const result = snapshot && ["PUZZLE_RESULT", "WAVE_RESULT", "STAGE_RESULT", "FINAL_RESULT", "GAME_OVER"].includes(snapshot.phase);
-  const showMenu = !snapshot || snapshot.phase === "TITLE" || snapshot.phase === "MENU" || Boolean(panel && !playing && !result);
+  const showMenu = (!snapshot && !launching) || snapshot?.phase === "TITLE" || snapshot?.phase === "MENU" || Boolean(panel && !playing && !result);
+  const launch = (detail: CubicCommand) => { setLaunching(true); onLaunch(detail); };
   const execute = (mode = chosenMode, stage = practice.stage, wave = practice.wave, ordinal = practice.ordinal) => {
-    command({ type: "start", mode, difficulty, stage, wave, ordinal });
+    launch({ type: "start", mode, difficulty, stage, wave, ordinal });
     setPanel(null);
   };
 
@@ -54,6 +57,7 @@ export default function GameShell() {
           execute={execute}
           practice={practice}
           setPractice={setPractice}
+          onTest={(puzzle) => { launch({ type: "load-custom", puzzle }); setPanel(null); }}
         />
       )}
       {snapshot?.phase === "PAUSED" && <PauseOverlay snapshot={snapshot} onResume={() => command({ type: "resume" })} onQuit={() => { command({ type: "menu" }); setPanel("mode"); }} />}
@@ -63,8 +67,8 @@ export default function GameShell() {
   );
 }
 
-function MenuPanel({ panel, setPanel, chosenMode, setChosenMode, difficulty, setDifficulty, execute, practice, setPractice }: {
-  panel: Exclude<Panel, null>; setPanel: (panel: Panel) => void; chosenMode: GameMode; setChosenMode: (mode: GameMode) => void; difficulty: Difficulty; setDifficulty: (difficulty: Difficulty) => void; execute: (mode?: GameMode, stage?: number, wave?: number, ordinal?: number) => void; practice: { stage: number; wave: number; ordinal: number }; setPractice: (value: { stage: number; wave: number; ordinal: number }) => void;
+function MenuPanel({ panel, setPanel, chosenMode, setChosenMode, difficulty, setDifficulty, execute, practice, setPractice, onTest }: {
+  panel: Exclude<Panel, null>; setPanel: (panel: Panel) => void; chosenMode: GameMode; setChosenMode: (mode: GameMode) => void; difficulty: Difficulty; setDifficulty: (difficulty: Difficulty) => void; execute: (mode?: GameMode, stage?: number, wave?: number, ordinal?: number) => void; practice: { stage: number; wave: number; ordinal: number }; setPractice: (value: { stage: number; wave: number; ordinal: number }) => void; onTest(puzzle: PuzzleDescriptor): void;
 }) {
   return (
     <section className="title-shell">
@@ -74,7 +78,7 @@ function MenuPanel({ panel, setPanel, chosenMode, setChosenMode, difficulty, set
         {panel === "mode" && <ModeActions chosenMode={chosenMode} setChosenMode={setChosenMode} onNext={() => setPanel(chosenMode === "PRACTICE" ? "practice" : chosenMode === "CREATE" ? "create" : "difficulty")} onBack={() => setPanel("title")} />}
         {panel === "difficulty" && <DifficultyActions difficulty={difficulty} setDifficulty={setDifficulty} onStart={() => execute(chosenMode)} onBack={() => setPanel("mode")} />}
         {panel === "practice" && <PracticeActions difficulty={difficulty} setDifficulty={setDifficulty} practice={practice} setPractice={setPractice} onStart={() => execute("PRACTICE")} onBack={() => setPanel("mode")} />}
-        {panel === "create" && <CreatePanel difficulty={difficulty} onBack={() => setPanel("mode")} />}
+        {panel === "create" && <CreatePanel difficulty={difficulty} onBack={() => setPanel("mode")} onTest={onTest} />}
         {panel === "settings" && <SettingsPanel onBack={() => setPanel("title")} />}
       </div>
       <div className="title-footer"><span>MARK / CAPTURE</span><i /> <span>AREA</span><i /> <span>FAST</span><i /> <span>ESC PAUSE</span></div>
@@ -101,7 +105,7 @@ function PracticeActions({ difficulty, setDifficulty, practice, setPractice, onS
 
 function LabeledSelect({ label, value, max, onChange }: { label: string; value: number; max: number; onChange(value: number): void }) { return <label><span>{label}</span><select value={value} onChange={(event) => onChange(Number(event.target.value))}>{Array.from({ length: max }, (_, index) => <option value={index + 1} key={index}>{String(index + 1).padStart(2, "0")}</option>)}</select></label>; }
 
-function CreatePanel({ difficulty, onBack }: { difficulty: Difficulty; onBack(): void }) {
+function CreatePanel({ difficulty, onBack, onTest }: { difficulty: Difficulty; onBack(): void; onTest(puzzle: PuzzleDescriptor): void }) {
   const [width, setWidth] = useState(4); const [depth, setDepth] = useState(3); const [cells, setCells] = useState<EditorCell[]>(Array.from({ length: 12 }, () => "empty")); const [requiredRolls, setRequiredRolls] = useState(0); const [notice, setNotice] = useState("セルをクリックして EMPTY → NORMAL → VEIL → VOID を切り替えます。"); const [seed] = useState(() => Date.now()); const input = useRef<HTMLInputElement>(null);
   useEffect(() => setCells(Array.from({ length: width * depth }, () => "empty")), [width, depth]);
   const layout = useMemo(() => cells.flatMap((cell, index) => cell === "empty" ? [] : [{ x: index % width, z: Math.floor(index / width), type: cell }]), [cells, width]);
@@ -115,7 +119,7 @@ function CreatePanel({ difficulty, onBack }: { difficulty: Difficulty; onBack():
   const exportJson = () => { const url = URL.createObjectURL(new Blob([JSON.stringify(descriptor, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = "cubic-ordeal-custom.json"; anchor.click(); URL.revokeObjectURL(url); };
   const importJson = async (file?: File) => { if (!file) return; try { const imported = JSON.parse(await file.text()) as PuzzleDescriptor; if (!imported || !Array.isArray(imported.layout) || imported.width < 4 || imported.width > 7 || imported.depth < 2 || imported.depth > 9) throw new Error("format"); setWidth(imported.width); setDepth(imported.depth); setCells(Array.from({ length: imported.width * imported.depth }, (_, index) => { const cube = imported.layout.find((item) => item.x === index % imported.width && item.z === Math.floor(index / imported.width)); return cube?.type ?? "empty"; })); setRequiredRolls(imported.requiredRolls); setNotice("JSONを読み込みました。VALIDATEで現在の規則に照合してください。"); } catch { setNotice("WARNING // 読み込めないCUBIC ORDEAL JSONです。"); } finally { if (input.current) input.current.value = ""; } };
   const loadLatest = () => { const archive = JSON.parse(localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]") as PuzzleDescriptor[]; const latest = archive.at(-1); if (!latest) { setNotice("保存済み問題がありません。"); return; } void importJson(new File([JSON.stringify(latest)], "archive.json", { type: "application/json" })); };
-  return <div className="menu-actions create-panel"><span className="eyebrow">CREATE // LOCAL ARCHIVE</span><div className="select-grid"><LabeledSelect label="WIDTH" value={width} max={7} onChange={(value) => setWidth(Math.max(4, value))} /><LabeledSelect label="DEPTH" value={depth} max={9} onChange={(value) => setDepth(Math.max(2, value))} /><label><span>REQUIRED</span><input type="number" min="0" max="99" value={requiredRolls} onChange={(event) => setRequiredRolls(Math.max(0, Number(event.target.value)))} /></label></div><div className="editor-grid" style={{ gridTemplateColumns: `repeat(${width}, 1fr)` }}>{cells.map((cell, index) => <button className={`editor-cell ${cell}`} title={`${cell} cell`} onClick={() => cycle(index)} key={index}>{cell === "normal" ? "N" : cell === "veil" ? "V" : cell === "void" ? "Ø" : ""}</button>)}</div><p className="editor-notice">{notice}</p><input ref={input} type="file" accept="application/json,.json" hidden onChange={(event) => void importJson(event.target.files?.[0])} /><div className="editor-actions"><Action label="VALIDATE" note="CHECK" onClick={test} /><Action label="SAVE" note="LOCAL" onClick={save} /><Action label="LOAD" note="LATEST" onClick={loadLatest} /><Action label="IMPORT" note="JSON" onClick={() => input.current?.click()} /><Action label="EXPORT" note="JSON" onClick={exportJson} /><Action label="MIRROR" note="LEFT / RIGHT" onClick={mirror} /></div><div className="action-row"><Action label="BACK" note="MODE" onClick={onBack} /><Action label="TEST ORDEAL" note={difficulty} onClick={() => command({ type: "load-custom", puzzle: descriptor })} primary /></div></div>;
+  return <div className="menu-actions create-panel"><span className="eyebrow">CREATE // LOCAL ARCHIVE</span><div className="select-grid"><LabeledSelect label="WIDTH" value={width} max={7} onChange={(value) => setWidth(Math.max(4, value))} /><LabeledSelect label="DEPTH" value={depth} max={9} onChange={(value) => setDepth(Math.max(2, value))} /><label><span>REQUIRED</span><input type="number" min="0" max="99" value={requiredRolls} onChange={(event) => setRequiredRolls(Math.max(0, Number(event.target.value)))} /></label></div><div className="editor-grid" style={{ gridTemplateColumns: `repeat(${width}, 1fr)` }}>{cells.map((cell, index) => <button className={`editor-cell ${cell}`} title={`${cell} cell`} onClick={() => cycle(index)} key={index}>{cell === "normal" ? "N" : cell === "veil" ? "V" : cell === "void" ? "Ø" : ""}</button>)}</div><p className="editor-notice">{notice}</p><input ref={input} type="file" accept="application/json,.json" hidden onChange={(event) => void importJson(event.target.files?.[0])} /><div className="editor-actions"><Action label="VALIDATE" note="CHECK" onClick={test} /><Action label="SAVE" note="LOCAL" onClick={save} /><Action label="LOAD" note="LATEST" onClick={loadLatest} /><Action label="IMPORT" note="JSON" onClick={() => input.current?.click()} /><Action label="EXPORT" note="JSON" onClick={exportJson} /><Action label="MIRROR" note="LEFT / RIGHT" onClick={mirror} /></div><div className="action-row"><Action label="BACK" note="MODE" onClick={onBack} /><Action label="TEST ORDEAL" note={difficulty} onClick={() => onTest(descriptor)} primary /></div></div>;
 }
 
 function SettingsPanel({ onBack }: { onBack(): void }) { const [quality, setQuality] = useState(localStorage.getItem("cubic-ordeal-quality") ?? "AUTO"); const [audio, setAudio] = useState(localStorage.getItem("cubic-ordeal-audio") ?? "ON"); const set = (key: "quality" | "audio", value: string) => { localStorage.setItem(`cubic-ordeal-${key}`, value); setting(key, value); }; return <div className="menu-actions"><span className="eyebrow">OBSERVATORY SETTINGS</span><h2>CALIBRATION</h2><div className="setting-line"><span>QUALITY</span><select value={quality} onChange={(event) => { setQuality(event.target.value); set("quality", event.target.value); }}><option>AUTO</option><option>LOW</option><option>NORMAL</option><option>HIGH</option></select></div><div className="setting-line"><span>AUDIO</span><select value={audio} onChange={(event) => { setAudio(event.target.value); set("audio", event.target.value); }}><option>ON</option><option>OFF</option></select></div><p className="menu-lead">品質と音声は選択直後に反映されます。AUTOは端末性能から安全な描画密度を選びます。</p><Action label="BACK" note="TITLE" onClick={onBack} primary /></div>; }

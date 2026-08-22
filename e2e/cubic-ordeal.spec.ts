@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorage.clear()); });
+test.beforeEach(async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.clear());
+});
 
 test("タイトルからキャンペーンを開始し、HUDと一時停止へ到達できる", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
