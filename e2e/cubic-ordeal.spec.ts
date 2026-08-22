@@ -104,3 +104,12 @@ test("870×400横画面でタッチ操作を開始・解除してもHUDと盤面
   await page.getByRole("button", { name: "AREA" }).click();
   await expect(page.getByText("SCORE", { exact: true })).toBeVisible();
 });
+
+test("RUM観測面が初期ロード・3Dランタイム・初回フレームの匿名計測値を表示する", async ({ page }) => {
+  await page.goto("/?demo&rum=1");
+  const panel = page.getByLabel("Runtime measurement");
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("NAV");
+  await expect(panel).toContainText("REQUEST");
+  await expect(panel.locator("div").filter({ hasText: "FRAME" })).toContainText(/\d+ms/);
+});

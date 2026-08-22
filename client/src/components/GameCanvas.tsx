@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { createGameScene, type GameHandle } from "@/game/scene";
 
-export default function GameCanvas({ onReady }: { onReady(): void }) {
+export default function GameCanvas({ onReady, onFirstFrame }: { onReady(): void; onFirstFrame(): void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startedRef = useRef(false);
   useEffect(() => {
@@ -13,7 +13,8 @@ export default function GameCanvas({ onReady }: { onReady(): void }) {
     const engine = new Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, adaptToDeviceRatio: false });
     let handle: GameHandle | null = null;
     let alive = true;
-    void createGameScene(engine, canvas).then((created) => { if (!alive) { created.dispose(); return; } handle = created; engine.runRenderLoop(() => created.scene.render()); onReady(); }).catch((error: unknown) => { console.error("CUBIC ORDEAL scene initialization failed", error); });
+    let firstFrame = false;
+    void createGameScene(engine, canvas).then((created) => { if (!alive) { created.dispose(); return; } handle = created; engine.runRenderLoop(() => { created.scene.render(); if (!firstFrame) { firstFrame = true; onFirstFrame(); } }); onReady(); }).catch((error: unknown) => { console.error("CUBIC ORDEAL scene initialization failed", error); });
     const resize = () => engine.resize(); window.addEventListener("resize", resize);
     return () => { alive = false; window.removeEventListener("resize", resize); handle?.dispose(); engine.dispose(); startedRef.current = false; };
   }, []);

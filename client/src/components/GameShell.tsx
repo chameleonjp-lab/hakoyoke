@@ -6,6 +6,7 @@ import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { calculateMindIndex } from "@/game/rules";
 import type { CubicCommand } from "@/game/GameWorld";
 import type { Difficulty, GameMode, GameSnapshot, PuzzleDescriptor } from "@/game/types";
+import RumPanel from "./RumPanel";
 
 const PANEL = "/manus-storage/cubic-ordeal-signal-panel_78bc2974.png";
 const difficulties: Difficulty[] = ["BEGINNER", "EASY", "NORMAL", "HARD", "EXTREME"];
@@ -45,6 +46,7 @@ export default function GameShell({ onLaunch }: { onLaunch(command: CubicCommand
       {playing && snapshot && <Hud snapshot={snapshot} onMenu={() => { command({ type: "menu" }); setPanel("mode"); }} />}
       {snapshot?.phase === "TUTORIAL" && <aside className="tutorial-callout"><span>TRAINING {Math.min(8, snapshot.tutorialStep + 1)} / 8</span><p>{snapshot.hint}</p></aside>}
       {snapshot?.debug && <DebugPanel snapshot={snapshot} />}
+      <RumPanel />
       {snapshot?.banner && playing && <div className="signal-banner" aria-live="polite">{snapshot.banner}</div>}
       {showMenu && (
         <MenuPanel

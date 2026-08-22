@@ -4,7 +4,7 @@ import { Scene } from "@babylonjs/core/scene";
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
-import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
+import type { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { LinesMesh } from "@babylonjs/core/Meshes/linesMesh";
 import { InstancedMesh } from "@babylonjs/core/Meshes/instancedMesh";
@@ -14,7 +14,6 @@ import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
-import { GlowLayer } from "@babylonjs/core/Layers/glowLayer";
 import { GameWorld } from "./GameWorld";
 import { AudioManager, type SoundSignal } from "./AudioManager";
 import { loadPuzzles } from "./puzzles";
@@ -24,6 +23,7 @@ import type { CubeState, GameSnapshot } from "./types";
 export interface GameHandle { scene: Scene; dispose(): void; }
 
 interface RenderCube { root: TransformNode; core: Mesh; outline: Mesh; type: CubeState["type"]; }
+const BASALT_TILE = "/manus-storage/cubic-ordeal-basalt-tile_1a919528.png";
 
 export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement): Promise<GameHandle> {
   const scene = new Scene(engine);
@@ -49,17 +49,15 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   key.position = new Vector3(4, 12, -3);
   key.intensity = 1.72;
   key.diffuse = Color3.FromHexString("#D3E8FF");
-  const shadows = new ShadowGenerator(quality === "LOW" ? 512 : 1024, key);
-  shadows.useBlurExponentialShadowMap = quality !== "LOW";
-  shadows.blurKernel = 12;
-  const glow = new GlowLayer("signal-glow", scene, { mainTextureFixedSize: quality === "HIGH" ? 1024 : 512, blurKernelSize: 32 });
-  glow.intensity = quality === "LOW" ? 0.28 : 0.48;
+  let shadows: ShadowGenerator | null = null;
+  let glow: { intensity: number; dispose(): void } | null = null;
+  let disposed = false;
 
   const material = makeMaterials(scene);
   const platform = new PlatformRenderer(scene, material.tile);
   const markers = new MarkerRenderer(scene, material.marker, material.area);
   const effects = new EffectsRenderer(scene, material.marker, material.tile);
-  const player = createPlayer(scene, material.player, shadows);
+  const player = createPlayer(scene, material.player);
   const cubes = new Map<string, RenderCube>();
   const audio = new AudioManager();
   audio.setEnabled(localStorage.getItem("cubic-ordeal-audio") !== "OFF");
@@ -75,8 +73,8 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     if (detail.key === "quality") {
       quality = detail.value === "AUTO" ? detectQuality() : detail.value as "LOW" | "NORMAL" | "HIGH";
       engine.setHardwareScalingLevel(quality === "LOW" ? 1.6 : quality === "HIGH" ? 1 : 1.25);
-      glow.intensity = quality === "LOW" ? 0.24 : quality === "HIGH" ? 0.54 : 0.42;
-      shadows.setDarkness(quality === "LOW" ? 0.18 : 0.32);
+      if (glow) glow.intensity = quality === "LOW" ? 0.24 : quality === "HIGH" ? 0.54 : 0.42;
+      shadows?.setDarkness(quality === "LOW" ? 0.18 : 0.32);
     }
   };
   window.addEventListener("cubic:snapshot", onSnapshot);
@@ -105,10 +103,32 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     camera.radius = lerp(camera.radius, Math.max(11.4, latest.stats.platformRows * 0.68 + 4), 0.025);
     if (latest.phase === "CRUSHED") camera.radius = Math.min(25, camera.radius + 0.08);
   });
+  const stopDeferredEnhancement = deferVisualEnhancement(() => {
+    if (disposed) return;
+    const resolution = quality === "LOW" ? 512 : 1024;
+    void Promise.all([
+      import("@babylonjs/core/Lights/Shadows/shadowGenerator"),
+      import("@babylonjs/core/Layers/glowLayer"),
+      import("@babylonjs/core/Materials/Textures/texture"),
+    ]).then(([{ ShadowGenerator }, { GlowLayer }, { Texture }]) => {
+      if (disposed) return;
+      shadows = new ShadowGenerator(resolution, key);
+      shadows.useBlurExponentialShadowMap = quality !== "LOW";
+      shadows.blurKernel = 12;
+      shadows.setDarkness(quality === "LOW" ? 0.18 : 0.32);
+      player.getChildMeshes().forEach((mesh) => shadows?.addShadowCaster(mesh));
+      cubes.forEach((rendered) => shadows?.addShadowCaster(rendered.core));
+      material.tile.diffuseTexture = new Texture(BASALT_TILE, scene, true, false);
+      glow = new GlowLayer("signal-glow", scene, { mainTextureFixedSize: quality === "HIGH" ? 1024 : 512, blurKernelSize: 32 });
+      glow.intensity = quality === "LOW" ? 0.28 : 0.48;
+    }).catch(() => undefined);
+  });
 
   return {
     scene,
     dispose() {
+      disposed = true;
+      stopDeferredEnhancement();
       window.removeEventListener("cubic:snapshot", onSnapshot);
       window.removeEventListener("cubic:user-gesture", onGesture);
       window.removeEventListener("cubic:signal", onSignal);
@@ -121,8 +141,8 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
       Array.from(cubes.values()).forEach((rendered) => rendered.root.dispose());
       cubes.clear();
       player.dispose();
-      shadows.dispose();
-      glow.dispose();
+      shadows?.dispose();
+      glow?.dispose();
     },
   };
 }
@@ -231,7 +251,7 @@ class MarkerRenderer {
   dispose(): void { this.marker.dispose(); this.areaMeshes.forEach((mesh) => mesh.dispose()); this.areaMeshes.clear(); }
 }
 
-function createPlayer(scene: Scene, material: StandardMaterial, shadows: ShadowGenerator): TransformNode {
+function createPlayer(scene: Scene, material: StandardMaterial): TransformNode {
   const root = new TransformNode("runner", scene);
   const torso = MeshBuilder.CreateCylinder("runner-torso", { height: 0.56, diameterTop: 0.3, diameterBottom: 0.38, tessellation: 6 }, scene);
   torso.parent = root;
@@ -249,7 +269,7 @@ function createPlayer(scene: Scene, material: StandardMaterial, shadows: ShadowG
   forward.parent = root;
   forward.rotation.x = Math.PI / 2;
   forward.position.set(0, 0.42, 0.42);
-  [torso, head, legLeft, legRight, forward].forEach((part) => { part.material = material; shadows.addShadowCaster(part); });
+  [torso, head, legLeft, legRight, forward].forEach((part) => { part.material = material; });
   return root;
 }
 
@@ -261,7 +281,7 @@ function syncPlayer(player: TransformNode, snapshot: GameSnapshot): void {
   if (snapshot.phase === "CRUSHED") player.rotation.z = Math.PI * 0.47;
 }
 
-function syncCubes(scene: Scene, rendered: Map<string, RenderCube>, snapshot: GameSnapshot, materials: ReturnType<typeof makeMaterials>, shadows: ShadowGenerator): void {
+function syncCubes(scene: Scene, rendered: Map<string, RenderCube>, snapshot: GameSnapshot, materials: ReturnType<typeof makeMaterials>, shadows: ShadowGenerator | null): void {
   const active = new Set(snapshot.cubes.map((cube) => cube.id));
   for (const cube of snapshot.cubes) {
     let visual = rendered.get(cube.id);
@@ -271,7 +291,7 @@ function syncCubes(scene: Scene, rendered: Map<string, RenderCube>, snapshot: Ga
       core.parent = root;
       core.position.set(0, ROLL_HALF, ROLL_HALF);
       core.material = materials[cube.type];
-      shadows.addShadowCaster(core);
+      shadows?.addShadowCaster(core);
       const outline = MeshBuilder.CreateBox(`cube-outline-${cube.id}`, { size: ROLL_SIZE * 1.018 }, scene);
       outline.parent = root;
       outline.position.set(0, ROLL_HALF, ROLL_HALF);
@@ -373,3 +393,13 @@ function resolveQuality(): "LOW" | "NORMAL" | "HIGH" {
 }
 
 function lerp(from: number, to: number, alpha: number): number { return from + (to - from) * alpha; }
+
+function deferVisualEnhancement(task: () => void): () => void {
+  const idle = window as Window & { requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+  if (idle.requestIdleCallback) {
+    const id = idle.requestIdleCallback(task, { timeout: 1400 });
+    return () => idle.cancelIdleCallback?.(id);
+  }
+  const id = window.setTimeout(task, 180);
+  return () => window.clearTimeout(id);
+}
