@@ -12,3 +12,14 @@
 
 すべての画像は本タスクで生成したオリジナル素材であり、第三者のゲーム画面、ロゴ、音楽、モデル、フォント、問題データは含まない。大型アセットをプロジェクトツリーへ保存せず、上記ストレージURLで参照する。
 
+## GitHub完全移行用の原本アーカイブ
+
+実行時には上記のストレージURLを継続して使用する。完全移行リポジトリには、再利用・監査・バックアップ向けに同一アセットの原本またはストレージ由来のベクター書き出しを `assets/original/` へ収録する。ラスターの視覚ターゲットはローカルの生成原本を保管し、他の4点はストレージから取得したSVG書き出しとして保管する。
+
+| Asset | GitHubアーカイブパス | 収録形式 |
+|---|---|---|
+| Visual target | `assets/original/cubic-ordeal-visual-target.png` | 生成時のラスター原本 |
+| Title background | `assets/original/cubic-ordeal-title-background.svg` | ストレージ由来SVG書き出し |
+| Symbol logo | `assets/original/cubic-ordeal-logo.svg` | ストレージ由来SVG書き出し |
+| Basalt tile | `assets/original/cubic-ordeal-basalt-tile.svg` | ストレージ由来SVG書き出し |
+| Signal panel | `assets/original/cubic-ordeal-signal-panel.svg` | ストレージ由来SVG書き出し |
