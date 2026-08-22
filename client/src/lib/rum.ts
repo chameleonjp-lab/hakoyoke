@@ -1,4 +1,4 @@
-/** Obsidian Observatory RUM: anonymous runtime milestones and Web Vitals, retained locally unless an endpoint is configured. */
+/** Opt-in local runtime measurement. It never transmits data and only starts with ?rum=1. */
 export interface RumSnapshot {
   navigationMs?: number;
   fcpMs?: number;
@@ -11,33 +11,27 @@ export interface RumSnapshot {
   recordedAt: string;
 }
 
-const STORAGE_KEY = "cubic-ordeal-rum-v1";
+const STORAGE_KEY = "cubic-ordeal-rum-v2";
 const EVENT_NAME = "cubic:rum";
 let started = false;
-let sent = false;
 let snapshot: RumSnapshot = { cls: 0, recordedAt: new Date().toISOString() };
 
 function isBrowser(): boolean { return typeof window !== "undefined" && typeof performance !== "undefined"; }
 function now(): number { return Math.round(performance.now()); }
 
 function publish(): void {
-  if (!isBrowser()) return;
+  if (!isBrowser() || !started) return;
   snapshot = { ...snapshot, recordedAt: new Date().toISOString() };
   window.dispatchEvent(new CustomEvent<RumSnapshot>(EVENT_NAME, { detail: snapshot }));
 }
 
-function persist(send = false): void {
-  if (!isBrowser()) return;
+function persist(): void {
+  if (!isBrowser() || !started) return;
   try {
     const previous = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as RumSnapshot[];
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...previous.slice(-23), snapshot]));
-  } catch { /* RUM is optional in restricted storage contexts. */ }
-  const endpoint = import.meta.env.VITE_RUM_ENDPOINT;
-  if (!send || sent || !endpoint) return;
-  sent = true;
-  const body = JSON.stringify(snapshot);
-  if (!navigator.sendBeacon?.(endpoint, new Blob([body], { type: "application/json" }))) {
-    void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => undefined);
+  } catch {
+    // Measurement is optional in restricted storage contexts.
   }
 }
 
@@ -47,7 +41,9 @@ function observe(type: string, receive: (entries: PerformanceEntry[]) => void): 
     const observer = new PerformanceObserver((list) => receive(list.getEntries()));
     observer.observe({ type, buffered: true });
     return () => observer.disconnect();
-  } catch { return () => undefined; }
+  } catch {
+    return () => undefined;
+  }
 }
 
 export function startRum(): () => void {
@@ -70,20 +66,14 @@ export function startRum(): () => void {
     const input = entries[0];
     if (input) { snapshot.inputDelayMs = Math.round(input.duration); publish(); }
   });
-  const finish = () => { persist(true); publish(); };
+  const finish = () => { persist(); publish(); };
   window.addEventListener("pagehide", finish, { once: true });
   publish();
   return () => { stopPaint(); stopLcp(); stopCls(); stopInput(); window.removeEventListener("pagehide", finish); };
 }
 
-export function markRuntimeRequested(): void { if (isBrowser()) { snapshot.runtimeRequestedMs = now(); publish(); } }
-export function markRuntimeReady(): void { if (isBrowser()) { snapshot.runtimeReadyMs = now(); publish(); } }
-export function markFirstFrame(): void { if (isBrowser() && snapshot.firstFrameMs === undefined) { snapshot.firstFrameMs = now(); persist(); publish(); } }
+export function markRuntimeRequested(): void { if (started && isBrowser()) { snapshot.runtimeRequestedMs = now(); publish(); } }
+export function markRuntimeReady(): void { if (started && isBrowser()) { snapshot.runtimeReadyMs = now(); publish(); } }
+export function markFirstFrame(): void { if (started && isBrowser() && snapshot.firstFrameMs === undefined) { snapshot.firstFrameMs = now(); persist(); publish(); } }
 export function getRumSnapshot(): RumSnapshot { return { ...snapshot }; }
-
-export function subscribeRum(listener: (value: RumSnapshot) => void): () => void {
-  if (!isBrowser()) return () => undefined;
-  const receive = (event: Event) => listener((event as CustomEvent<RumSnapshot>).detail);
-  window.addEventListener(EVENT_NAME, receive);
-  return () => window.removeEventListener(EVENT_NAME, receive);
-}
+export function subscribeRum(listener: (value: RumSnapshot) => void): () => void { if (!isBrowser()) return () => undefined; const receive = (event: Event) => listener((event as CustomEvent<RumSnapshot>).detail); window.addEventListener(EVENT_NAME, receive); return () => window.removeEventListener(EVENT_NAME, receive); }

@@ -1,4 +1,4 @@
-/** Obsidian Observatory app shell: keep title instrumentation instant; load Babylon only when an ordeal begins. */
+/** App shell: keep title instrumentation instant; load Babylon only when an ordeal begins. */
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import GameShell from "@/components/GameShell";
 import RuntimeBoundary from "@/components/RuntimeBoundary";
@@ -9,42 +9,44 @@ import "./index.css";
 const GameCanvas = lazy(() => import("@/components/GameCanvas"));
 
 export default function App() {
+  const search = new URLSearchParams(window.location.search);
+  const rumEnabled = search.get("rum") === "1";
   const pendingCommand = useRef<CubicCommand | null>(null);
   const runtimeReady = useRef(false);
   const runtimeRequested = useRef(false);
-  const [loadRuntime, setLoadRuntime] = useState(() => new URLSearchParams(window.location.search).has("demo"));
+  const [loadRuntime, setLoadRuntime] = useState(() => search.has("demo"));
 
-  useEffect(() => startRum(), []);
+  useEffect(() => rumEnabled ? startRum() : undefined, [rumEnabled]);
   useEffect(() => {
-    if (loadRuntime && !runtimeRequested.current) {
+    if (rumEnabled && loadRuntime && !runtimeRequested.current) {
       runtimeRequested.current = true;
       markRuntimeRequested();
     }
-  }, [loadRuntime]);
+  }, [loadRuntime, rumEnabled]);
 
   const dispatchCommand = useCallback((command: CubicCommand) => {
     window.dispatchEvent(new CustomEvent<CubicCommand>("cubic:command", { detail: command }));
   }, []);
 
   const launch = useCallback((command: CubicCommand) => {
-    if (runtimeReady.current) {
-      dispatchCommand(command);
-      return;
+    window.dispatchEvent(new Event("cubic:user-gesture"));
+    if (runtimeReady.current) dispatchCommand(command);
+    else {
+      pendingCommand.current = command;
+      setLoadRuntime(true);
     }
-    pendingCommand.current = command;
-    setLoadRuntime(true);
   }, [dispatchCommand]);
 
   const handleRuntimeReady = useCallback(() => {
     runtimeReady.current = true;
-    markRuntimeReady();
+    if (rumEnabled) markRuntimeReady();
     const command = pendingCommand.current;
     pendingCommand.current = null;
     if (command) dispatchCommand(command);
-  }, [dispatchCommand]);
+  }, [dispatchCommand, rumEnabled]);
 
   return <div className="game-root">
-    {loadRuntime && <RuntimeBoundary><Suspense fallback={<div className="engine-loading" role="status">CALIBRATING OBSERVATORY…</div>}><GameCanvas onReady={handleRuntimeReady} onFirstFrame={markFirstFrame} /></Suspense></RuntimeBoundary>}
+    {loadRuntime && <RuntimeBoundary><Suspense fallback={<div className="engine-loading" role="status">CALIBRATING OBSERVATORY…</div>}><GameCanvas onReady={handleRuntimeReady} onFirstFrame={() => { if (rumEnabled) markFirstFrame(); }} /></Suspense></RuntimeBoundary>}
     <GameShell onLaunch={launch} />
   </div>;
 }

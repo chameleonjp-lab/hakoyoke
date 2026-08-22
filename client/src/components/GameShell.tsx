@@ -1,9 +1,10 @@
 /** Obsidian Observatory UI: edge instrumentation, not a centered generic dashboard. */
-import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent, type TouchEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { validatePuzzle } from "@/game/puzzleValidation";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { calculateMindIndex } from "@/game/rules";
+import { puzzleCountFor } from "@/game/stagePlan";
 import type { CubicCommand } from "@/game/GameWorld";
 import type { Difficulty, GameMode, GameSnapshot, PuzzleDescriptor } from "@/game/types";
 import RumPanel from "./RumPanel";
@@ -23,6 +24,7 @@ export default function GameShell({ onLaunch }: { onLaunch(command: CubicCommand
   const [chosenMode, setChosenMode] = useState<GameMode>("CAMPAIGN");
   const [difficulty, setDifficulty] = useState<Difficulty>("NORMAL");
   const [practice, setPractice] = useState({ stage: 1, wave: 1, ordinal: 1 });
+  const rumEnabled = new URLSearchParams(window.location.search).get("rum") === "1";
 
   useEffect(() => {
     const update = (event: Event) => setSnapshot((event as CustomEvent<GameSnapshot>).detail);
@@ -46,22 +48,9 @@ export default function GameShell({ onLaunch }: { onLaunch(command: CubicCommand
       {playing && snapshot && <Hud snapshot={snapshot} onMenu={() => { command({ type: "menu" }); setPanel("mode"); }} />}
       {snapshot?.phase === "TUTORIAL" && <aside className="tutorial-callout"><span>TRAINING {Math.min(8, snapshot.tutorialStep + 1)} / 8</span><p>{snapshot.hint}</p></aside>}
       {snapshot?.debug && <DebugPanel snapshot={snapshot} />}
-      <RumPanel />
+      {rumEnabled && <RumPanel />}
       {snapshot?.banner && playing && <div className="signal-banner" aria-live="polite">{snapshot.banner}</div>}
-      {showMenu && (
-        <MenuPanel
-          panel={panel ?? "title"}
-          setPanel={setPanel}
-          chosenMode={chosenMode}
-          setChosenMode={setChosenMode}
-          difficulty={difficulty}
-          setDifficulty={setDifficulty}
-          execute={execute}
-          practice={practice}
-          setPractice={setPractice}
-          onTest={(puzzle) => { launch({ type: "load-custom", puzzle }); setPanel(null); }}
-        />
-      )}
+      {showMenu && <MenuPanel panel={panel ?? "title"} setPanel={setPanel} chosenMode={chosenMode} setChosenMode={setChosenMode} difficulty={difficulty} setDifficulty={setDifficulty} execute={execute} practice={practice} setPractice={setPractice} onTest={(puzzle) => { launch({ type: "load-custom", puzzle }); setPanel(null); }} />}
       {snapshot?.phase === "PAUSED" && <PauseOverlay snapshot={snapshot} onResume={() => command({ type: "resume" })} onQuit={() => { command({ type: "menu" }); setPanel("mode"); }} />}
       {result && snapshot && <ResultOverlay snapshot={snapshot} onContinue={() => { command({ type: "menu" }); setPanel("mode"); }} />}
       {playing && snapshot && <TouchControls snapshot={snapshot} />}
@@ -70,22 +59,25 @@ export default function GameShell({ onLaunch }: { onLaunch(command: CubicCommand
 }
 
 function MenuPanel({ panel, setPanel, chosenMode, setChosenMode, difficulty, setDifficulty, execute, practice, setPractice, onTest }: {
-  panel: Exclude<Panel, null>; setPanel: (panel: Panel) => void; chosenMode: GameMode; setChosenMode: (mode: GameMode) => void; difficulty: Difficulty; setDifficulty: (difficulty: Difficulty) => void; execute: (mode?: GameMode, stage?: number, wave?: number, ordinal?: number) => void; practice: { stage: number; wave: number; ordinal: number }; setPractice: (value: { stage: number; wave: number; ordinal: number }) => void; onTest(puzzle: PuzzleDescriptor): void;
+  panel: Exclude<Panel, null>;
+  setPanel: (panel: Panel) => void;
+  chosenMode: GameMode;
+  setChosenMode: (mode: GameMode) => void;
+  difficulty: Difficulty;
+  setDifficulty: (difficulty: Difficulty) => void;
+  execute: (mode?: GameMode, stage?: number, wave?: number, ordinal?: number) => void;
+  practice: { stage: number; wave: number; ordinal: number };
+  setPractice: (value: { stage: number; wave: number; ordinal: number }) => void;
+  onTest(puzzle: PuzzleDescriptor): void;
 }) {
-  return (
-    <section className="title-shell">
-      <div className="title-rail">
-        <div className="brand-lockup"><BrandMark /><div><span className="eyebrow">OBSERVATORY // 01</span><h1><b>CUBIC</b> <em>ORDEAL</em></h1></div></div>
-        {panel === "title" && <TitleActions onMode={() => setPanel("mode")} onTutorial={() => execute("TUTORIAL", 1, 1, 1)} onSettings={() => setPanel("settings")} />}
-        {panel === "mode" && <ModeActions chosenMode={chosenMode} setChosenMode={setChosenMode} onNext={() => setPanel(chosenMode === "PRACTICE" ? "practice" : chosenMode === "CREATE" ? "create" : "difficulty")} onBack={() => setPanel("title")} />}
-        {panel === "difficulty" && <DifficultyActions difficulty={difficulty} setDifficulty={setDifficulty} onStart={() => execute(chosenMode)} onBack={() => setPanel("mode")} />}
-        {panel === "practice" && <PracticeActions difficulty={difficulty} setDifficulty={setDifficulty} practice={practice} setPractice={setPractice} onStart={() => execute("PRACTICE")} onBack={() => setPanel("mode")} />}
-        {panel === "create" && <CreatePanel difficulty={difficulty} onBack={() => setPanel("mode")} onTest={onTest} />}
-        {panel === "settings" && <SettingsPanel onBack={() => setPanel("title")} />}
-      </div>
-      <div className="title-footer"><span>MARK / CAPTURE</span><i /> <span>AREA</span><i /> <span>FAST</span><i /> <span>ESC PAUSE</span></div>
-    </section>
-  );
+  return <section className="title-shell"><div className="title-rail"><div className="brand-lockup"><BrandMark /><div><span className="eyebrow">OBSERVATORY // 01</span><h1><b>CUBIC</b> <em>ORDEAL</em></h1></div></div>
+    {panel === "title" && <TitleActions onMode={() => setPanel("mode")} onTutorial={() => execute("TUTORIAL", 1, 1, 1)} onSettings={() => setPanel("settings")} />}
+    {panel === "mode" && <ModeActions chosenMode={chosenMode} setChosenMode={setChosenMode} onNext={() => setPanel(chosenMode === "PRACTICE" ? "practice" : chosenMode === "CREATE" ? "create" : "difficulty")} onBack={() => setPanel("title")} />}
+    {panel === "difficulty" && <DifficultyActions difficulty={difficulty} setDifficulty={setDifficulty} onStart={() => execute(chosenMode)} onBack={() => setPanel("mode")} />}
+    {panel === "practice" && <PracticeActions difficulty={difficulty} setDifficulty={setDifficulty} practice={practice} setPractice={setPractice} onStart={() => execute("PRACTICE")} onBack={() => setPanel("mode")} />}
+    {panel === "create" && <CreatePanel difficulty={difficulty} onBack={() => setPanel("mode")} onTest={onTest} />}
+    {panel === "settings" && <SettingsPanel onBack={() => setPanel("title")} />}
+  </div><div className="title-footer"><span>MARK / CAPTURE</span><i /><span>AREA</span><i /><span>FAST</span><i /><span>ESC PAUSE</span></div></section>;
 }
 
 function TitleActions({ onMode, onTutorial, onSettings }: { onMode(): void; onTutorial(): void; onSettings(): void }) {
@@ -102,35 +94,56 @@ function DifficultyActions({ difficulty, setDifficulty, onStart, onBack }: { dif
 }
 
 function PracticeActions({ difficulty, setDifficulty, practice, setPractice, onStart, onBack }: { difficulty: Difficulty; setDifficulty(value: Difficulty): void; practice: { stage: number; wave: number; ordinal: number }; setPractice(value: { stage: number; wave: number; ordinal: number }): void; onStart(): void; onBack(): void }) {
-  return <div className="menu-actions"><span className="eyebrow">PRACTICE ARCHIVE</span><h2>SELECT AN ORDEAL</h2><div className="select-grid"><LabeledSelect label="STAGE" value={practice.stage} max={9} onChange={(stage) => setPractice({ ...practice, stage })} /><LabeledSelect label="WAVE" value={practice.wave} max={4} onChange={(wave) => setPractice({ ...practice, wave })} /><LabeledSelect label="PUZZLE" value={practice.ordinal} max={3} onChange={(ordinal) => setPractice({ ...practice, ordinal })} /></div><div className="difficulty-row compact">{difficulties.slice(0, 4).map((item) => <button onClick={() => setDifficulty(item)} className={difficulty === item ? "active" : ""} key={item}>{item}</button>)}</div><p className="menu-lead">一手送り、10秒巻き戻し、クイックセーブ、解法確認を使用できます。練習記録は最高記録へ送られません。</p><div className="action-row"><Action label="BACK" note="MODE" onClick={onBack} /><Action label="LOAD ARCHIVE" note={`S${practice.stage} W${practice.wave} P${practice.ordinal}`} onClick={onStart} primary /></div></div>;
+  const maxPuzzle = puzzleCountFor(practice.stage, practice.wave);
+  const update = (next: Partial<typeof practice>) => {
+    const merged = { ...practice, ...next };
+    const count = puzzleCountFor(merged.stage, merged.wave);
+    setPractice({ ...merged, ordinal: Math.min(Math.max(1, merged.ordinal), Math.max(1, count)) });
+  };
+  return <div className="menu-actions"><span className="eyebrow">PRACTICE ARCHIVE</span><h2>SELECT AN ORDEAL</h2><div className="select-grid"><LabeledSelect label="STAGE" value={practice.stage} min={1} max={9} onChange={(stage) => update({ stage })} /><LabeledSelect label="WAVE" value={practice.wave} min={1} max={4} onChange={(wave) => update({ wave })} /><LabeledSelect label="PUZZLE" value={practice.ordinal} min={1} max={Math.max(1, maxPuzzle)} onChange={(ordinal) => update({ ordinal })} /></div><div className="difficulty-row compact">{difficulties.slice(0, 4).map((item) => <button onClick={() => setDifficulty(item)} className={difficulty === item ? "active" : ""} key={item}>{item}</button>)}</div><p className="menu-lead">存在する問題番号だけを選択できます。一手送り、10秒巻き戻し、クイックセーブを使用できます。</p><div className="action-row"><Action label="BACK" note="MODE" onClick={onBack} /><Action label="LOAD ARCHIVE" note={`S${practice.stage} W${practice.wave} P${practice.ordinal}`} onClick={onStart} primary /></div></div>;
 }
 
-function LabeledSelect({ label, value, max, onChange }: { label: string; value: number; max: number; onChange(value: number): void }) { return <label><span>{label}</span><select value={value} onChange={(event) => onChange(Number(event.target.value))}>{Array.from({ length: max }, (_, index) => <option value={index + 1} key={index}>{String(index + 1).padStart(2, "0")}</option>)}</select></label>; }
+function LabeledSelect({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange(value: number): void }) {
+  return <label><span>{label}</span><select value={value} onChange={(event) => onChange(Number(event.target.value))}>{Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => <option value={min + index} key={min + index}>{String(min + index).padStart(2, "0")}</option>)}</select></label>;
+}
 
 function CreatePanel({ difficulty, onBack, onTest }: { difficulty: Difficulty; onBack(): void; onTest(puzzle: PuzzleDescriptor): void }) {
-  const [width, setWidth] = useState(4); const [depth, setDepth] = useState(3); const [cells, setCells] = useState<EditorCell[]>(Array.from({ length: 12 }, () => "empty")); const [requiredRolls, setRequiredRolls] = useState(0); const [notice, setNotice] = useState("セルをクリックして EMPTY → NORMAL → VEIL → VOID を切り替えます。"); const [seed] = useState(() => Date.now()); const input = useRef<HTMLInputElement>(null);
+  const [width, setWidth] = useState(4);
+  const [depth, setDepth] = useState(3);
+  const [cells, setCells] = useState<EditorCell[]>(Array.from({ length: 12 }, () => "empty"));
+  const [requiredRolls, setRequiredRolls] = useState(0);
+  const [notice, setNotice] = useState("セルをクリックして EMPTY → NORMAL → VEIL → VOID を切り替えます。");
+  const [seed] = useState(() => Date.now());
+  const input = useRef<HTMLInputElement>(null);
   useEffect(() => setCells(Array.from({ length: width * depth }, () => "empty")), [width, depth]);
   const layout = useMemo(() => cells.flatMap((cell, index) => cell === "empty" ? [] : [{ x: index % width, z: Math.floor(index / width), type: cell }]), [cells, width]);
   const derived = useMemo(() => deriveDirectSolution({ id: `CUSTOM-${seed}`, width, depth, layout }), [depth, layout, seed, width]);
   useEffect(() => { const captures = derived.filter((step) => step.action === "capture").map((step) => step.rotation); setRequiredRolls(captures.length < 2 ? 0 : Math.max(...captures) - Math.min(...captures)); }, [derived]);
-  const descriptor = useMemo<PuzzleDescriptor>(() => ({ id: `CUSTOM-${seed}`, stage: 1, wave: 1, ordinal: 1, width, depth, requiredRolls, difficultyTag: "custom", seed, layout, solution: derived, validation: { valid: false, normal: layout.filter((cell) => cell.type === "normal").length, veil: layout.filter((cell) => cell.type === "veil").length, void: layout.filter((cell) => cell.type === "void").length, travelBudget: width + depth + 4 }, featured: true }), [depth, derived, layout, requiredRolls, seed, width]);
+  const descriptor = useMemo<PuzzleDescriptor>(() => ({ id: `CUSTOM-${seed}`, stage: 1, wave: 1, ordinal: 1, width, depth, spawnRow: 0, requiredRolls, difficultyTag: "custom", seed, layout, solution: derived, validation: { valid: false, normal: layout.filter((cell) => cell.type === "normal").length, veil: layout.filter((cell) => cell.type === "veil").length, void: layout.filter((cell) => cell.type === "void").length, travelBudget: width + depth + 4 }, featured: true }), [depth, derived, layout, requiredRolls, seed, width]);
   const cycle = (index: number) => setCells((previous) => previous.map((cell, cellIndex) => cellIndex !== index ? cell : cell === "empty" ? "normal" : cell === "normal" ? "veil" : cell === "veil" ? "void" : "empty"));
   const mirror = () => { setCells((previous) => Array.from({ length: width * depth }, (_, index) => previous[Math.floor(index / width) * width + (width - 1 - (index % width))])); setNotice("盤面を左右反転しました。"); };
   const save = () => { const archive = JSON.parse(localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]") as PuzzleDescriptor[]; localStorage.setItem("cubic-ordeal-custom-v1", JSON.stringify([...archive, descriptor])); setNotice(`CUSTOM ARCHIVEへ保存しました。保存数: ${archive.length + 1}`); };
-  const test = () => { const result = validatePuzzle(descriptor); setNotice(result.valid ? `VALID // 必須 ${result.required}、VOID ${result.voids}、規定 ${descriptor.requiredRolls}回転` : `WARNING // ${result.reason}`); };
+  const test = () => { const result = validatePuzzle(descriptor); setNotice(result.valid ? `VALID // 必須 ${result.required}、VOID ${result.voids}、AREA ${result.areaUses}回` : `WARNING // ${result.reason}`); };
   const exportJson = () => { const url = URL.createObjectURL(new Blob([JSON.stringify(descriptor, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = "cubic-ordeal-custom.json"; anchor.click(); URL.revokeObjectURL(url); };
   const importJson = async (file?: File) => { if (!file) return; try { const imported = JSON.parse(await file.text()) as PuzzleDescriptor; if (!imported || !Array.isArray(imported.layout) || imported.width < 4 || imported.width > 7 || imported.depth < 2 || imported.depth > 9) throw new Error("format"); setWidth(imported.width); setDepth(imported.depth); setCells(Array.from({ length: imported.width * imported.depth }, (_, index) => { const cube = imported.layout.find((item) => item.x === index % imported.width && item.z === Math.floor(index / imported.width)); return cube?.type ?? "empty"; })); setRequiredRolls(imported.requiredRolls); setNotice("JSONを読み込みました。VALIDATEで現在の規則に照合してください。"); } catch { setNotice("WARNING // 読み込めないCUBIC ORDEAL JSONです。"); } finally { if (input.current) input.current.value = ""; } };
   const loadLatest = () => { const archive = JSON.parse(localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]") as PuzzleDescriptor[]; const latest = archive.at(-1); if (!latest) { setNotice("保存済み問題がありません。"); return; } void importJson(new File([JSON.stringify(latest)], "archive.json", { type: "application/json" })); };
-  return <div className="menu-actions create-panel"><span className="eyebrow">CREATE // LOCAL ARCHIVE</span><div className="select-grid"><LabeledSelect label="WIDTH" value={width} max={7} onChange={(value) => setWidth(Math.max(4, value))} /><LabeledSelect label="DEPTH" value={depth} max={9} onChange={(value) => setDepth(Math.max(2, value))} /><label><span>REQUIRED</span><input type="number" min="0" max="99" value={requiredRolls} onChange={(event) => setRequiredRolls(Math.max(0, Number(event.target.value)))} /></label></div><div className="editor-grid" style={{ gridTemplateColumns: `repeat(${width}, 1fr)` }}>{cells.map((cell, index) => <button className={`editor-cell ${cell}`} title={`${cell} cell`} onClick={() => cycle(index)} key={index}>{cell === "normal" ? "N" : cell === "veil" ? "V" : cell === "void" ? "Ø" : ""}</button>)}</div><p className="editor-notice">{notice}</p><input ref={input} type="file" accept="application/json,.json" hidden onChange={(event) => void importJson(event.target.files?.[0])} /><div className="editor-actions"><Action label="VALIDATE" note="CHECK" onClick={test} /><Action label="SAVE" note="LOCAL" onClick={save} /><Action label="LOAD" note="LATEST" onClick={loadLatest} /><Action label="IMPORT" note="JSON" onClick={() => input.current?.click()} /><Action label="EXPORT" note="JSON" onClick={exportJson} /><Action label="MIRROR" note="LEFT / RIGHT" onClick={mirror} /></div><div className="action-row"><Action label="BACK" note="MODE" onClick={onBack} /><Action label="TEST ORDEAL" note={difficulty} onClick={() => onTest(descriptor)} primary /></div></div>;
+  return <div className="menu-actions create-panel"><span className="eyebrow">CREATE // LOCAL ARCHIVE</span><div className="select-grid"><LabeledSelect label="WIDTH" value={width} min={4} max={7} onChange={setWidth} /><LabeledSelect label="DEPTH" value={depth} min={2} max={9} onChange={setDepth} /><label><span>REQUIRED</span><input type="number" min="0" max="99" value={requiredRolls} onChange={(event) => setRequiredRolls(Math.max(0, Number(event.target.value)))} /></label></div><div className="editor-grid" style={{ gridTemplateColumns: `repeat(${width}, 1fr)` }}>{cells.map((cell, index) => <button className={`editor-cell ${cell}`} title={`${cell} cell`} onClick={() => cycle(index)} key={index}>{cell === "normal" ? "N" : cell === "veil" ? "V" : cell === "void" ? "Ø" : ""}</button>)}</div><p className="editor-notice">{notice}</p><input ref={input} type="file" accept="application/json,.json" hidden onChange={(event) => void importJson(event.target.files?.[0])} /><div className="editor-actions"><Action label="VALIDATE" note="CHECK" onClick={test} /><Action label="SAVE" note="LOCAL" onClick={save} /><Action label="LOAD" note="LATEST" onClick={loadLatest} /><Action label="IMPORT" note="JSON" onClick={() => input.current?.click()} /><Action label="EXPORT" note="JSON" onClick={exportJson} /><Action label="MIRROR" note="LEFT / RIGHT" onClick={mirror} /></div><div className="action-row"><Action label="BACK" note="MODE" onClick={onBack} /><Action label="TEST ORDEAL" note={difficulty} onClick={() => onTest(descriptor)} primary /></div></div>;
 }
 
-function SettingsPanel({ onBack }: { onBack(): void }) { const [quality, setQuality] = useState(localStorage.getItem("cubic-ordeal-quality") ?? "AUTO"); const [audio, setAudio] = useState(localStorage.getItem("cubic-ordeal-audio") ?? "ON"); const set = (key: "quality" | "audio", value: string) => { localStorage.setItem(`cubic-ordeal-${key}`, value); setting(key, value); }; return <div className="menu-actions"><span className="eyebrow">OBSERVATORY SETTINGS</span><h2>CALIBRATION</h2><div className="setting-line"><span>QUALITY</span><select value={quality} onChange={(event) => { setQuality(event.target.value); set("quality", event.target.value); }}><option>AUTO</option><option>LOW</option><option>NORMAL</option><option>HIGH</option></select></div><div className="setting-line"><span>AUDIO</span><select value={audio} onChange={(event) => { setAudio(event.target.value); set("audio", event.target.value); }}><option>ON</option><option>OFF</option></select></div><p className="menu-lead">品質と音声は選択直後に反映されます。AUTOは端末性能から安全な描画密度を選びます。</p><Action label="BACK" note="TITLE" onClick={onBack} primary /></div>; }
+function SettingsPanel({ onBack }: { onBack(): void }) {
+  const [quality, setQuality] = useState(localStorage.getItem("cubic-ordeal-quality") ?? "AUTO");
+  const [audio, setAudio] = useState(localStorage.getItem("cubic-ordeal-audio") ?? "ON");
+  const set = (key: "quality" | "audio", value: string) => { localStorage.setItem(`cubic-ordeal-${key}`, value); setting(key, value); };
+  return <div className="menu-actions"><span className="eyebrow">OBSERVATORY SETTINGS</span><h2>CALIBRATION</h2><div className="setting-line"><span>QUALITY</span><select value={quality} onChange={(event) => { setQuality(event.target.value); set("quality", event.target.value); }}><option>AUTO</option><option>LOW</option><option>NORMAL</option><option>HIGH</option></select></div><div className="setting-line"><span>AUDIO</span><select value={audio} onChange={(event) => { setAudio(event.target.value); set("audio", event.target.value); }}><option>ON</option><option>OFF</option></select></div><p className="menu-lead">品質と音声は選択直後に反映されます。AUTOは端末性能から安全な描画密度を選びます。</p><Action label="BACK" note="TITLE" onClick={onBack} primary /></div>;
+}
 
 function Action({ label, note, onClick, primary = false }: { label: string; note: string; onClick(): void; primary?: boolean }) { return <Button className={`signal-action ${primary ? "primary" : ""}`} onClick={onClick}><span>{label}</span><small>{note}</small></Button>; }
 function BrandMark() { return <span className="brand-symbol" aria-hidden="true"><i /><i /><i /><i /></span>; }
 
 function Hud({ snapshot, onMenu }: { snapshot: GameSnapshot; onMenu(): void }) {
-  const compact = snapshot.mode === "TUTORIAL"; const mindIndex = calculateMindIndex(snapshot.stats.score, snapshot.stage, snapshot.stats.platformRows, snapshot.stats.misses); return <><header className="hud-top"><div className="hud-brand"><BrandMark /><span>CUBIC ORDEAL</span></div><div className="hud-stat score"><span>{snapshot.mode === "DUEL" ? `P1 ${snapshot.duelScore[0]} : ${snapshot.duelScore[1]} P2` : "SCORE"}</span><b>{snapshot.mode === "DUEL" ? `TURN P${snapshot.duelTurn + 1}` : String(snapshot.stats.score).padStart(6, "0")}</b></div><button className="pause-button" onClick={() => command({ type: "pause" })}>Ⅱ <span>PAUSE</span></button></header><aside className="hud-left"><Metric label="STAGE" value={snapshot.stage === 9 ? "FINAL" : String(snapshot.stage).padStart(2, "0")} /><Metric label="WAVE" value={String(snapshot.wave).padStart(2, "0")} /><Metric label="PUZZLE" value={String(snapshot.puzzleIndex + 1).padStart(2, "0")} /></aside><aside className="hud-right"><Metric label="ROLL" value={`${snapshot.stats.rotations} / ${snapshot.stats.requiredRolls}`} /><Metric label="LOSS" value={`${snapshot.stats.misses} / ${snapshot.stats.missLimit}`} danger={snapshot.stats.misses > 0} /><Metric label="ROWS" value={String(snapshot.stats.platformRows)} /><Metric label="VEIL" value={String(snapshot.stats.areaMarks)} /></aside>{!compact && <footer className="hud-bottom" style={{ backgroundImage: `linear-gradient(90deg, rgba(2,11,19,.92), rgba(9,24,32,.74)), url(${PANEL})` }}><span>{snapshot.difficulty}</span><i /><span>MIND INDEX {mindIndex}</span><i /><button onClick={onMenu}>MENU</button></footer>}{snapshot.mode === "PRACTICE" && <PracticeTools />}</>;
+  const compact = snapshot.mode === "TUTORIAL";
+  const mindIndex = calculateMindIndex(snapshot.stats.score, snapshot.stage, snapshot.stats.platformRows, snapshot.stats.misses);
+  return <><header className="hud-top"><div className="hud-brand"><BrandMark /><span>CUBIC ORDEAL</span></div><div className="hud-stat score"><span>{snapshot.mode === "DUEL" ? `P1 ${snapshot.duelScore[0]} : ${snapshot.duelScore[1]} P2` : "SCORE"}</span><b>{snapshot.mode === "DUEL" ? `TURN P${snapshot.duelTurn + 1}` : String(snapshot.stats.score).padStart(6, "0")}</b></div><button className="pause-button" onClick={() => command({ type: "pause" })}>Ⅱ <span>PAUSE</span></button></header><aside className="hud-left"><Metric label="STAGE" value={snapshot.stage === 9 ? "FINAL" : String(snapshot.stage).padStart(2, "0")} /><Metric label="WAVE" value={String(snapshot.wave).padStart(2, "0")} /><Metric label="PUZZLE" value={String(snapshot.puzzleIndex + 1).padStart(2, "0")} /></aside><aside className="hud-right"><Metric label="ROLL" value={`${snapshot.stats.rotations} / ${snapshot.stats.requiredRolls}`} /><Metric label="LOSS" value={`${snapshot.stats.misses} / ${snapshot.stats.missLimit}`} danger={snapshot.stats.misses > 0} /><Metric label="ROWS" value={String(snapshot.stats.platformRows)} /><Metric label="VEIL" value={String(snapshot.stats.areaMarks)} /></aside>{!compact && <footer className="hud-bottom" style={{ backgroundImage: `linear-gradient(90deg, rgba(2,11,19,.92), rgba(9,24,32,.74)), url(${PANEL})` }}><span>{snapshot.difficulty}</span><i /><span>MIND INDEX {mindIndex}</span><i /><button onClick={onMenu}>MENU</button></footer>}{snapshot.mode === "PRACTICE" && <PracticeTools />}</>;
 }
 
 function Metric({ label, value, danger = false }: { label: string; value: string; danger?: boolean }) { return <div className={`hud-stat ${danger ? "danger" : ""}`}><span>{label}</span><b>{value}</b></div>; }
@@ -143,7 +156,6 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   const [stick, setStick] = useState<{ originX: number; originY: number; x: number; y: number } | null>(null);
   const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
   const activePointer = useRef<number | null>(null);
-  const lastAction = useRef<{ name: "mark" | "area" | "fast" | null; at: number }>({ name: null, at: 0 });
   const markHasTarget = Boolean(snapshot.marker && snapshot.cubes.some((cube) => cube.x === snapshot.marker?.x && cube.z === snapshot.marker?.z && !cube.captured && !cube.falling));
   const markAction = !snapshot.marker ? "MARK" : markHasTarget ? "CAPTURE" : "CLEAR";
   useEffect(() => {
@@ -151,31 +163,12 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     window.addEventListener("cubic:camera-basis", updateBasis);
     return () => window.removeEventListener("cubic:camera-basis", updateBasis);
   }, []);
-  const begin = (event: PointerEvent<HTMLDivElement>) => {
-    if (activePointer.current !== null) return;
-    activePointer.current = event.pointerId;
-    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* synthetic pointer events do not own a capture target */ }
-    setStick({ originX: event.clientX, originY: event.clientY, x: 0, y: 0 });
-    command({ type: "touch-move", x: 0, z: 0 });
-  };
-  const update = (event: PointerEvent<HTMLDivElement>) => {
-      if (activePointer.current !== event.pointerId) return;
-      setStick((origin) => {
-        if (!origin) return null;
-        const dx = Math.max(-52, Math.min(52, event.clientX - origin.originX));
-        const dy = Math.max(-52, Math.min(52, event.clientY - origin.originY));
-        const next = { ...origin, x: dx / 52, y: dy / 52 };
-        const screenForward = -next.y;
-        const worldX = basis.current.rightX * next.x + basis.current.forwardX * screenForward;
-        const worldZ = basis.current.rightZ * next.x + basis.current.forwardZ * screenForward;
-        command({ type: "touch-move", x: worldX, z: worldZ });
-        return next;
-      });
-  };
-  const release = (event: PointerEvent<HTMLDivElement>) => { if (activePointer.current === event.pointerId) { activePointer.current = null; setStick(null); command({ type: "touch-move", x: 0, z: 0 }); } };
-  const claim = (name: "mark" | "area" | "fast") => { const now = performance.now(); if (lastAction.current.name === name && now - lastAction.current.at < 120) return false; lastAction.current = { name, at: now }; return true; };
-  const beginFast = (event: PointerEvent<HTMLButtonElement> | MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>) => { event.preventDefault(); event.stopPropagation(); if (!claim("fast")) return; if ("pointerId" in event) { try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* browser can reject synthetic capture */ } } command({ type: "touch-fast", active: true }); };
-  const endFast = (event: PointerEvent<HTMLButtonElement> | MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>) => { event.preventDefault(); event.stopPropagation(); command({ type: "touch-fast", active: false }); };
-  const pressAction = (event: PointerEvent<HTMLButtonElement> | MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>, action: "mark" | "area") => { event.preventDefault(); event.stopPropagation(); if (!claim(action)) return; if ("pointerId" in event) { try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* input remains valid without capture */ } } command({ type: "touch-press", action }); };
-  return <div className="touch-controls" aria-label="タッチ操作"><div className="touch-zone" aria-label="画面下半分のフローティング移動キー" onPointerDown={begin} onPointerMove={update} onPointerUp={release} onPointerCancel={release}>{stick && <div className="touch-stick floating" data-origin={`${Math.round(stick.originX)}:${Math.round(stick.originY)}`} style={{ left: stick.originX, top: stick.originY }}><div className="touch-knob" style={{ transform: `translate(${stick.x * 35}px, ${stick.y * 35}px)` }} /></div>}<span className="touch-zone-label">MOVE // TAP ORIGIN</span></div><div className="touch-actions"><button className="area" aria-label="AREA" disabled={!snapshot.areas.length} onPointerDown={(event) => pressAction(event, "area")} onMouseDown={(event) => pressAction(event, "area")} onTouchStart={(event) => pressAction(event, "area")}>AREA</button><button className="fast" aria-label="FAST" onPointerDown={beginFast} onMouseDown={beginFast} onTouchStart={beginFast} onPointerUp={endFast} onPointerCancel={endFast} onPointerLeave={endFast} onLostPointerCapture={endFast} onMouseUp={endFast} onMouseLeave={endFast} onTouchEnd={endFast} onTouchCancel={endFast}>FAST</button><button className="mark" aria-label={markAction} onPointerDown={(event) => pressAction(event, "mark")} onMouseDown={(event) => pressAction(event, "mark")} onTouchStart={(event) => pressAction(event, "mark")}>{markAction}<br /><span>{markAction === "MARK" ? "SET TRAP" : markAction === "CAPTURE" ? "ON SIGNAL" : "REMOVE TRAP"}</span></button></div></div>;
+  const begin = (event: PointerEvent<HTMLDivElement>) => { if (activePointer.current !== null || !event.isPrimary) return; activePointer.current = event.pointerId; try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* synthetic test events */ } setStick({ originX: event.clientX, originY: event.clientY, x: 0, y: 0 }); command({ type: "touch-move", x: 0, z: 0 }); };
+  const update = (event: PointerEvent<HTMLDivElement>) => { if (activePointer.current !== event.pointerId) return; setStick((origin) => { if (!origin) return null; const dx = Math.max(-52, Math.min(52, event.clientX - origin.originX)); const dy = Math.max(-52, Math.min(52, event.clientY - origin.originY)); const next = { ...origin, x: dx / 52, y: dy / 52 }; const screenForward = -next.y; command({ type: "touch-move", x: basis.current.rightX * next.x + basis.current.forwardX * screenForward, z: basis.current.rightZ * next.x + basis.current.forwardZ * screenForward }); return next; }); };
+  const release = (event: PointerEvent<HTMLDivElement>) => { if (activePointer.current !== event.pointerId) return; activePointer.current = null; setStick(null); command({ type: "touch-move", x: 0, z: 0 }); };
+  const pressAction = (event: PointerEvent<HTMLButtonElement>, action: "mark" | "area") => { event.preventDefault(); event.stopPropagation(); try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* synthetic test events */ } command({ type: "touch-press", action }); };
+  const keyAction = (event: KeyboardEvent<HTMLButtonElement>, action: "mark" | "area") => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); command({ type: "touch-press", action }); } };
+  const beginFast = (event: PointerEvent<HTMLButtonElement>) => { event.preventDefault(); event.stopPropagation(); try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* synthetic test events */ } command({ type: "touch-fast", active: true }); };
+  const endFast = (event: PointerEvent<HTMLButtonElement>) => { event.preventDefault(); event.stopPropagation(); command({ type: "touch-fast", active: false }); };
+  return <div className="touch-controls" aria-label="タッチ操作"><div className="touch-zone" aria-label="画面下半分のフローティング移動キー" onPointerDown={begin} onPointerMove={update} onPointerUp={release} onPointerCancel={release}>{stick && <div className="touch-stick floating" data-origin={`${Math.round(stick.originX)}:${Math.round(stick.originY)}`} style={{ left: stick.originX, top: stick.originY }}><div className="touch-knob" style={{ transform: `translate(${stick.x * 35}px, ${stick.y * 35}px)` }} /></div>}<span className="touch-zone-label">MOVE // TAP ORIGIN</span></div><div className="touch-actions"><button className="area" aria-label="AREA" disabled={!snapshot.areas.length} onPointerDown={(event) => pressAction(event, "area")} onKeyDown={(event) => keyAction(event, "area")}>AREA</button><button className="fast" aria-label="FAST" onPointerDown={beginFast} onPointerUp={endFast} onPointerCancel={endFast} onPointerLeave={endFast} onLostPointerCapture={endFast}>FAST</button><button className="mark" aria-label={markAction} onPointerDown={(event) => pressAction(event, "mark")} onKeyDown={(event) => keyAction(event, "mark")}>{markAction}<br /><span>{markAction === "MARK" ? "SET TRAP" : markAction === "CAPTURE" ? "ON SIGNAL" : "REMOVE TRAP"}</span></button></div></div>;
 }
