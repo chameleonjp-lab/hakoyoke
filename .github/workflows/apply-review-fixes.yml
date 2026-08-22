@@ -1,0 +1,71 @@
+name: Apply complete PR review fixes
+
+on:
+  push:
+    branches:
+      - perf/runtime-streaming-rum-deps
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-review-fixes-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    if: ${{ !contains(github.event.head_commit.message, '[review-fixes-applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: perf/runtime-streaming-rum-deps
+          fetch-depth: 0
+
+      - name: Reconstruct and verify reviewed source files
+        run: bash scripts/apply-review-fixes.sh
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Unit and puzzle validation tests
+        run: pnpm test
+
+      - name: Production build
+        run: pnpm build
+
+      - name: Install browser test runtimes
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Browser interaction tests
+        run: pnpm exec playwright test
+
+      - name: Production-server browser test
+        run: pnpm test:e2e:production
+
+      - name: Commit verified remediation to the PR branch
+        run: |
+          rm -rf .review-payload
+          rm -f scripts/apply-review-fixes.sh
+          rm -f .github/workflows/apply-review-fixes.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "fix: apply complete gameplay remediation [review-fixes-applied]"
+          git push origin HEAD:perf/runtime-streaming-rum-deps
