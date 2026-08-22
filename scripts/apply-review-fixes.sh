@@ -24,3 +24,62 @@ assert len(puzzles) == 88
 assert len({item['id'] for item in puzzles}) == 88
 assert all(len(item['layout']) == item['width'] * item['depth'] for item in puzzles)
 PY
+
+mkdir -p .github/workflows
+cat > .github/workflows/ci.yml <<'YAML'
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - perf/runtime-streaming-rum-deps
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Unit and puzzle validation tests
+        run: pnpm test
+
+      - name: Production build
+        run: pnpm build
+
+      - name: Install browser runtimes
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Browser interaction tests
+        run: pnpm exec playwright test
+
+      - name: Production-server browser test
+        run: pnpm test:e2e:production
+YAML
