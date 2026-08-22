@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: "./e2e",
   testIgnore: "production.spec.ts",
   timeout: 30_000,
+  expect: { timeout: 15_000 },
   workers: 1,
   use: { baseURL: "http://127.0.0.1:3000", headless: true },
   webServer: {

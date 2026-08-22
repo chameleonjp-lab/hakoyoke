@@ -12,5 +12,5 @@ export default defineConfig({
     timeout: 120_000,
     reuseExistingServer: false,
   },
-  projects: [{ name: "chromium-production", use: { browserName: "chromium", launchOptions: { executablePath: "/usr/bin/chromium", args: ["--no-sandbox", "--disable-dev-shm-usage"] } } }],
+  projects: [{ name: "chromium-production", use: { browserName: "chromium" } }],
 });
