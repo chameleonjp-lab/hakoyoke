@@ -77,4 +77,6 @@
 - [x] 初回起動のRUM指標を収集し、ブラウザで確認できる開発用観測面を追加する。
 - [x] 実際に参照されていないテンプレート依存関係を監査し、安全に削減する。
 - [x] 型検査、単体テスト、E2E、ビルド、ブラウザ表示、依存関係サイズを検証する。
-- [ ] 最適化内容を専用ブランチでPull Requestとして提出する。
+- [x] 最適化内容を専用ブランチでPull Requestとして提出する。
+
+Pull Request: `https://github.com/chameleonjp-lab/hakoyoke/pull/1`（`perf/runtime-streaming-rum-deps` → `main`）。
