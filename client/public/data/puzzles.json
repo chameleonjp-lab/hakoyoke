@@ -1,0 +1,8828 @@
+[
+  {
+    "id": "STAGE-1-W1-P01",
+    "stage": 1,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 2,
+    "spawnRow": 10,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 40711,
+    "layout": [
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 0,
+      "travelBudget": 10
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-1-W1-P02",
+    "stage": 1,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 2,
+    "spawnRow": 10,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 48630,
+    "layout": [
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 0,
+      "travelBudget": 10
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W1-P03",
+    "stage": 1,
+    "wave": 1,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 2,
+    "spawnRow": 10,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 56549,
+    "layout": [
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 0,
+      "travelBudget": 10
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W2-P01",
+    "stage": 1,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 2,
+    "spawnRow": 10,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 64468,
+    "layout": [
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 0,
+      "travelBudget": 10
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-1-W2-P02",
+    "stage": 1,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 2,
+    "spawnRow": 10,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 72387,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 0,
+      "travelBudget": 10
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W2-P03",
+    "stage": 1,
+    "wave": 2,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 2,
+    "spawnRow": 10,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 80306,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 0,
+      "travelBudget": 10
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W3-P01",
+    "stage": 1,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 3,
+    "spawnRow": 9,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 88225,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 1,
+      "travelBudget": 11
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-1-W3-P02",
+    "stage": 1,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 3,
+    "spawnRow": 9,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 96144,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 1,
+      "travelBudget": 11
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W3-P03",
+    "stage": 1,
+    "wave": 3,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 3,
+    "spawnRow": 9,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 104063,
+    "layout": [
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 1,
+      "travelBudget": 11
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W4-P01",
+    "stage": 1,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 4,
+    "spawnRow": 8,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 111982,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 12
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-1-W4-P02",
+    "stage": 1,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 4,
+    "spawnRow": 8,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 119901,
+    "layout": [
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 12
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-1-W4-P03",
+    "stage": 1,
+    "wave": 4,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 4,
+    "spawnRow": 8,
+    "requiredRolls": 0,
+    "difficultyTag": "read",
+    "seed": 127820,
+    "layout": [
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 12
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W1-P01",
+    "stage": 2,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 135739,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 13
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-2-W1-P02",
+    "stage": 2,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 143658,
+    "layout": [
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 13
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W1-P03",
+    "stage": 2,
+    "wave": 1,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 151577,
+    "layout": [
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 13
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W2-P01",
+    "stage": 2,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 159496,
+    "layout": [
+      {
+        "x": 0,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 13
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-2-W2-P02",
+    "stage": 2,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 167415,
+    "layout": [
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 13
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W2-P03",
+    "stage": 2,
+    "wave": 2,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 175334,
+    "layout": [
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 2,
+      "travelBudget": 13
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W3-P01",
+    "stage": 2,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 183253,
+    "layout": [
+      {
+        "x": 0,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 14
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-2-W3-P02",
+    "stage": 2,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 191172,
+    "layout": [
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 14
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W3-P03",
+    "stage": 2,
+    "wave": 3,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 199091,
+    "layout": [
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 14
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W4-P01",
+    "stage": 2,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 4,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 207010,
+    "layout": [
+      {
+        "x": 3,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 14
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-2-W4-P02",
+    "stage": 2,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 214929,
+    "layout": [
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 14
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-2-W4-P03",
+    "stage": 2,
+    "wave": 4,
+    "ordinal": 3,
+    "width": 4,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "read",
+    "seed": 222848,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 14
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W1-P01",
+    "stage": 3,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 4,
+    "spawnRow": 8,
+    "requiredRolls": 2,
+    "difficultyTag": "route",
+    "seed": 230767,
+    "layout": [
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 13
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-3-W1-P02",
+    "stage": 3,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 4,
+    "spawnRow": 8,
+    "requiredRolls": 2,
+    "difficultyTag": "route",
+    "seed": 238686,
+    "layout": [
+      {
+        "x": 4,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 3,
+      "travelBudget": 13
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W1-P03",
+    "stage": 3,
+    "wave": 1,
+    "ordinal": 3,
+    "width": 5,
+    "depth": 4,
+    "spawnRow": 8,
+    "requiredRolls": 2,
+    "difficultyTag": "route",
+    "seed": 246605,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 3,
+      "travelBudget": 13
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W2-P01",
+    "stage": 3,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 254524,
+    "layout": [
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 4,
+      "travelBudget": 14
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-3-W2-P02",
+    "stage": 3,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 262443,
+    "layout": [
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 4,
+      "travelBudget": 14
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W2-P03",
+    "stage": 3,
+    "wave": 2,
+    "ordinal": 3,
+    "width": 5,
+    "depth": 5,
+    "spawnRow": 7,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 270362,
+    "layout": [
+      {
+        "x": 0,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 4,
+      "travelBudget": 14
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W3-P01",
+    "stage": 3,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 278281,
+    "layout": [
+      {
+        "x": 2,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 4,
+      "travelBudget": 15
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-3-W3-P02",
+    "stage": 3,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 286200,
+    "layout": [
+      {
+        "x": 3,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 4,
+      "travelBudget": 15
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W3-P03",
+    "stage": 3,
+    "wave": 3,
+    "ordinal": 3,
+    "width": 5,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 294119,
+    "layout": [
+      {
+        "x": 4,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 4,
+      "travelBudget": 15
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W4-P01",
+    "stage": 3,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 302038,
+    "layout": [
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 4,
+      "travelBudget": 15
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-3-W4-P02",
+    "stage": 3,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 309957,
+    "layout": [
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 4,
+      "travelBudget": 15
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-3-W4-P03",
+    "stage": 3,
+    "wave": 4,
+    "ordinal": 3,
+    "width": 5,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 317876,
+    "layout": [
+      {
+        "x": 4,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 0,
+      "veil": 2,
+      "void": 4,
+      "travelBudget": 15
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-4-W1-P01",
+    "stage": 4,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 325795,
+    "layout": [
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 6,
+      "travelBudget": 16
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-4-W1-P02",
+    "stage": 4,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 333714,
+    "layout": [
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 6,
+      "travelBudget": 16
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-4-W2-P01",
+    "stage": 4,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 341633,
+    "layout": [
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 6,
+      "travelBudget": 16
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-4-W2-P02",
+    "stage": 4,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 349552,
+    "layout": [
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 6,
+      "travelBudget": 16
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-4-W3-P01",
+    "stage": 4,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "route",
+    "seed": 357471,
+    "layout": [
+      {
+        "x": 3,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 7,
+      "travelBudget": 17
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-4-W3-P02",
+    "stage": 4,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "route",
+    "seed": 365390,
+    "layout": [
+      {
+        "x": 1,
+        "z": 12,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 7,
+      "travelBudget": 17
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-4-W4-P01",
+    "stage": 4,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 5,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "route",
+    "seed": 373309,
+    "layout": [
+      {
+        "x": 2,
+        "z": 12,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 7,
+      "travelBudget": 17
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-4-W4-P02",
+    "stage": 4,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 5,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "route",
+    "seed": 381228,
+    "layout": [
+      {
+        "x": 1,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 7,
+      "travelBudget": 17
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W1-P01",
+    "stage": 5,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 389147,
+    "layout": [
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 7,
+      "travelBudget": 16
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-5-W1-P02",
+    "stage": 5,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 397066,
+    "layout": [
+      {
+        "x": 3,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 7,
+      "travelBudget": 16
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W1-P03",
+    "stage": 5,
+    "wave": 1,
+    "ordinal": 3,
+    "width": 6,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 404985,
+    "layout": [
+      {
+        "x": 5,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 7,
+      "travelBudget": 16
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W2-P01",
+    "stage": 5,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 2,
+    "difficultyTag": "chain-protect",
+    "seed": 412904,
+    "layout": [
+      {
+        "x": 2,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "area"
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 1,
+      "travelBudget": 16
+    },
+    "featured": true,
+    "designIntent": "AREAで最奥のVEILを捕獲してアンカーを連鎖させ、MARK上のVOIDをAREAから保護しながら最後のNORMALを回収する。"
+  },
+  {
+    "id": "STAGE-5-W2-P02",
+    "stage": 5,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 420823,
+    "layout": [
+      {
+        "x": 3,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 0,
+      "void": 7,
+      "travelBudget": 16
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W2-P03",
+    "stage": 5,
+    "wave": 2,
+    "ordinal": 3,
+    "width": 6,
+    "depth": 6,
+    "spawnRow": 6,
+    "requiredRolls": 3,
+    "difficultyTag": "route",
+    "seed": 428742,
+    "layout": [
+      {
+        "x": 4,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 1,
+      "void": 7,
+      "travelBudget": 16
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W3-P01",
+    "stage": 5,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 436661,
+    "layout": [
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 8,
+      "travelBudget": 17
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-5-W3-P02",
+    "stage": 5,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 444580,
+    "layout": [
+      {
+        "x": 5,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 8,
+      "travelBudget": 17
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W3-P03",
+    "stage": 5,
+    "wave": 3,
+    "ordinal": 3,
+    "width": 6,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 452499,
+    "layout": [
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 8,
+      "travelBudget": 17
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W4-P01",
+    "stage": 5,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 460418,
+    "layout": [
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 8,
+      "travelBudget": 17
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-5-W4-P02",
+    "stage": 5,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 468337,
+    "layout": [
+      {
+        "x": 1,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 8,
+      "travelBudget": 17
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-5-W4-P03",
+    "stage": 5,
+    "wave": 4,
+    "ordinal": 3,
+    "width": 6,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "route",
+    "seed": 476256,
+    "layout": [
+      {
+        "x": 5,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 8,
+      "travelBudget": 17
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-6-W1-P01",
+    "stage": 6,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 484175,
+    "layout": [
+      {
+        "x": 2,
+        "z": 12,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 10,
+      "travelBudget": 18
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-6-W1-P02",
+    "stage": 6,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 492094,
+    "layout": [
+      {
+        "x": 1,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 10,
+      "travelBudget": 18
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-6-W2-P01",
+    "stage": 6,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 500013,
+    "layout": [
+      {
+        "x": 5,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 12,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 10,
+      "travelBudget": 18
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-6-W2-P02",
+    "stage": 6,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 507932,
+    "layout": [
+      {
+        "x": 5,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 10,
+      "travelBudget": 18
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-6-W3-P01",
+    "stage": 6,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 515851,
+    "layout": [
+      {
+        "x": 4,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 11,
+      "travelBudget": 19
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-6-W3-P02",
+    "stage": 6,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 523770,
+    "layout": [
+      {
+        "x": 2,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 13,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 12,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 11,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-6-W4-P01",
+    "stage": 6,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 6,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 531689,
+    "layout": [
+      {
+        "x": 4,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 5,
+        "z": 13,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 11,
+      "travelBudget": 19
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-6-W4-P02",
+    "stage": 6,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 6,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 539608,
+    "layout": [
+      {
+        "x": 5,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 11,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W1-P01",
+    "stage": 7,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "chain",
+    "seed": 547527,
+    "layout": [
+      {
+        "x": 0,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 11,
+      "travelBudget": 18
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-7-W1-P02",
+    "stage": 7,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "chain",
+    "seed": 555446,
+    "layout": [
+      {
+        "x": 2,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "veil"
+      },
+      {
+        "x": 6,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 11,
+      "travelBudget": 18
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W1-P03",
+    "stage": 7,
+    "wave": 1,
+    "ordinal": 3,
+    "width": 7,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "chain",
+    "seed": 563365,
+    "layout": [
+      {
+        "x": 3,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 11,
+      "travelBudget": 18
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W2-P01",
+    "stage": 7,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "chain",
+    "seed": 571284,
+    "layout": [
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 11,
+      "travelBudget": 18
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-7-W2-P02",
+    "stage": 7,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "chain",
+    "seed": 579203,
+    "layout": [
+      {
+        "x": 4,
+        "z": 11,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 11,
+      "travelBudget": 18
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W2-P03",
+    "stage": 7,
+    "wave": 2,
+    "ordinal": 3,
+    "width": 7,
+    "depth": 7,
+    "spawnRow": 5,
+    "requiredRolls": 5,
+    "difficultyTag": "chain",
+    "seed": 587122,
+    "layout": [
+      {
+        "x": 2,
+        "z": 11,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 11,
+      "travelBudget": 18
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W3-P01",
+    "stage": 7,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 595041,
+    "layout": [
+      {
+        "x": 2,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "veil"
+      },
+      {
+        "x": 6,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-7-W3-P02",
+    "stage": 7,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 602960,
+    "layout": [
+      {
+        "x": 0,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W3-P03",
+    "stage": 7,
+    "wave": 3,
+    "ordinal": 3,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 610879,
+    "layout": [
+      {
+        "x": 1,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W4-P01",
+    "stage": 7,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 618798,
+    "layout": [
+      {
+        "x": 2,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-7-W4-P02",
+    "stage": 7,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 626717,
+    "layout": [
+      {
+        "x": 0,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-7-W4-P03",
+    "stage": 7,
+    "wave": 4,
+    "ordinal": 3,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 634636,
+    "layout": [
+      {
+        "x": 2,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-8-W1-P01",
+    "stage": 8,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 642555,
+    "layout": [
+      {
+        "x": 3,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-8-W1-P02",
+    "stage": 8,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 8,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 650474,
+    "layout": [
+      {
+        "x": 5,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 12,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 11,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 13,
+      "travelBudget": 19
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-8-W2-P01",
+    "stage": 8,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 658393,
+    "layout": [
+      {
+        "x": 6,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 15,
+      "travelBudget": 20
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-8-W2-P02",
+    "stage": 8,
+    "wave": 2,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 666312,
+    "layout": [
+      {
+        "x": 1,
+        "z": 7,
+        "type": "veil"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 15,
+      "travelBudget": 20
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-8-W3-P01",
+    "stage": 8,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 674231,
+    "layout": [
+      {
+        "x": 2,
+        "z": 13,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 6,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 15,
+      "travelBudget": 20
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-8-W3-P02",
+    "stage": 8,
+    "wave": 3,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 682150,
+    "layout": [
+      {
+        "x": 3,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 15,
+      "travelBudget": 20
+    },
+    "featured": false
+  },
+  {
+    "id": "STAGE-8-W4-P01",
+    "stage": 8,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 690069,
+    "layout": [
+      {
+        "x": 3,
+        "z": 13,
+        "type": "veil"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 1,
+      "veil": 2,
+      "void": 15,
+      "travelBudget": 20
+    },
+    "featured": true
+  },
+  {
+    "id": "STAGE-8-W4-P02",
+    "stage": 8,
+    "wave": 4,
+    "ordinal": 2,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "chain",
+    "seed": 697988,
+    "layout": [
+      {
+        "x": 4,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 15,
+      "travelBudget": 20
+    },
+    "featured": false
+  },
+  {
+    "id": "FINAL-W1-P01",
+    "stage": 9,
+    "wave": 1,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "memory",
+    "seed": 705907,
+    "layout": [
+      {
+        "x": 1,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 0,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 13,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 4,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 16,
+      "travelBudget": 20
+    },
+    "featured": true
+  },
+  {
+    "id": "FINAL-W2-P01",
+    "stage": 9,
+    "wave": 2,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "memory",
+    "seed": 713826,
+    "layout": [
+      {
+        "x": 2,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 8,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 5,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 2,
+      "veil": 1,
+      "void": 16,
+      "travelBudget": 20
+    },
+    "featured": true
+  },
+  {
+    "id": "FINAL-W3-P01",
+    "stage": 9,
+    "wave": 3,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "memory",
+    "seed": 721745,
+    "layout": [
+      {
+        "x": 0,
+        "z": 13,
+        "type": "veil"
+      },
+      {
+        "x": 1,
+        "z": 10,
+        "type": "veil"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "veil"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 0,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 0,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 0,
+      "veil": 3,
+      "void": 16,
+      "travelBudget": 20
+    },
+    "featured": true
+  },
+  {
+    "id": "FINAL-W4-P01",
+    "stage": 9,
+    "wave": 4,
+    "ordinal": 1,
+    "width": 7,
+    "depth": 9,
+    "spawnRow": 5,
+    "requiredRolls": 6,
+    "difficultyTag": "memory",
+    "seed": 729664,
+    "layout": [
+      {
+        "x": 1,
+        "z": 10,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 13,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 4,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 12,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 13,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 4,
+        "z": 10,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 11,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 5,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 6,
+        "z": 10,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 3,
+        "z": 0
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 10,
+        "action": "capture",
+        "x": 1,
+        "z": 0
+      },
+      {
+        "rotation": 12,
+        "action": "mark",
+        "x": 2,
+        "z": 0
+      },
+      {
+        "rotation": 13,
+        "action": "capture",
+        "x": 2,
+        "z": 0
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 3,
+      "veil": 0,
+      "void": 16,
+      "travelBudget": 20
+    },
+    "featured": true
+  }
+]
