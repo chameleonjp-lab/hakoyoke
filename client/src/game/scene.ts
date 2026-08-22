@@ -353,8 +353,9 @@ function syncCubes(scene: Scene, rendered: Map<string, RenderCube>, snapshot: Ga
       rendered.set(cube.id, visual);
     }
     const p = snapshot.rollProgress;
-    visual.root.position.set(cube.x, 0, cube.z - ROLL_HALF);
-    visual.root.rotation.x = -p * Math.PI / 2;
+    const crush = cube.falling && snapshot.phase === "CRUSHED" ? snapshot.crushProgress : 0;
+    visual.root.position.set(cube.x, -crush * 1.45, cube.z - ROLL_HALF - crush * 2.8);
+    visual.root.rotation.x = -p * Math.PI / 2 - crush * Math.PI * 0.22;
     visual.root.rotation.z = 0;
     const sink = cube.captured ? snapshot.captureProgress : 0;
     visual.root.position.y = -sink * 0.82;

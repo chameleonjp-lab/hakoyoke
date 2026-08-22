@@ -7,7 +7,7 @@ export default defineConfig({
   use: { baseURL: "http://127.0.0.1:3000", headless: true },
   projects: [
     { name: "chromium", use: { browserName: "chromium", launchOptions: { executablePath: "/usr/bin/chromium", args: ["--no-sandbox", "--disable-dev-shm-usage"] } } },
-    { name: "webkit", use: { browserName: "webkit" } },
+    { name: "webkit", use: { browserName: "webkit", hasTouch: true, isMobile: true } },
   ],
   reporter: [["list"]],
 });

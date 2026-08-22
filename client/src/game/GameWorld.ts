@@ -1,7 +1,7 @@
 /** Obsidian Observatory: deterministic 30Hz rules; Babylon only reads snapshots. */
 import { InputManager } from "./InputManager";
 import { findPuzzle } from "./puzzles";
-import { advanceOneCell, areaTargets, calculateMindIndex, isPositionOnPlatform, markerCanCapture } from "./rules";
+import { advanceOneCell, areaAnchorBlocksMark, areaTargets, calculateMindIndex, isPositionOnPlatform, markerCanCapture, unresolvedCubeCount } from "./rules";
 import { playerIntersectsRollSweep } from "./rollPhysics";
 import { DIFFICULTIES, initialStats, type AreaMark, type CubeState, type Difficulty, type GameMode, type GamePhase, type GameSnapshot, type GridPosition, type PuzzleDescriptor, type RunStats } from "./types";
 
@@ -87,7 +87,7 @@ export class GameWorld {
   private fixedUpdate(dt: number): void {
     this.elapsed += dt;
     if (this.demo) this.runDemo(dt);
-    const input = this.input.sample();
+    const input = this.input.sample(this.phase === "PLAYING" || this.phase === "TUTORIAL");
     if (input.pause && this.phase !== "TITLE" && this.phase !== "MENU") this.togglePause();
     if (this.phase === "PAUSED" || this.phase === "TITLE" || this.phase === "MENU" || this.phase === "EDITOR" || this.phase === "GAME_OVER" || this.phase === "FINAL_RESULT") return;
     if (this.phase === "STAGE_INTRO") {
@@ -197,7 +197,9 @@ export class GameWorld {
 
   private markOrCapture(): void {
     if (!this.marker) {
-      this.marker = { x: Math.round(this.player.x), z: Math.round(this.player.z) };
+      const candidate = { x: Math.round(this.player.x), z: Math.round(this.player.z) };
+      if (areaAnchorBlocksMark(this.areas, candidate)) { this.banner = "AREA ANCHOR LOCKED"; return; }
+      this.marker = candidate;
       this.banner = "MARK SET";
       this.onSignal("mark");
       if (this.mode === "TUTORIAL") {
@@ -206,9 +208,9 @@ export class GameWorld {
       }
       return;
     }
-    if (this.isRolling) { this.banner = "WAIT FOR LANDING"; return; }
     const target = this.cubes.find((cube) => markerCanCapture(this.marker, cube));
-    if (!target) { this.banner = "NO MASS ON MARK"; return; }
+    if (!target) { this.marker = null; this.banner = "MARK CLEARED"; this.onSignal("mark"); return; }
+    if (this.isRolling) { this.banner = "WAIT FOR LANDING"; return; }
     this.captureCube(target, "manual");
     this.marker = null;
   }
@@ -270,9 +272,9 @@ export class GameWorld {
     this.phaseTimer = 2.3;
   }
 
-  private losePlatformRow(reason: string): void {
+  private losePlatformRow(reason: string, preserveMisses = false): void {
     this.stats.platformRows -= 1;
-    this.stats.misses = 0;
+    if (!preserveMisses) this.stats.misses = 0;
     this.banner = reason;
     this.onSignal("collapse");
     if (this.player.z >= this.stats.platformRows || this.stats.platformRows < this.currentPuzzle.depth + 2) {
@@ -283,10 +285,17 @@ export class GameWorld {
 
   private crush(): void {
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
-    const escaped = this.cubes.filter((cube) => !cube.captured && cube.type !== "void").length;
-    this.stats.misses += escaped;
+    const escaped = unresolvedCubeCount(this.cubes);
+    this.cubes.forEach((cube) => { if (!cube.captured) cube.falling = true; });
+    const combinedMisses = this.stats.misses + escaped;
+    const threshold = this.stats.missLimit + 1;
+    const rowsLost = Math.floor(combinedMisses / threshold);
+    this.stats.misses = combinedMisses % threshold;
     this.stats.perfect = false;
-    while (this.stats.misses > this.stats.missLimit) this.losePlatformRow("CRUSHED");
+    for (let index = 0; index < rowsLost; index += 1) {
+      this.losePlatformRow("CRUSHED", true);
+      if (this.stats.platformRows < this.currentPuzzle.depth + 2 || this.player.z >= this.stats.platformRows) return;
+    }
     if (this.stats.platformRows < this.currentPuzzle.depth + 2 || this.player.z >= this.stats.platformRows) return;
     this.phase = "CRUSHED";
     this.phaseTimer = 1.8;
@@ -473,6 +482,7 @@ export class GameWorld {
       stage: this.currentPuzzle.stage, wave: this.currentPuzzle.wave, puzzleIndex: this.puzzleIndex, boardWidth: this.currentPuzzle.width, boardDepth: this.currentPuzzle.depth, countdown: this.phase === "COUNTDOWN" ? Math.ceil(this.phaseTimer) : 0,
       banner: this.banner, hint: this.hint, rollProgress: this.rollProgress, debug: this.debug, duelTurn: this.duelTurn, duelScore: [...this.duelScore] as [number, number], tutorialStep: this.tutorialStep,
       captureProgress: this.phase === "CAPTURE_PAUSE" ? Math.max(0, Math.min(1, 1 - this.phaseTimer / DIFFICULTIES[this.difficulty].captureSeconds)) : 0,
+      crushProgress: this.phase === "CRUSHED" ? Math.max(0, Math.min(1, 1 - this.phaseTimer / 1.8)) : 0,
     };
   }
 

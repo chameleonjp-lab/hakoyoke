@@ -68,6 +68,22 @@ test("Campaignの状態と設定をlocalStorageへ保存し、Campaign開始時�
   await expect(page.getByRole("heading", { name: "PAUSED" })).toBeVisible();
 });
 
+test("PRACTICE開始後のSAVE、LOAD、STEP、REWINDはCampaign記録と独立して実行できる", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+  await page.getByRole("button", { name: /PRACTICE/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await page.getByRole("button", { name: /LOAD ARCHIVE/ }).click();
+  await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /SAVE/ }).click();
+  await expect(page.getByText("QUICK SAVE STORED", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /STEP/ }).click();
+  await page.getByRole("button", { name: /LOAD/ }).click();
+  await expect(page.getByText("QUICK SAVE RESTORED", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /REWIND/ }).click();
+  await expect(page.getByText("10 SECONDS REWOUND", { exact: true })).toBeVisible();
+});
+
 test("プレイヤーが足場外へ出ると即座にゲームオーバーになる", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
@@ -87,6 +103,7 @@ test("スマートフォン縦画面でタップ地点に移動キーが出現�
   const touchLayer = page.locator(".touch-zone");
   await touchLayer.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "touch", isPrimary: true, button: 0, clientX: 112, clientY: 500 });
   await expect(page.locator(".touch-stick.floating")).toBeVisible();
+  await expect(page.locator(".touch-stick.floating")).toHaveAttribute("data-origin", "112:500");
   await page.waitForTimeout(3900);
   await touchLayer.dispatchEvent("pointermove", { pointerId: 7, pointerType: "touch", isPrimary: true, button: 0, clientX: 112, clientY: 450 });
   await expect.poll(() => page.evaluate(() => (window as Window & { latestSnapshot?: { player: { z: number } } }).latestSnapshot?.player.z ?? 0)).toBeGreaterThan(0.7);
@@ -119,8 +136,22 @@ test("870×400横画面でタッチ操作を開始・解除してもHUDと盤面
   const fast = page.getByRole("button", { name: "FAST" });
   await fast.dispatchEvent("pointerdown", { pointerId: 3, pointerType: "touch", isPrimary: true });
   await fast.dispatchEvent("pointercancel", { pointerId: 3, pointerType: "touch", isPrimary: true });
-  await page.getByRole("button", { name: "AREA" }).click();
+  await expect(page.getByRole("button", { name: "AREA" })).toBeDisabled();
   await expect(page.getByText("SCORE", { exact: true })).toBeVisible();
+});
+
+test("開始後のMARKボタンは設置、対象不在時の解除、状態表示を一貫して行う", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  const mark = page.getByRole("button", { name: "MARK" });
+  if (testInfo.project.name === "webkit") await mark.tap(); else await mark.click();
+  await expect(page.getByText("MARK SET", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "CLEAR" })).toBeVisible();
+  const clear = page.getByRole("button", { name: "CLEAR" });
+  if (testInfo.project.name === "webkit") await clear.tap(); else await clear.click();
+  await expect(page.getByText("MARK CLEARED", { exact: true })).toBeVisible();
 });
 
 test("RUM観測面が初期ロード・3Dランタイム・初回フレームの匿名計測値を表示する", async ({ page }) => {

@@ -100,6 +100,7 @@ export interface GameSnapshot {
   duelScore: [number, number];
   tutorialStep: number;
   captureProgress: number;
+  crushProgress: number;
 }
 
 export interface DifficultyConfig {

@@ -54,18 +54,20 @@ export class InputManager {
     this.edges.add(`touch:${action}`);
   }
 
-  sample(): InputFrame {
+  sample(consumeActions = true): InputFrame {
     const pad = Array.from(navigator.getGamepads?.() ?? []).find((candidate) => candidate?.connected);
     const padX = pad && Math.abs(pad.axes[0] ?? 0) > 0.18 ? -(pad.axes[0] ?? 0) : 0;
     const padZ = pad && Math.abs(pad.axes[1] ?? 0) > 0.18 ? -(pad.axes[1] ?? 0) : 0;
+    const dpadX = (pad?.buttons[14]?.pressed ? 1 : 0) - (pad?.buttons[15]?.pressed ? 1 : 0);
+    const dpadZ = (pad?.buttons[12]?.pressed ? 1 : 0) - (pad?.buttons[13]?.pressed ? 1 : 0);
     if (pad) pad.buttons.forEach((button, index) => { if (button.pressed && !this.previousButtons[index]) this.gamepadEdges.add(index); this.previousButtons[index] = button.pressed; });
-    const moveX = (this.down.has("a") || this.down.has("arrowleft") ? 1 : 0) - (this.down.has("d") || this.down.has("arrowright") ? 1 : 0) + this.touchX + padX;
-    const moveZ = (this.down.has("w") || this.down.has("arrowup") ? 1 : 0) - (this.down.has("s") || this.down.has("arrowdown") ? 1 : 0) + this.touchZ + padZ;
+    const moveX = (this.down.has("a") || this.down.has("arrowleft") ? 1 : 0) - (this.down.has("d") || this.down.has("arrowright") ? 1 : 0) + this.touchX + padX + dpadX;
+    const moveZ = (this.down.has("w") || this.down.has("arrowup") ? 1 : 0) - (this.down.has("s") || this.down.has("arrowdown") ? 1 : 0) + this.touchZ + padZ + dpadZ;
     const frame: InputFrame = {
       moveX: Math.max(-1, Math.min(1, moveX)),
       moveZ: Math.max(-1, Math.min(1, moveZ)),
-      mark: this.consume(" ") || this.consume("z") || this.consume("touch:mark") || this.consumeGamepad(0),
-      area: this.consume("x") || this.consume("e") || this.consume("touch:area") || this.consumeGamepad(2),
+      mark: consumeActions && (this.consume(" ") || this.consume("z") || this.consume("touch:mark") || this.consumeGamepad(0)),
+      area: consumeActions && (this.consume("x") || this.consume("e") || this.consume("touch:area") || this.consumeGamepad(2)),
       pause: this.consume("escape") || this.consume("touch:pause") || this.consumeGamepad(9),
       fast: this.down.has("shift") || this.down.has("c") || this.touchFast || Boolean(pad?.buttons[1]?.pressed),
     };

@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import { advanceOneCell, applyMiss, applyVoidCapture, areaTargets, calculateMindIndex, cloneDeterministic, isPositionOnPlatform, markerCanCapture, normalCaptureScore, perfectBonus } from "./rules";
+import { advanceOneCell, applyMiss, applyVoidCapture, areaAnchorBlocksMark, areaTargets, calculateMindIndex, cloneDeterministic, isPositionOnPlatform, markerCanCapture, normalCaptureScore, perfectBonus, unresolvedCubeCount } from "./rules";
 import { validateAllPuzzles } from "./puzzleValidation";
 import { initialStats, type AreaMark, type CubeState, type PuzzleDescriptor } from "./types";
 
@@ -13,6 +13,9 @@ describe("CUBIC ORDEAL deterministic rules", () => {
   it("selects the exact 3 by 3 AREA neighborhood", () => { const area: AreaMark[] = [{ id: "a", x: 2, z: 2, armed: true }]; const selected = areaTargets([cube("0", "normal", 1, 1), cube("1", "normal", 3, 3), cube("2", "normal", 4, 3)], area, null); expect(selected.map((item) => item.id)).toEqual(["0", "1"]); });
   it("activates multiple AREA anchors simultaneously", () => { const areas: AreaMark[] = [{ id: "a", x: 1, z: 1, armed: true }, { id: "b", x: 5, z: 5, armed: true }]; expect(areaTargets([cube("left", "normal", 0, 0), cube("right", "veil", 6, 6)], areas, null)).toHaveLength(2); });
   it("protects a VOID cube parked on the blue MARK from AREA capture", () => { const voidCube = cube("void", "void", 2, 2); expect(areaTargets([voidCube, cube("normal", "normal", 1, 2)], [{ id: "a", x: 2, z: 2, armed: true }], { x: 2, z: 2 }).map((item) => item.id)).toEqual(["normal"]); });
+  it("reserves an active AREA anchor tile from a normal blue MARK", () => expect(areaAnchorBlocksMark([{ id: "a", x: 2, z: 2, armed: true }], { x: 2, z: 2 })).toBe(true));
+  it("counts every unresolved cube type when a crush resolves the remaining formation", () => expect(unresolvedCubeCount([cube("normal", "normal", 1, 2), cube("veil", "veil", 2, 2), cube("void", "void", 3, 2)])).toBe(3));
+  it("preserves the residual loss meter after a multi-row crush calculation", () => { const width = 4; const threshold = initialStats(width).missLimit + 1; const combined = 1 + 10; expect({ rows: Math.floor(combined / threshold), residual: combined % threshold }).toEqual({ rows: 2, residual: 3 }); });
   it("removes a platform row when misses exceed the width-derived threshold", () => { const stats = { ...initialStats(4), misses: 3, platformRows: 12 }; expect(applyMiss(stats)).toMatchObject({ misses: 0, platformRows: 11, perfect: false }); });
   it("removes one platform row for a VOID capture", () => { expect(applyVoidCapture({ ...initialStats(4), platformRows: 12 })).toMatchObject({ platformRows: 11, voidCaptured: 1, perfect: false }); });
   it("awards all three perfect timing bands", () => { expect(perfectBonus(3, 4)).toBe(10000); expect(perfectBonus(4, 4)).toBe(5000); expect(perfectBonus(5, 4)).toBe(1000); });
