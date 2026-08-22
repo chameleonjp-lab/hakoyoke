@@ -9,6 +9,7 @@ printf '%s  %s\n' 'f1659265f6d18b3d3fd605136e8546d905ae65e0b7cf120b884dd984d1fa6
 
 tar -xzf "$payload"
 
+# Verify the reviewed payload before applying the post-review typo correction.
 test "$(git hash-object client/src/game/GameWorld.ts)" = '47952afad238840e36a6f14bccfbd880972f765f'
 test "$(git hash-object client/src/components/GameShell.tsx)" = 'ba82714efd7ce7db3747f033346176126a014e7d'
 python3 - <<'PY'
@@ -25,11 +26,28 @@ assert len({item['id'] for item in puzzles}) == 88
 assert all(len(item['layout']) == item['width'] * item['depth'] for item in puzzles)
 PY
 
+# The reviewed GameWorld payload accidentally referenced a non-existent `Hint`
+# member. Correct it before committing the actual source files.
+python3 - <<'PY'
+from pathlib import Path
+path = Path('client/src/game/GameWorld.ts')
+text = path.read_text()
+source = 'hint: this.Hint,'
+target = 'hint: this.hint,'
+if source not in text:
+    raise SystemExit('expected GameWorld hint typo was not found')
+path.write_text(text.replace(source, target, 1))
+PY
+
+grep -Fq 'hint: this.hint,' client/src/game/GameWorld.ts
+! grep -Fq 'this.Hint' client/src/game/GameWorld.ts
+
 mkdir -p .github/workflows
 cat > .github/workflows/ci.yml <<'YAML'
 name: CI
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
