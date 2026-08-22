@@ -80,3 +80,10 @@
 - [x] 最適化内容を専用ブランチでPull Requestとして提出する。
 
 Pull Request: `https://github.com/chameleonjp-lab/hakoyoke/pull/1`（`perf/runtime-streaming-rum-deps` → `main`）。
+
+# 品質優先の安全復旧
+
+- [x] ゲームロジックの状態遷移、判定、Campaign保存・復帰を最適化より優先する不変条件として固定する。
+- [x] 盤面・キューブ・影・グロー・テクスチャ・HUDの品質を損なわず、productionで安定描画する経路へ復旧する。
+- [x] production起動後にタイトル、全モード、入力、3D描画、アセット取得を検証する回帰経路を追加する。
+- [x] 開発・production・実機相当画面の検証結果を記録し、品質を確認できない最適化は採用しない。

@@ -203,20 +203,6 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-/** Keep the Babylon runtime cacheable and below the single-chunk warning threshold. */
-function splitBabylonRuntime(id: string): string | undefined {
-  if (!id.includes("/node_modules/@babylonjs/core/")) return undefined;
-  if (id.includes("/Engines/")) return "babylon-engine";
-  if (id.includes("/Cameras/") || id.includes("/Lights/") || id.endsWith("/scene.js")) return "babylon-scene";
-  if (id.includes("/Meshes/") || id.includes("/Maths/")) return "babylon-geometry";
-  if (id.includes("/Materials/Textures/")) return "babylon-textures";
-  if (id.includes("/Materials/")) return "babylon-materials";
-  if (id.includes("/Layers/") || id.includes("/PostProcesses/") || id.includes("/Shaders/")) return "babylon-effects";
-  if (id.includes("/Buffers/") || id.includes("/Rendering/") || id.includes("/Culling/")) return "babylon-rendering";
-  if (id.includes("/Misc/") || id.includes("/Events/") || id.includes("/DeviceInput/")) return "babylon-utils";
-  return "babylon-core";
-}
-
 const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
 
 export default defineConfig({
@@ -233,12 +219,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: splitBabylonRuntime,
-        onlyExplicitManualChunks: true,
-      },
-    },
+    // GameCanvas is already loaded only when an ordeal starts. Keep Babylon's cyclic graph intact rather than splitting it by folders.
+    chunkSizeWarningLimit: 1300,
   },
   server: {
     port: 3000,
