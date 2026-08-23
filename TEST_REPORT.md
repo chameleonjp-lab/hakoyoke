@@ -6,6 +6,7 @@
 
 | 区分 | コマンド | 検査範囲 | 直前の成功実績 |
 | --- | --- | --- | --- |
+| リポジトリ衛生 | `pnpm repo:check` | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | 新設 |
 | 問題生成物 | `pnpm puzzles:check` | TS正本とJSON・レポートの完全一致、全88問の再生検証 | 新設。ローカルPASS — 88問 |
 | 型検査 | `pnpm check` | client、server、test、設定 | PASS |
 | 単体・問題検査 | `pnpm test` | 4ファイル | PASS — 23件 |

@@ -43,25 +43,29 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 
 PR全体の削除行が大きく見えた主因は、ゲーム本体の削除ではなく次の3群です。
 
-1. 到達経路のない生成済みテンプレートUI 52ファイルと、その未使用依存関係
+1. 到達経路のない生成済みテンプレートUI 52ファイル、旧ページ・hookなどの関連scaffold 13ファイル、および未使用依存関係
 2. 依存関係整理に伴う`pnpm-lock.yaml`の機械的縮小
 3. 旧問題JSONを一時的にメタデータだけへ置換した差分
 
 3は実行時データの所在とREADMEを不一致にしたため、この整理で撤回しました。現行生成器から作った88問の完全なJSONを復元し、CIでTypeScript正本との完全一致を強制します。
 
-ゲーム中核は削っていません。`main`との比較では`GameWorld.ts`は497行から739行へ増えており、回転・衝突・保存復帰・モード処理・検査は追加側です。今後も削除は「実行経路なし」「参照なし」「代替経路あり」を静的検索とテストで確認できるものに限定します。
+ゲーム中核は削っていません。`main`との比較では`GameWorld.ts`は追加666行・削除153行で、回転・衝突・保存復帰・モード処理・検査は追加側です。今後も削除は「実行経路なし」「参照なし」「代替経路あり」を静的検索とテストで確認できるものに限定します。
+
+ローカル実行環境の設定とscaffold原本はアプリの実行経路ではありません。資格情報を持ち得る`.project-config.json`と、削除済み旧テンプレートを内包する`template.json`は追跡対象から外し、`.gitignore`と`pnpm repo:check`で再混入を防止します。Git履歴に入った資格情報はファイル削除だけでは無効化されないため、別途ローテーションが必要です。
 
 ## 検証の基準
 
 PRを更新するたび、次を同じCIで通します。
 
 1. `pnpm install --frozen-lockfile`
-2. `pnpm puzzles:check`
-3. `pnpm check`
-4. `pnpm test`
-5. `pnpm build`
-6. ChromiumとWebKitの`pnpm test:e2e`
-7. 実ビルドをExpressで起動する`pnpm test:e2e:production`
+2. `pnpm repo:check`
+3. `pnpm puzzles:check`
+4. `pnpm format:check`
+5. `pnpm check`
+6. `pnpm test`
+7. `pnpm build`
+8. ChromiumとWebKitの`pnpm test:e2e`
+9. 実ビルドをExpressで起動する`pnpm test:e2e:production`
 
 直前の整理前head（`faed6d6c`）では、型検査、Vitest 23件、Playwright 26件、production E2E 1件が成功しています。この整理後の確定結果はPRの最新CIを正とします。
 

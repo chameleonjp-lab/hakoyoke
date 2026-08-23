@@ -8,6 +8,7 @@
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "preview": "vite preview --host",
+    "repo:check": "node scripts/check-repository-hygiene.mjs",
     "puzzles:write": "node scripts/generate-puzzles.mjs",
     "puzzles:check": "node scripts/validate-levels.mjs",
     "check": "tsc --noEmit",

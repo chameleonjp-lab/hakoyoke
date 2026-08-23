@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Repository hygiene
+        run: pnpm repo:check
+
       - name: Puzzle archive consistency
         run: pnpm puzzles:check
 
