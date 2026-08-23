@@ -93,15 +93,66 @@ test("PRACTICE開始後のSAVE、LOAD、STEP、REWINDはCampaign記録と独立�
   await page.getByRole("button", { name: /CONFIGURE/ }).click();
   await page.getByRole("button", { name: /LOAD ARCHIVE/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await page.evaluate(() => {
+    const target = window as Window & {
+      practiceSnapshot?: { cubes: Array<{ z: number }> };
+    };
+    window.addEventListener("cubic:snapshot", event => {
+      target.practiceSnapshot = (
+        event as CustomEvent<{ cubes: Array<{ z: number }> }>
+      ).detail;
+    });
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as Window & { practiceSnapshot?: { cubes: unknown[] } })
+            .practiceSnapshot?.cubes.length ?? 0
+      )
+    )
+    .toBeGreaterThan(0);
+  const savedFirstCubeZ = await page.evaluate(
+    () =>
+      (
+        window as Window & {
+          practiceSnapshot?: { cubes: Array<{ z: number }> };
+        }
+      ).practiceSnapshot?.cubes[0]?.z
+  );
+  if (savedFirstCubeZ === undefined) {
+    throw new Error("PRACTICE snapshot has no active cubes.");
+  }
   await page.getByRole("button", { name: /SAVE/ }).click();
   await expect(
     page.getByText("QUICK SAVE STORED", { exact: true })
   ).toBeVisible();
   await page.getByRole("button", { name: /STEP/ }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as Window & {
+              practiceSnapshot?: { cubes: Array<{ z: number }> };
+            }
+          ).practiceSnapshot?.cubes[0]?.z
+      )
+    )
+    .toBeLessThan(savedFirstCubeZ);
   await page.getByRole("button", { name: /LOAD/ }).click();
-  await expect(
-    page.getByText("QUICK SAVE RESTORED", { exact: true })
-  ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as Window & {
+              practiceSnapshot?: { cubes: Array<{ z: number }> };
+            }
+          ).practiceSnapshot?.cubes[0]?.z
+      )
+    )
+    .toBe(savedFirstCubeZ);
   await page.getByRole("button", { name: /REWIND/ }).click();
   await expect(
     page.getByText("10 SECONDS REWOUND", { exact: true })
