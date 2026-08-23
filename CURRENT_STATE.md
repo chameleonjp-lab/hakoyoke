@@ -67,7 +67,9 @@ PRを更新するたび、次を同じCIで通します。
 8. ChromiumとWebKitの`pnpm test:e2e`
 9. 実ビルドをExpressで起動する`pnpm test:e2e:production`
 
-直前の整理前head（`faed6d6c`）では、型検査、Vitest 23件、Playwright 26件、production E2E 1件が成功しています。この整理後の確定結果はPRの最新CIを正とします。
+整理実装head `e9afbaad`に対するGitHub Actions `CI` run #13で、リポジトリ衛生、88問生成物、書式、型、Vitest 23件、Playwright 26件、production E2E 1件がすべて成功しました。PR更新後は常に最新CIを正とします。
+
+同runの主要ビルド出力は、初期HTML 367.96 kB（gzip 105.77 kB）、CSS 29.36 kB（gzip 7.46 kB）、初期JS 238.31 kB（gzip 73.26 kB）、遅延`GameCanvas` 1,251.73 kB（gzip 308.55 kB）です。88問JSONは静的データとして別に配信します。
 
 ## 本番E2Eの環境差
 

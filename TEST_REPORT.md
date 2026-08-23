@@ -1,13 +1,14 @@
 # TEST REPORT
 
-検査項目の正本です。数値はPR #1の整理前head `faed6d6c`に対するGitHub Actions成功runを基準にし、整理後は最新runの結果を優先します。
+検査項目の正本です。結果はPR #1の整理実装head `e9afbaad`に対するGitHub Actions `CI` run #13（2026-08-23 JST）です。以後は最新runを優先します。
 
 ## 自動検査
 
 | 区分 | コマンド | 検査範囲 | 直前の成功実績 |
 | --- | --- | --- | --- |
-| リポジトリ衛生 | `pnpm repo:check` | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | 新設 |
-| 問題生成物 | `pnpm puzzles:check` | TS正本とJSON・レポートの完全一致、全88問の再生検証 | 新設。ローカルPASS — 88問 |
+| リポジトリ衛生 | `pnpm repo:check` | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | PASS |
+| 問題生成物 | `pnpm puzzles:check` | TS正本とJSON・レポートの完全一致、全88問の再生検証 | PASS — 88問 |
+| 書式 | `pnpm format:check` | client、server、E2E、script、主要設定 | PASS |
 | 型検査 | `pnpm check` | client、server、test、設定 | PASS |
 | 単体・問題検査 | `pnpm test` | 4ファイル | PASS — 23件 |
 | 本番ビルド | `pnpm build` | Vite静的出力、Express bundle | PASS |
@@ -15,6 +16,17 @@
 | 本番経路 | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy | PASS — 1件 |
 
 CIは上記を毎回同じ順序で実行します。ローカルの個別成功だけではPRを成功扱いにしません。
+
+## ビルド出力
+
+| 出力 | raw | gzip |
+| --- | ---: | ---: |
+| `index.html` | 367.96 kB | 105.77 kB |
+| 初期CSS | 29.36 kB | 7.46 kB |
+| 初期JS | 238.31 kB | 73.26 kB |
+| 遅延`GameCanvas` | 1,251.73 kB | 308.55 kB |
+
+`client/public/data/puzzles.json`はJSへ重複同梱せず、ゲーム開始時に読む静的データです。
 
 ## 問題アーカイブ検査
 
