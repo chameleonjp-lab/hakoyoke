@@ -4,6 +4,8 @@
 
 > この作品は既存作品の名称、ロゴ、映像、音楽、3Dモデル、フォント、問題配置、攻略データを使用していません。ゲームの抽象的な「進路予測と床印による捕獲」という発想を、独自の問題・名称・美術・ルール表現として再構成しています。
 
+現行実装の正本、PR #1の削除監査、文書間の優先順位は[CURRENT_STATE.md](./CURRENT_STATE.md)にまとめています。
+
 ## はじめ方
 
 開発環境では、プロジェクト直下で次のコマンドを実行します。`pnpm dev` の後に表示されるローカルURLを開くとタイトル画面が表示されます。
@@ -15,12 +17,13 @@ pnpm dev
 | コマンド | 用途 |
 | --- | --- |
 | `pnpm dev` | Vite開発サーバーを起動する。 |
+| `pnpm puzzles:write` | TypeScript正本から88問JSONと検証レポートを再生成する。 |
+| `pnpm puzzles:check` | 生成物と正本の完全一致、および全88問の解法を検査する。 |
 | `pnpm check` | TypeScriptの型検査を行う。 |
 | `pnpm test` | 固定グリッド、捕獲、足場、得点、88問の検証を実行する。 |
-| `pnpm test:e2e` | Chromiumでタイトル開始、一時停止、CREATE保存、モバイル操作領域を検査する。 |
+| `pnpm test:e2e` | ChromiumとWebKitで各モード、保存復帰、モバイル操作を検査する。 |
+| `pnpm test:e2e:production` | Expressで実ビルドを起動し、本番経路を検査する。 |
 | `pnpm build` | 本番用の静的ビルドを生成する。 |
-| `node scripts/generate-puzzles.mjs` | 固定シードから88問のJSONを再生成する。 |
-| `node scripts/validate-levels.mjs` | `LEVEL_VALIDATION_REPORT.md` を再生成する。 |
 
 ## 操作方法
 
@@ -72,7 +75,7 @@ round(score / 170 + stage × 18 + remainingRows × 9 − misses × 22)
 
 ## ステージと問題数
 
-本編は9ステージ・88問です。すべての問題は`client/public/data/puzzles.json`に分離され、固定シードから決定的に生成されます。各問題にはID、ステージ、ウェーブ、サイズ、規定回転数、難易度タグ、初期配置、攻略手順、生成シード、検査情報が含まれます。詳細は[LEVEL_VALIDATION_REPORT.md](./LEVEL_VALIDATION_REPORT.md)を参照してください。
+本編は9ステージ・88問です。`client/src/game/stagePlan.ts`と`client/src/game/puzzles.ts`を唯一の編集元とし、`client/public/data/puzzles.json`を決定的に生成します。ゲームは開始時にこのJSONを読み込み、CIはJSONと正本の完全一致を検査します。各問題にはID、ステージ、ウェーブ、サイズ、規定回転数、難易度タグ、初期配置、攻略手順、生成seed、検査情報が含まれます。詳細は[LEVEL_VALIDATION_REPORT.md](./LEVEL_VALIDATION_REPORT.md)を参照してください。
 
 | 範囲 | Wave構成 | 問題数 |
 | --- | --- | ---: |
@@ -114,5 +117,5 @@ URLへ`?debug=1`を付けると、通常プレイには出ないデバッグパ�
 
 ## 既知の事項
 
-本ビルドではBabylon.js由来の単一バンドルが圧縮後約475KBとなり、ビルド時にチャンクサイズの注意が表示されます。ゲームの動作や静的ビルドの完了には影響しません。音はブラウザの自動再生制限を守るため、最初のユーザー入力後にWeb Audio APIで有効化されます。公開処理はユーザーの指示により実施していません。
+Babylon.jsは`GameCanvas`の遅延境界に置かれ、タイトル初期表示には読み込みません。遅延ランタイム自体は大きいため、現在値はGitHub Actionsの最新`pnpm build`を正とします。音はブラウザの自動再生制限を守るため、最初のユーザー入力後にWeb Audio APIで有効化されます。`/manus-storage/*`はForge資格情報がある本番環境では署名URLへ`307`、ない検査環境では`503`を返します。
 

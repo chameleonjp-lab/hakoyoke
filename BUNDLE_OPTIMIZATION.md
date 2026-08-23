@@ -1,5 +1,7 @@
 # Babylon.js バンドル最適化記録
 
+> **履歴資料:** 数値と検査件数は実施当時の記録です。現行値は[CURRENT_STATE.md](./CURRENT_STATE.md)とGitHub Actionsの最新`CI`を優先してください。
+
 ## 基準値
 
 最適化前の `pnpm build` では、Babylon.jsのレンダラ・シェーダー・React UIが単一の `index-*.js` に集約されていた。この初期チャンクは **1,878.84 kB（gzip 479.59 kB）** であり、Viteの500 kB警告が発生していた。

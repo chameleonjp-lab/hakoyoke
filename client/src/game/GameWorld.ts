@@ -2,7 +2,14 @@
 import { InputManager } from "./InputManager";
 import { findPuzzle } from "./puzzles";
 import { resolveDuelRound } from "./duelRules";
-import { advanceOneCell, areaTargets, calculateMindIndex, isPositionOnPlatform, markerCanCapture, unresolvedCubeCount } from "./rules";
+import {
+  advanceOneCell,
+  areaTargets,
+  calculateMindIndex,
+  isPositionOnPlatform,
+  markerCanCapture,
+  unresolvedCubeCount,
+} from "./rules";
 import { playerIntersectsRollSweep } from "./rollPhysics";
 import {
   DIFFICULTIES,
@@ -24,7 +31,14 @@ const HIGH_SCORE_KEY = "cubic-ordeal-highscore-v1";
 const SAVE_VERSION = 3;
 
 export type CubicCommand =
-  | { type: "start"; mode: GameMode; difficulty: Difficulty; stage?: number; wave?: number; ordinal?: number }
+  | {
+      type: "start";
+      mode: GameMode;
+      difficulty: Difficulty;
+      stage?: number;
+      wave?: number;
+      ordinal?: number;
+    }
   | { type: "menu" }
   | { type: "pause" }
   | { type: "resume" }
@@ -51,9 +65,19 @@ export class GameWorld {
   private quickSave: GameSnapshot | null = null;
   private readonly onPublish: (snapshot: GameSnapshot) => void;
   private readonly onSignal: (signal: string) => void;
-  private readonly onCommand = (event: Event) => this.command((event as CustomEvent<CubicCommand>).detail);
+  private readonly onCommand = (event: Event) =>
+    this.command((event as CustomEvent<CubicCommand>).detail);
   private readonly onVisibility = () => {
-    if (document.hidden && ["PLAYING", "TUTORIAL", "CAPTURE_PAUSE", "COUNTDOWN", "STAGE_INTRO"].includes(this.phase)) {
+    if (
+      document.hidden &&
+      [
+        "PLAYING",
+        "TUTORIAL",
+        "CAPTURE_PAUSE",
+        "COUNTDOWN",
+        "STAGE_INTRO",
+      ].includes(this.phase)
+    ) {
       this.phase = "PAUSED";
       this.banner = "PAUSED // VIEW HIDDEN";
     }
@@ -83,13 +107,14 @@ export class GameWorld {
   private stats: RunStats = initialStats(4);
   private banner = "CUBIC ORDEAL";
   private hint = "進路を読み、MARKを置け。";
-  private debug = new URLSearchParams(window.location.search).get("debug") === "1";
+  private debug =
+    new URLSearchParams(window.location.search).get("debug") === "1";
   private demo = new URLSearchParams(window.location.search).has("demo");
 
   constructor(
     private readonly puzzles: PuzzleDescriptor[],
     onPublish: (snapshot: GameSnapshot) => void,
-    onSignal: (signal: string) => void,
+    onSignal: (signal: string) => void
   ) {
     if (!puzzles.length) throw new Error("Puzzle archive is empty.");
     this.onPublish = onPublish;
@@ -108,10 +133,12 @@ export class GameWorld {
       this.fixedUpdate(FIXED_STEP);
       this.accumulator -= FIXED_STEP;
     }
-    if (this.mode === "CAMPAIGN"
-      && this.phase !== "TITLE"
-      && this.phase !== "MENU"
-      && Math.floor(this.elapsed) !== this.lastCampaignSaveSecond) {
+    if (
+      this.mode === "CAMPAIGN" &&
+      this.phase !== "TITLE" &&
+      this.phase !== "MENU" &&
+      Math.floor(this.elapsed) !== this.lastCampaignSaveSecond
+    ) {
       this.lastCampaignSaveSecond = Math.floor(this.elapsed);
       this.saveCampaign();
     }
@@ -121,9 +148,22 @@ export class GameWorld {
   private fixedUpdate(dt: number): void {
     this.elapsed += dt;
     if (this.demo) this.runDemo(dt);
-    const input = this.input.sample(this.phase === "PLAYING" || this.phase === "TUTORIAL");
-    if (input.pause && this.phase !== "TITLE" && this.phase !== "MENU") this.togglePause();
-    if (["PAUSED", "TITLE", "MENU", "EDITOR", "GAME_OVER", "FINAL_RESULT"].includes(this.phase)) return;
+    const input = this.input.sample(
+      this.phase === "PLAYING" || this.phase === "TUTORIAL"
+    );
+    if (input.pause && this.phase !== "TITLE" && this.phase !== "MENU")
+      this.togglePause();
+    if (
+      [
+        "PAUSED",
+        "TITLE",
+        "MENU",
+        "EDITOR",
+        "GAME_OVER",
+        "FINAL_RESULT",
+      ].includes(this.phase)
+    )
+      return;
 
     if (this.phase === "STAGE_INTRO") {
       this.phaseTimer += dt;
@@ -137,7 +177,10 @@ export class GameWorld {
 
     if (this.phase === "COUNTDOWN") {
       this.phaseTimer -= dt;
-      this.banner = this.phaseTimer > 0 ? String(Math.max(1, Math.ceil(this.phaseTimer))) : "EXECUTE";
+      this.banner =
+        this.phaseTimer > 0
+          ? String(Math.max(1, Math.ceil(this.phaseTimer)))
+          : "EXECUTE";
       if (this.phaseTimer <= 0) {
         this.phase = this.mode === "TUTORIAL" ? "TUTORIAL" : "PLAYING";
         this.banner = "ORDEAL ACTIVE";
@@ -175,8 +218,13 @@ export class GameWorld {
     if (input.mark) this.markOrCapture();
     if (input.area) this.activateAreas();
     this.updateTutorial(input.moveX, input.moveZ);
-    if (this.phase === "PLAYING" || this.phase === "TUTORIAL") this.updateRoll(dt, input.fast);
-    if (this.mode === "PRACTICE" && Math.floor(this.elapsed * 4) !== Math.floor((this.elapsed - dt) * 4)) this.recordHistory();
+    if (this.phase === "PLAYING" || this.phase === "TUTORIAL")
+      this.updateRoll(dt, input.fast);
+    if (
+      this.mode === "PRACTICE" &&
+      Math.floor(this.elapsed * 4) !== Math.floor((this.elapsed - dt) * 4)
+    )
+      this.recordHistory();
   }
 
   private movePlayer(moveX: number, moveZ: number, dt: number): boolean {
@@ -186,7 +234,13 @@ export class GameWorld {
     this.player.x += (moveX / length) * config.playerSpeed * dt;
     this.player.z += (moveZ / length) * config.playerSpeed * dt;
     this.player.heading = Math.atan2(moveX, moveZ);
-    if (!isPositionOnPlatform(this.player, this.currentPuzzle.width, this.stats.platformRows)) {
+    if (
+      !isPositionOnPlatform(
+        this.player,
+        this.currentPuzzle.width,
+        this.stats.platformRows
+      )
+    ) {
       this.fallFromPlatform();
       return false;
     }
@@ -220,9 +274,12 @@ export class GameWorld {
   }
 
   private checkRollCollision(previousProgress: number, progress: number): void {
-    const crushing = this.cubes.some((cube) => !cube.captured
-      && !cube.falling
-      && playerIntersectsRollSweep(cube, this.player, previousProgress, progress));
+    const crushing = this.cubes.some(
+      cube =>
+        !cube.captured &&
+        !cube.falling &&
+        playerIntersectsRollSweep(cube, this.player, previousProgress, progress)
+    );
     if (crushing) this.crush();
   }
 
@@ -232,20 +289,22 @@ export class GameWorld {
       Object.assign(cube, advanceOneCell(cube));
       if (cube.z < 0) this.handleFalling(cube);
     }
-    this.cubes = this.cubes.filter((cube) => !cube.falling && !cube.captured);
+    this.cubes = this.cubes.filter(cube => !cube.falling && !cube.captured);
     this.resolveIfEmpty();
   }
 
   private handleFalling(cube: CubeState): void {
     cube.falling = true;
     if (cube.type === "void") {
-      if (this.mode === "TUTORIAL") this.tutorialStep = Math.max(this.tutorialStep, 5);
+      if (this.mode === "TUTORIAL")
+        this.tutorialStep = Math.max(this.tutorialStep, 5);
       return;
     }
     this.stats.misses += 1;
     this.stats.perfect = false;
     this.banner = "SIGNAL LOST";
-    if (this.stats.misses > this.stats.missLimit) this.losePlatformRow("LOSS LIMIT");
+    if (this.stats.misses > this.stats.missLimit)
+      this.losePlatformRow("LOSS LIMIT");
   }
 
   private fallFromPlatform(): void {
@@ -257,17 +316,25 @@ export class GameWorld {
 
   private markOrCapture(): void {
     if (!this.marker) {
-      this.marker = { x: Math.round(this.player.x), z: Math.round(this.player.z) };
+      this.marker = {
+        x: Math.round(this.player.x),
+        z: Math.round(this.player.z),
+      };
       this.banner = "MARK SET";
       this.onSignal("mark");
       if (this.mode === "TUTORIAL") {
-        const protectsVoid = this.cubes.some((cube) => cube.type === "void" && cube.x === this.marker?.x && cube.z === this.marker?.z);
+        const protectsVoid = this.cubes.some(
+          cube =>
+            cube.type === "void" &&
+            cube.x === this.marker?.x &&
+            cube.z === this.marker?.z
+        );
         this.tutorialStep = Math.max(this.tutorialStep, protectsVoid ? 3 : 1);
       }
       return;
     }
 
-    const target = this.cubes.find((cube) => markerCanCapture(this.marker, cube));
+    const target = this.cubes.find(cube => markerCanCapture(this.marker, cube));
     if (!target) {
       this.marker = null;
       this.banner = "MARK CLEARED";
@@ -283,17 +350,33 @@ export class GameWorld {
   }
 
   private addAreaAnchor(cube: CubeState): void {
-    const area: AreaMark = { id: `area-${cube.id}`, x: cube.x, z: cube.z, armed: true };
-    if (!this.areas.some((existing) => existing.x === area.x && existing.z === area.z)) this.areas.push(area);
+    const area: AreaMark = {
+      id: `area-${cube.id}`,
+      x: cube.x,
+      z: cube.z,
+      armed: true,
+    };
+    if (
+      !this.areas.some(
+        existing => existing.x === area.x && existing.z === area.z
+      )
+    )
+      this.areas.push(area);
     this.stats.areaMarks = this.areas.length;
   }
 
-  private captureCube(cube: CubeState, source: "manual" | "area", options: CaptureOptions = {}): void {
+  private captureCube(
+    cube: CubeState,
+    source: "manual" | "area",
+    options: CaptureOptions = {}
+  ): void {
     cube.captured = true;
     if (cube.type === "void") {
       this.stats.voidCaptured += 1;
       this.stats.perfect = false;
-      this.losePlatformRow(source === "area" ? "AREA VOID BREACH" : "VOID BREACH");
+      this.losePlatformRow(
+        source === "area" ? "AREA VOID BREACH" : "VOID BREACH"
+      );
       if (!options.batch) this.onSignal("warning");
       return;
     }
@@ -314,7 +397,8 @@ export class GameWorld {
     this.phaseTimer = DIFFICULTIES[this.difficulty].captureSeconds;
     this.banner = cube.type === "veil" ? "VEIL ANCHOR SET" : "CAPTURED";
     this.onSignal("capture");
-    if (this.mode === "TUTORIAL") this.tutorialStep = Math.max(this.tutorialStep, 2);
+    if (this.mode === "TUTORIAL")
+      this.tutorialStep = Math.max(this.tutorialStep, 2);
     this.resolveIfEmpty();
   }
 
@@ -326,7 +410,7 @@ export class GameWorld {
 
     // AREA anchors are consumed before targets are captured. VEIL targets therefore create
     // a fresh set that can only be used by a later AREA input.
-    const activeAreas = this.areas.map((area) => ({ ...area }));
+    const activeAreas = this.areas.map(area => ({ ...area }));
     this.areas = [];
     this.stats.areaMarks = 0;
     const targets = areaTargets(this.cubes, activeAreas, this.marker);
@@ -347,24 +431,42 @@ export class GameWorld {
     this.phaseTimer = DIFFICULTIES[this.difficulty].captureSeconds;
     this.banner = capturedVoid ? "AREA BREACH" : "AREA CASCADE";
     this.onSignal(capturedVoid ? "warning" : "area");
-    if (this.mode === "TUTORIAL") this.tutorialStep = Math.max(this.tutorialStep, 4);
+    if (this.mode === "TUTORIAL")
+      this.tutorialStep = Math.max(this.tutorialStep, 4);
     this.resolveIfEmpty();
   }
 
   private resolveIfEmpty(): void {
-    if (this.cubes.some((cube) => !cube.captured && !cube.falling && cube.type !== "void")) return;
-    if (this.cubes.some((cube) => !cube.captured && !cube.falling && cube.type === "void")) return;
+    if (
+      this.cubes.some(
+        cube => !cube.captured && !cube.falling && cube.type !== "void"
+      )
+    )
+      return;
+    if (
+      this.cubes.some(
+        cube => !cube.captured && !cube.falling && cube.type === "void"
+      )
+    )
+      return;
     this.completePuzzle();
   }
 
   private completePuzzle(): void {
-    if (["PUZZLE_RESULT", "STAGE_RESULT", "FINAL_RESULT"].includes(this.phase)) return;
-    const allRequiredCaptured = this.stats.misses === 0 && this.stats.voidCaptured === 0;
+    if (["PUZZLE_RESULT", "STAGE_RESULT", "FINAL_RESULT"].includes(this.phase))
+      return;
+    const allRequiredCaptured =
+      this.stats.misses === 0 && this.stats.voidCaptured === 0;
     const rollDiff = this.stats.rotations - this.currentPuzzle.requiredRolls;
     if (allRequiredCaptured && this.stats.perfect) {
       this.stats.platformRows += 1;
       this.stats.score += rollDiff < 0 ? 10000 : rollDiff === 0 ? 5000 : 1000;
-      this.banner = rollDiff < 0 ? "TRUE PERFECT" : rollDiff === 0 ? "EXACT PERFECT" : "PERFECT";
+      this.banner =
+        rollDiff < 0
+          ? "TRUE PERFECT"
+          : rollDiff === 0
+            ? "EXACT PERFECT"
+            : "PERFECT";
       this.onSignal("perfect");
     } else {
       this.banner = "ORDEAL RESOLVED";
@@ -379,7 +481,10 @@ export class GameWorld {
     if (!preserveMisses) this.stats.misses = 0;
     this.banner = reason;
     this.onSignal("collapse");
-    if (this.player.z >= this.stats.platformRows || this.stats.platformRows < this.currentPuzzle.depth + 2) {
+    if (
+      this.player.z >= this.stats.platformRows ||
+      this.stats.platformRows < this.currentPuzzle.depth + 2
+    ) {
       this.phase = "GAME_OVER";
       this.banner = "OBSERVATORY LOST";
       return true;
@@ -390,7 +495,9 @@ export class GameWorld {
   private crush(): void {
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
     const escaped = unresolvedCubeCount(this.cubes);
-    this.cubes.forEach((cube) => { if (!cube.captured) cube.falling = true; });
+    this.cubes.forEach(cube => {
+      if (!cube.captured) cube.falling = true;
+    });
     const combinedMisses = this.stats.misses + escaped;
     const threshold = this.stats.missLimit + 1;
     const rowsLost = Math.floor(combinedMisses / threshold);
@@ -442,14 +549,25 @@ export class GameWorld {
     this.puzzleIndex += 1;
     this.loadPuzzle(next, false);
     this.saveCampaign();
-    this.phase = stageChanged ? "STAGE_RESULT" : waveChanged ? "WAVE_RESULT" : "PLAYING";
+    this.phase = stageChanged
+      ? "STAGE_RESULT"
+      : waveChanged
+        ? "WAVE_RESULT"
+        : "PLAYING";
     this.phaseTimer = stageChanged ? 1.5 : waveChanged ? 1.1 : 0;
     if (!stageChanged && !waveChanged) this.banner = "NEXT ORDEAL";
   }
 
   private advanceDuel(): void {
-    const succeeded = this.stats.perfect && this.stats.misses === 0 && this.stats.voidCaptured === 0;
-    const resolution = resolveDuelRound(this.duelScore, this.duelTurn as 0 | 1, succeeded);
+    const succeeded =
+      this.stats.perfect &&
+      this.stats.misses === 0 &&
+      this.stats.voidCaptured === 0;
+    const resolution = resolveDuelRound(
+      this.duelScore,
+      this.duelTurn as 0 | 1,
+      succeeded
+    );
     this.duelScore = resolution.scores;
     this.duelTurn = resolution.nextTurn;
     if (resolution.winner !== null) {
@@ -457,8 +575,11 @@ export class GameWorld {
       this.banner = `DUEL WINNER: PLAYER ${resolution.winner + 1}`;
       return;
     }
-    if (resolution.advancePuzzle) this.puzzleIndex = (this.puzzleIndex + 1) % this.puzzles.length;
-    const nextPuzzle = resolution.advancePuzzle ? this.puzzles[this.puzzleIndex] : this.currentPuzzle;
+    if (resolution.advancePuzzle)
+      this.puzzleIndex = (this.puzzleIndex + 1) % this.puzzles.length;
+    const nextPuzzle = resolution.advancePuzzle
+      ? this.puzzles[this.puzzleIndex]
+      : this.currentPuzzle;
     this.loadPuzzle(nextPuzzle, true);
     this.phase = "STAGE_INTRO";
     this.phaseTimer = 0;
@@ -476,10 +597,21 @@ export class GameWorld {
     }));
     this.marker = null;
     this.areas = [];
-    const platformRows = resetPlatform ? Math.max(12, (puzzle.spawnRow ?? 0) + puzzle.depth) : this.stats.platformRows;
+    const platformRows = resetPlatform
+      ? Math.max(12, (puzzle.spawnRow ?? 0) + puzzle.depth)
+      : this.stats.platformRows;
     const retainedScore = resetPlatform ? 0 : this.stats.score;
-    this.stats = { ...initialStats(puzzle.width), platformRows, score: retainedScore, requiredRolls: puzzle.requiredRolls };
-    this.player = { x: Math.min(puzzle.width - 0.5, Math.max(0.5, puzzle.width / 2)), z: 0.7, heading: 0 };
+    this.stats = {
+      ...initialStats(puzzle.width),
+      platformRows,
+      score: retainedScore,
+      requiredRolls: puzzle.requiredRolls,
+    };
+    this.player = {
+      x: Math.min(puzzle.width - 0.5, Math.max(0.5, puzzle.width / 2)),
+      z: 0.7,
+      heading: 0,
+    };
     this.hasScoringStarted = false;
     this.isRolling = false;
     this.rollElapsed = 0;
@@ -491,7 +623,13 @@ export class GameWorld {
     }
   }
 
-  private start(mode: GameMode, difficulty: Difficulty, stage = 1, wave = 1, ordinal = 1): void {
+  private start(
+    mode: GameMode,
+    difficulty: Difficulty,
+    stage = 1,
+    wave = 1,
+    ordinal = 1
+  ): void {
     if (mode === "CAMPAIGN" && stage === 1 && wave === 1 && ordinal === 1) {
       const restored = this.readCampaign();
       if (restored) {
@@ -505,7 +643,10 @@ export class GameWorld {
 
     this.mode = mode;
     this.difficulty = difficulty;
-    const puzzle = mode === "TUTORIAL" ? makeTutorialPuzzle() : findPuzzle(this.puzzles, stage, wave, ordinal);
+    const puzzle =
+      mode === "TUTORIAL"
+        ? makeTutorialPuzzle()
+        : findPuzzle(this.puzzles, stage, wave, ordinal);
     if (!puzzle) {
       this.phase = "MENU";
       this.banner = `ARCHIVE NOT FOUND // S${stage} W${wave} P${ordinal}`;
@@ -518,7 +659,12 @@ export class GameWorld {
     this.loadPuzzle(puzzle, true);
     this.phase = "STAGE_INTRO";
     this.phaseTimer = 0;
-    this.banner = mode === "TUTORIAL" ? "TRAINING SIGNAL" : mode === "DUEL" ? "DUEL // PLAYER 1" : `STAGE ${stage}`;
+    this.banner =
+      mode === "TUTORIAL"
+        ? "TRAINING SIGNAL"
+        : mode === "DUEL"
+          ? "DUEL // PLAYER 1"
+          : `STAGE ${stage}`;
     this.onSignal("menu");
   }
 
@@ -543,24 +689,103 @@ export class GameWorld {
 
   private command(command: CubicCommand): void {
     if (!command) return;
-    if (command.type !== "touch-move" && command.type !== "touch-fast") this.emitUserGesture();
-    if (command.type === "start") { this.start(command.mode, command.difficulty, command.stage, command.wave, command.ordinal); return; }
-    if (command.type === "menu") { if (this.mode === "CAMPAIGN") this.saveCampaign(); this.phase = "MENU"; this.banner = "MODE SELECT"; return; }
-    if (command.type === "pause") { this.pauseGame(); return; }
-    if (command.type === "resume") { this.resumeGame(); return; }
-    if (command.type === "continue" && ["PUZZLE_RESULT", "WAVE_RESULT", "STAGE_RESULT"].includes(this.phase)) { this.advanceAfterResult(); return; }
-    if (command.type === "rewind" && this.mode === "PRACTICE") { this.restoreHistory(); return; }
-    if (command.type === "quick-save" && this.mode === "PRACTICE") { this.quickSave = this.snapshot(); this.banner = "QUICK SAVE STORED"; return; }
-    if (command.type === "quick-load" && this.mode === "PRACTICE" && this.quickSave) { this.restore(this.quickSave); this.banner = "QUICK SAVE RESTORED"; return; }
-    if (command.type === "step-roll" && (this.mode === "PRACTICE" || this.debug)) { this.isRolling = true; this.rollElapsed = DIFFICULTIES[this.difficulty].rollSeconds; this.finishRotation(); this.isRolling = false; return; }
-    if (command.type === "touch-move") { this.input.setTouchMove(command.x, command.z); return; }
-    if (command.type === "touch-fast") { this.input.setTouchFast(command.active); return; }
-    if (command.type === "touch-press") { this.input.press(command.action); return; }
-    if (command.type === "load-custom") { this.mode = "CREATE"; this.puzzles.unshift(command.puzzle); this.puzzleIndex = 0; this.loadPuzzle(command.puzzle, true); this.phase = "STAGE_INTRO"; this.banner = "CUSTOM ORDEAL"; return; }
-    if (command.type === "set-debug") { this.debug = command.active; return; }
-    if (command.type === "debug-platform" && this.debug) { this.stats.platformRows = Math.max(this.currentPuzzle.depth + 2, command.rows); return; }
+    if (command.type !== "touch-move" && command.type !== "touch-fast")
+      this.emitUserGesture();
+    if (command.type === "start") {
+      this.start(
+        command.mode,
+        command.difficulty,
+        command.stage,
+        command.wave,
+        command.ordinal
+      );
+      return;
+    }
+    if (command.type === "menu") {
+      if (this.mode === "CAMPAIGN") this.saveCampaign();
+      this.phase = "MENU";
+      this.banner = "MODE SELECT";
+      return;
+    }
+    if (command.type === "pause") {
+      this.pauseGame();
+      return;
+    }
+    if (command.type === "resume") {
+      this.resumeGame();
+      return;
+    }
+    if (
+      command.type === "continue" &&
+      ["PUZZLE_RESULT", "WAVE_RESULT", "STAGE_RESULT"].includes(this.phase)
+    ) {
+      this.advanceAfterResult();
+      return;
+    }
+    if (command.type === "rewind" && this.mode === "PRACTICE") {
+      this.restoreHistory();
+      return;
+    }
+    if (command.type === "quick-save" && this.mode === "PRACTICE") {
+      this.quickSave = this.snapshot();
+      this.banner = "QUICK SAVE STORED";
+      return;
+    }
+    if (
+      command.type === "quick-load" &&
+      this.mode === "PRACTICE" &&
+      this.quickSave
+    ) {
+      this.restore(this.quickSave);
+      this.banner = "QUICK SAVE RESTORED";
+      return;
+    }
+    if (
+      command.type === "step-roll" &&
+      (this.mode === "PRACTICE" || this.debug)
+    ) {
+      this.isRolling = true;
+      this.rollElapsed = DIFFICULTIES[this.difficulty].rollSeconds;
+      this.finishRotation();
+      this.isRolling = false;
+      return;
+    }
+    if (command.type === "touch-move") {
+      this.input.setTouchMove(command.x, command.z);
+      return;
+    }
+    if (command.type === "touch-fast") {
+      this.input.setTouchFast(command.active);
+      return;
+    }
+    if (command.type === "touch-press") {
+      this.input.press(command.action);
+      return;
+    }
+    if (command.type === "load-custom") {
+      this.mode = "CREATE";
+      this.puzzles.unshift(command.puzzle);
+      this.puzzleIndex = 0;
+      this.loadPuzzle(command.puzzle, true);
+      this.phase = "STAGE_INTRO";
+      this.banner = "CUSTOM ORDEAL";
+      return;
+    }
+    if (command.type === "set-debug") {
+      this.debug = command.active;
+      return;
+    }
+    if (command.type === "debug-platform" && this.debug) {
+      this.stats.platformRows = Math.max(
+        this.currentPuzzle.depth + 2,
+        command.rows
+      );
+      return;
+    }
     if (command.type === "auto-solve" && this.debug) {
-      this.cubes.filter((cube) => cube.type !== "void" && !cube.captured).forEach((cube) => this.captureCube(cube, "manual", { batch: true }));
+      this.cubes
+        .filter(cube => cube.type !== "void" && !cube.captured)
+        .forEach(cube => this.captureCube(cube, "manual", { batch: true }));
       this.resolveIfEmpty();
     }
   }
@@ -571,7 +796,8 @@ export class GameWorld {
 
   private updateTutorial(moveX: number, moveZ: number): void {
     if (this.mode !== "TUTORIAL") return;
-    if (Math.abs(moveX) + Math.abs(moveZ) > 0.1) this.tutorialStep = Math.max(this.tutorialStep, 1);
+    if (Math.abs(moveX) + Math.abs(moveZ) > 0.1)
+      this.tutorialStep = Math.max(this.tutorialStep, 1);
     const hints = [
       "1/8: 盤面を横へ走り、移動入力を確認する。",
       "2/8: 青いMARKを次に通る床へ置く。",
@@ -587,9 +813,16 @@ export class GameWorld {
 
   private runDemo(dt: number): void {
     this.demoElapsed += dt;
-    if ((this.phase !== "PLAYING" && this.phase !== "TUTORIAL") || this.demoElapsed <= 1.1) return;
+    if (
+      (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") ||
+      this.demoElapsed <= 1.1
+    )
+      return;
     this.demoElapsed = 0;
-    const landed = this.cubes.find((cube) => cube.type !== "void" && !cube.captured && !cube.falling && cube.z === 0);
+    const landed = this.cubes.find(
+      cube =>
+        cube.type !== "void" && !cube.captured && !cube.falling && cube.z === 0
+    );
     if (landed) {
       this.marker = { x: landed.x, z: landed.z };
       this.markOrCapture();
@@ -614,9 +847,9 @@ export class GameWorld {
     this.mode = snapshot.mode;
     this.difficulty = snapshot.difficulty;
     this.player = { ...snapshot.player };
-    this.cubes = snapshot.cubes.map((cube) => ({ ...cube }));
+    this.cubes = snapshot.cubes.map(cube => ({ ...cube }));
     this.marker = snapshot.marker ? { ...snapshot.marker } : null;
-    this.areas = snapshot.areas.map((area) => ({ ...area }));
+    this.areas = snapshot.areas.map(area => ({ ...area }));
     this.stats = { ...snapshot.stats };
     this.puzzleIndex = snapshot.puzzleIndex;
     this.currentPuzzle = this.puzzles[this.puzzleIndex] ?? this.currentPuzzle;
@@ -633,7 +866,10 @@ export class GameWorld {
   private saveCampaign(): void {
     if (this.mode !== "CAMPAIGN") return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: SAVE_VERSION, snapshot: this.snapshot() }));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ version: SAVE_VERSION, snapshot: this.snapshot() })
+      );
     } catch {
       // localStorage can be unavailable in strict privacy contexts.
     }
@@ -642,8 +878,15 @@ export class GameWorld {
   private readCampaign(): GameSnapshot | null {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      const saved = raw ? JSON.parse(raw) as { version?: number; snapshot?: GameSnapshot } : null;
-      if (saved?.version === SAVE_VERSION && saved.snapshot && this.puzzles[saved.snapshot.puzzleIndex]) return saved.snapshot;
+      const saved = raw
+        ? (JSON.parse(raw) as { version?: number; snapshot?: GameSnapshot })
+        : null;
+      if (
+        saved?.version === SAVE_VERSION &&
+        saved.snapshot &&
+        this.puzzles[saved.snapshot.puzzleIndex]
+      )
+        return saved.snapshot;
     } catch {
       // Invalid or obsolete data starts a fresh campaign.
     }
@@ -652,9 +895,16 @@ export class GameWorld {
 
   private saveHighScore(): void {
     try {
-      const current = { score: this.stats.score, mindIndex: this.mindIndex, at: Date.now() };
-      const previous = JSON.parse(localStorage.getItem(HIGH_SCORE_KEY) ?? "null") as { score?: number } | null;
-      if (!previous || current.score > (previous.score ?? 0)) localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(current));
+      const current = {
+        score: this.stats.score,
+        mindIndex: this.mindIndex,
+        at: Date.now(),
+      };
+      const previous = JSON.parse(
+        localStorage.getItem(HIGH_SCORE_KEY) ?? "null"
+      ) as { score?: number } | null;
+      if (!previous || current.score > (previous.score ?? 0))
+        localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(current));
     } catch {
       // Score persistence is optional.
     }
@@ -666,9 +916,9 @@ export class GameWorld {
       mode: this.mode,
       difficulty: this.difficulty,
       player: { ...this.player },
-      cubes: this.cubes.map((cube) => ({ ...cube })),
+      cubes: this.cubes.map(cube => ({ ...cube })),
       marker: this.marker ? { ...this.marker } : null,
-      areas: this.areas.map((area) => ({ ...area })),
+      areas: this.areas.map(area => ({ ...area })),
       stats: { ...this.stats },
       stage: this.currentPuzzle.stage,
       wave: this.currentPuzzle.wave,
@@ -683,10 +933,21 @@ export class GameWorld {
       duelTurn: this.duelTurn,
       duelScore: [...this.duelScore] as [number, number],
       tutorialStep: this.tutorialStep,
-      captureProgress: this.phase === "CAPTURE_PAUSE"
-        ? Math.max(0, Math.min(1, 1 - this.phaseTimer / DIFFICULTIES[this.difficulty].captureSeconds))
-        : 0,
-      crushProgress: this.phase === "CRUSHED" ? Math.max(0, Math.min(1, 1 - this.phaseTimer / 1.8)) : 0,
+      captureProgress:
+        this.phase === "CAPTURE_PAUSE"
+          ? Math.max(
+              0,
+              Math.min(
+                1,
+                1 -
+                  this.phaseTimer / DIFFICULTIES[this.difficulty].captureSeconds
+              )
+            )
+          : 0,
+      crushProgress:
+        this.phase === "CRUSHED"
+          ? Math.max(0, Math.min(1, 1 - this.phaseTimer / 1.8))
+          : 0,
     };
   }
 
@@ -695,11 +956,21 @@ export class GameWorld {
   }
 
   get rollProgress(): number {
-    return this.isRolling ? Math.min(1, this.rollElapsed / DIFFICULTIES[this.difficulty].rollSeconds) : 0;
+    return this.isRolling
+      ? Math.min(
+          1,
+          this.rollElapsed / DIFFICULTIES[this.difficulty].rollSeconds
+        )
+      : 0;
   }
 
   get mindIndex(): number {
-    return calculateMindIndex(this.stats.score, this.currentPuzzle.stage, this.stats.platformRows, this.stats.misses);
+    return calculateMindIndex(
+      this.stats.score,
+      this.currentPuzzle.stage,
+      this.stats.platformRows,
+      this.stats.misses
+    );
   }
 
   dispose(): void {

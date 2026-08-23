@@ -7,15 +7,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function redirectStorageAsset(key: string): Promise<string | null> {
-  const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(/\/+$/, "");
+  const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(
+    /\/+$/,
+    ""
+  );
   const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
   if (!forgeBaseUrl || !forgeKey) return null;
 
   const forgeUrl = new URL("v1/storage/presign/get", `${forgeBaseUrl}/`);
   forgeUrl.searchParams.set("path", key);
-  const response = await fetch(forgeUrl, { headers: { Authorization: `Bearer ${forgeKey}` } });
+  const response = await fetch(forgeUrl, {
+    headers: { Authorization: `Bearer ${forgeKey}` },
+  });
   if (!response.ok) return null;
-  const payload = await response.json() as { url?: string };
+  const payload = (await response.json()) as { url?: string };
   return payload.url ?? null;
 }
 
@@ -43,7 +48,10 @@ async function startServer() {
       }
       res.redirect(307, url);
     } catch {
-      res.status(502).type("text/plain").send("Storage asset could not be resolved");
+      res
+        .status(502)
+        .type("text/plain")
+        .send("Storage asset could not be resolved");
     }
   });
 

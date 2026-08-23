@@ -58,7 +58,13 @@ export interface PuzzleDescriptor {
   seed: number;
   layout: Array<{ x: number; z: number; type: CubeType }>;
   solution: SolutionStep[];
-  validation: { valid: boolean; normal: number; veil: number; void: number; travelBudget: number };
+  validation: {
+    valid: boolean;
+    normal: number;
+    veil: number;
+    void: number;
+    travelBudget: number;
+  };
   featured: boolean;
   designIntent?: string;
 }
@@ -112,11 +118,41 @@ export interface DifficultyConfig {
 }
 
 export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
-  BEGINNER: { rollSeconds: 0.82, settleSeconds: 1.05, captureSeconds: 0.82, playerSpeed: 4.8, assistance: "high" },
-  EASY: { rollSeconds: 0.72, settleSeconds: 0.9, captureSeconds: 0.7, playerSpeed: 4.65, assistance: "high" },
-  NORMAL: { rollSeconds: 0.62, settleSeconds: 0.76, captureSeconds: 0.58, playerSpeed: 4.45, assistance: "medium" },
-  HARD: { rollSeconds: 0.52, settleSeconds: 0.62, captureSeconds: 0.46, playerSpeed: 4.25, assistance: "low" },
-  EXTREME: { rollSeconds: 0.44, settleSeconds: 0.54, captureSeconds: 0.38, playerSpeed: 4.1, assistance: "low" },
+  BEGINNER: {
+    rollSeconds: 0.82,
+    settleSeconds: 1.05,
+    captureSeconds: 0.82,
+    playerSpeed: 4.8,
+    assistance: "high",
+  },
+  EASY: {
+    rollSeconds: 0.72,
+    settleSeconds: 0.9,
+    captureSeconds: 0.7,
+    playerSpeed: 4.65,
+    assistance: "high",
+  },
+  NORMAL: {
+    rollSeconds: 0.62,
+    settleSeconds: 0.76,
+    captureSeconds: 0.58,
+    playerSpeed: 4.45,
+    assistance: "medium",
+  },
+  HARD: {
+    rollSeconds: 0.52,
+    settleSeconds: 0.62,
+    captureSeconds: 0.46,
+    playerSpeed: 4.25,
+    assistance: "low",
+  },
+  EXTREME: {
+    rollSeconds: 0.44,
+    settleSeconds: 0.54,
+    captureSeconds: 0.38,
+    playerSpeed: 4.1,
+    assistance: "low",
+  },
 };
 
 export const initialStats = (width: number): RunStats => ({

@@ -20,3 +20,4 @@
 2. Hardcore Gaming 101, *Intelligent Qube*（2024-08-16）: https://www.hardcoregaming101.net/intelligent-qube/
 3. PlayStation Datacenter, *Intelligent Qube*: https://www.psxdatacenter.com/games/U/I/SCUS-94181.html
 4. GameFAQs, *Intelligent Qube FAQ*（2000-02-02）: https://gamefaqs.gamespot.com/ps/197636-intelligent-qube/faqs/3929
+

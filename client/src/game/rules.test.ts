@@ -18,11 +18,19 @@ import {
 import { EXPECTED_PUZZLE_COUNT, puzzleCountFor } from "./stagePlan";
 import { initialStats, type AreaMark, type CubeState } from "./types";
 
-const cube = (id: string, type: CubeState["type"], x: number, z: number): CubeState => ({ id, type, x, z, previousZ: z });
+const cube = (
+  id: string,
+  type: CubeState["type"],
+  x: number,
+  z: number
+): CubeState => ({ id, type, x, z, previousZ: z });
 
 describe("CUBIC ORDEAL deterministic rules", () => {
   it("moves a cube exactly one logical cell toward the player", () => {
-    expect(advanceOneCell(cube("n", "normal", 1, 3))).toMatchObject({ previousZ: 3, z: 2 });
+    expect(advanceOneCell(cube("n", "normal", 1, 3))).toMatchObject({
+      previousZ: 3,
+      z: 2,
+    });
   });
 
   it("treats a player footprint beyond any platform edge as a fall", () => {
@@ -40,39 +48,52 @@ describe("CUBIC ORDEAL deterministic rules", () => {
   it("selects the exact 3 by 3 AREA neighborhood", () => {
     const area: AreaMark[] = [{ id: "a", x: 2, z: 2, armed: true }];
     const selected = areaTargets(
-      [cube("0", "normal", 1, 1), cube("1", "normal", 3, 3), cube("2", "normal", 4, 3)],
+      [
+        cube("0", "normal", 1, 1),
+        cube("1", "normal", 3, 3),
+        cube("2", "normal", 4, 3),
+      ],
       area,
-      null,
+      null
     );
-    expect(selected.map((item) => item.id)).toEqual(["0", "1"]);
+    expect(selected.map(item => item.id)).toEqual(["0", "1"]);
   });
 
   it("protects one VOID on MARK while AREA captures the other target", () => {
     const selected = areaTargets(
       [cube("protected", "void", 2, 2), cube("normal", "normal", 1, 2)],
       [{ id: "a", x: 2, z: 2, armed: true }],
-      { x: 2, z: 2 },
+      { x: 2, z: 2 }
     );
-    expect(selected.map((item) => item.id)).toEqual(["normal"]);
+    expect(selected.map(item => item.id)).toEqual(["normal"]);
   });
 
   it("counts every unresolved cube type after a crush", () => {
-    expect(unresolvedCubeCount([
-      cube("normal", "normal", 1, 2),
-      cube("veil", "veil", 2, 2),
-      cube("void", "void", 3, 2),
-    ])).toBe(3);
+    expect(
+      unresolvedCubeCount([
+        cube("normal", "normal", 1, 2),
+        cube("veil", "veil", 2, 2),
+        cube("void", "void", 3, 2),
+      ])
+    ).toBe(3);
   });
 
   it("preserves the residual loss meter after multi-row loss", () => {
     const threshold = initialStats(4).missLimit + 1;
     const combined = 11;
-    expect({ rows: Math.floor(combined / threshold), residual: combined % threshold }).toEqual({ rows: 2, residual: 3 });
+    expect({
+      rows: Math.floor(combined / threshold),
+      residual: combined % threshold,
+    }).toEqual({ rows: 2, residual: 3 });
   });
 
   it("applies miss, VOID, scoring, and MIND INDEX rules", () => {
-    expect(applyMiss({ ...initialStats(4), misses: 3, platformRows: 12 })).toMatchObject({ misses: 0, platformRows: 11, perfect: false });
-    expect(applyVoidCapture({ ...initialStats(4), platformRows: 12 })).toMatchObject({ platformRows: 11, voidCaptured: 1, perfect: false });
+    expect(
+      applyMiss({ ...initialStats(4), misses: 3, platformRows: 12 })
+    ).toMatchObject({ misses: 0, platformRows: 11, perfect: false });
+    expect(
+      applyVoidCapture({ ...initialStats(4), platformRows: 12 })
+    ).toMatchObject({ platformRows: 11, voidCaptured: 1, perfect: false });
     expect(perfectBonus(3, 4)).toBe(10000);
     expect(perfectBonus(4, 4)).toBe(5000);
     expect(perfectBonus(5, 4)).toBe(1000);
@@ -95,25 +116,50 @@ describe("CUBIC ORDEAL deterministic rules", () => {
     expect(puzzles).toHaveLength(EXPECTED_PUZZLE_COUNT);
     expect(archive.valid).toBe(true);
     expect(archive.issues).toEqual([]);
-    expect(puzzles.every((puzzle) => puzzle.layout.length === puzzle.width * puzzle.depth)).toBe(true);
-    expect(new Set(puzzles.map((puzzle) => puzzle.id)).size).toBe(EXPECTED_PUZZLE_COUNT);
-    expect(new Set(puzzles.map((puzzle) => puzzle.seed)).size).toBe(EXPECTED_PUZZLE_COUNT);
+    expect(
+      puzzles.every(
+        puzzle => puzzle.layout.length === puzzle.width * puzzle.depth
+      )
+    ).toBe(true);
+    expect(new Set(puzzles.map(puzzle => puzzle.id)).size).toBe(
+      EXPECTED_PUZZLE_COUNT
+    );
+    expect(new Set(puzzles.map(puzzle => puzzle.seed)).size).toBe(
+      EXPECTED_PUZZLE_COUNT
+    );
   });
 
   it("contains a representative one-shot AREA chain with MARK protection", () => {
-    const representative = generatePuzzles().find((puzzle) => puzzle.id === "STAGE-6-W3-P01");
+    const representative = generatePuzzles().find(
+      puzzle => puzzle.id === "STAGE-6-W3-P01"
+    );
     expect(representative?.designIntent).toMatch(/one-shot AREA/);
-    expect(representative?.solution.filter((step) => step.action === "area").length).toBeGreaterThanOrEqual(2);
-    expect(representative?.layout.filter((item) => item.type === "veil").length).toBeGreaterThan(2);
-    expect(representative?.layout.some((item) => item.type === "void")).toBe(true);
+    expect(
+      representative?.solution.filter(step => step.action === "area").length
+    ).toBeGreaterThanOrEqual(2);
+    expect(
+      representative?.layout.filter(item => item.type === "veil").length
+    ).toBeGreaterThan(2);
+    expect(representative?.layout.some(item => item.type === "void")).toBe(
+      true
+    );
   });
 
   it("uses exact PRACTICE counts and DUEL hand-off rules", () => {
     expect(puzzleCountFor(1, 1)).toBe(3);
     expect(puzzleCountFor(4, 1)).toBe(2);
     expect(puzzleCountFor(9, 1)).toBe(1);
-    expect(resolveDuelRound([0, 0], 0, false)).toMatchObject({ nextTurn: 1, advancePuzzle: false });
-    expect(resolveDuelRound([0, 0], 1, true)).toMatchObject({ scores: [0, 1], advancePuzzle: true });
-    expect(resolveDuelRound([6, 5], 0, true)).toMatchObject({ scores: [7, 5], winner: 0 });
+    expect(resolveDuelRound([0, 0], 0, false)).toMatchObject({
+      nextTurn: 1,
+      advancePuzzle: false,
+    });
+    expect(resolveDuelRound([0, 0], 1, true)).toMatchObject({
+      scores: [0, 1],
+      advancePuzzle: true,
+    });
+    expect(resolveDuelRound([6, 5], 0, true)).toMatchObject({
+      scores: [7, 5],
+      winner: 0,
+    });
   });
 });

@@ -1,9 +1,21 @@
 /** App shell: keep title instrumentation instant; load Babylon only when an ordeal begins. */
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import GameShell from "@/components/GameShell";
 import RuntimeBoundary from "@/components/RuntimeBoundary";
 import type { CubicCommand } from "@/game/GameWorld";
-import { markFirstFrame, markRuntimeReady, markRuntimeRequested, startRum } from "@/lib/rum";
+import {
+  markFirstFrame,
+  markRuntimeReady,
+  markRuntimeRequested,
+  startRum,
+} from "@/lib/rum";
 import "./index.css";
 
 const GameCanvas = lazy(() => import("@/components/GameCanvas"));
@@ -16,7 +28,7 @@ export default function App() {
   const runtimeRequested = useRef(false);
   const [loadRuntime, setLoadRuntime] = useState(() => search.has("demo"));
 
-  useEffect(() => rumEnabled ? startRum() : undefined, [rumEnabled]);
+  useEffect(() => (rumEnabled ? startRum() : undefined), [rumEnabled]);
   useEffect(() => {
     if (rumEnabled && loadRuntime && !runtimeRequested.current) {
       runtimeRequested.current = true;
@@ -25,17 +37,22 @@ export default function App() {
   }, [loadRuntime, rumEnabled]);
 
   const dispatchCommand = useCallback((command: CubicCommand) => {
-    window.dispatchEvent(new CustomEvent<CubicCommand>("cubic:command", { detail: command }));
+    window.dispatchEvent(
+      new CustomEvent<CubicCommand>("cubic:command", { detail: command })
+    );
   }, []);
 
-  const launch = useCallback((command: CubicCommand) => {
-    window.dispatchEvent(new Event("cubic:user-gesture"));
-    if (runtimeReady.current) dispatchCommand(command);
-    else {
-      pendingCommand.current = command;
-      setLoadRuntime(true);
-    }
-  }, [dispatchCommand]);
+  const launch = useCallback(
+    (command: CubicCommand) => {
+      window.dispatchEvent(new Event("cubic:user-gesture"));
+      if (runtimeReady.current) dispatchCommand(command);
+      else {
+        pendingCommand.current = command;
+        setLoadRuntime(true);
+      }
+    },
+    [dispatchCommand]
+  );
 
   const handleRuntimeReady = useCallback(() => {
     runtimeReady.current = true;
@@ -45,8 +62,29 @@ export default function App() {
     if (command) dispatchCommand(command);
   }, [dispatchCommand, rumEnabled]);
 
-  return <div className="game-root">
-    {loadRuntime && <RuntimeBoundary><Suspense fallback={<div className="engine-loading" role="status">CALIBRATING OBSERVATORY…</div>}><GameCanvas onReady={handleRuntimeReady} onFirstFrame={() => { if (rumEnabled) markFirstFrame(); }} /></Suspense></RuntimeBoundary>}
-    <GameShell onLaunch={launch} />
-  </div>;
+  const handleFirstFrame = useCallback(() => {
+    if (rumEnabled) markFirstFrame();
+  }, [rumEnabled]);
+
+  return (
+    <div className="game-root">
+      {loadRuntime && (
+        <RuntimeBoundary>
+          <Suspense
+            fallback={
+              <div className="engine-loading" role="status">
+                CALIBRATING OBSERVATORY…
+              </div>
+            }
+          >
+            <GameCanvas
+              onReady={handleRuntimeReady}
+              onFirstFrame={handleFirstFrame}
+            />
+          </Suspense>
+        </RuntimeBoundary>
+      )}
+      <GameShell onLaunch={launch} />
+    </div>
+  );
 }

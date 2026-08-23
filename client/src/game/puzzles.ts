@@ -3,12 +3,20 @@ import { STAGE_PLAN } from "./stagePlan";
 import type { CubeType, PuzzleDescriptor, SolutionStep } from "./types";
 
 export async function loadPuzzles(): Promise<PuzzleDescriptor[]> {
-  return generatePuzzles();
+  const response = await fetch("/data/puzzles.json", { cache: "no-cache" });
+  if (!response.ok) throw new Error("Puzzle archive could not be loaded.");
+  const puzzles = (await response.json()) as unknown;
+  if (!Array.isArray(puzzles)) {
+    throw new Error("Puzzle archive has an invalid format.");
+  }
+  return puzzles as PuzzleDescriptor[];
 }
 
 export function generatePuzzles(): PuzzleDescriptor[] {
   const puzzles: PuzzleDescriptor[] = [];
-  const stages = Object.keys(STAGE_PLAN).map(Number).sort((a, b) => a - b);
+  const stages = Object.keys(STAGE_PLAN)
+    .map(Number)
+    .sort((a, b) => a - b);
   for (const stage of stages) {
     const waves = STAGE_PLAN[stage] ?? [];
     waves.forEach((plan, waveIndex) => {
@@ -25,15 +33,24 @@ export function findPuzzle(
   puzzles: PuzzleDescriptor[],
   stage: number,
   wave: number,
-  ordinal: number,
+  ordinal: number
 ): PuzzleDescriptor | undefined {
-  return puzzles.find((puzzle) => puzzle.stage === stage && puzzle.wave === wave && puzzle.ordinal === ordinal);
+  return puzzles.find(
+    puzzle =>
+      puzzle.stage === stage &&
+      puzzle.wave === wave &&
+      puzzle.ordinal === ordinal
+  );
 }
 
-export function puzzleOrdinals(puzzles: PuzzleDescriptor[], stage: number, wave: number): number[] {
+export function puzzleOrdinals(
+  puzzles: PuzzleDescriptor[],
+  stage: number,
+  wave: number
+): number[] {
   return puzzles
-    .filter((puzzle) => puzzle.stage === stage && puzzle.wave === wave)
-    .map((puzzle) => puzzle.ordinal)
+    .filter(puzzle => puzzle.stage === stage && puzzle.wave === wave)
+    .map(puzzle => puzzle.ordinal)
     .sort((a, b) => a - b);
 }
 
@@ -42,14 +59,14 @@ function buildPuzzle(
   wave: number,
   ordinal: number,
   width: number,
-  depth: number,
+  depth: number
 ): PuzzleDescriptor {
   const seed = stage * 100_000 + wave * 1_000 + ordinal * 17;
   const spawnRow = 5 + ((stage + wave + ordinal) % 2);
   const pairCount = Math.ceil(depth / 2);
   const center = 1 + (seed % Math.max(1, width - 2));
   const protectVoid = stage >= 2 && ordinal === 1;
-  const protectionX = center + (((stage + wave) % 2 === 0) ? 1 : -1);
+  const protectionX = center + ((stage + wave) % 2 === 0 ? 1 : -1);
   const layout: Array<{ x: number; z: number; type: CubeType }> = [];
 
   for (let offset = 0; offset < depth; offset += 1) {
@@ -68,10 +85,13 @@ function buildPuzzle(
   }
   if (stage >= 5) {
     const otherEdge = routeTargets[0]?.x === width - 1 ? 0 : width - 1;
-    if (Math.abs(otherEdge - center) > 1) routeTargets.push({ x: otherEdge, offset: Math.max(1, depth - 2) });
+    if (Math.abs(otherEdge - center) > 1)
+      routeTargets.push({ x: otherEdge, offset: Math.max(1, depth - 2) });
   }
   for (const target of routeTargets) {
-    const cube = layout.find((item) => item.x === target.x && item.z === spawnRow + target.offset);
+    const cube = layout.find(
+      item => item.x === target.x && item.z === spawnRow + target.offset
+    );
     if (cube) cube.type = "normal";
   }
 
@@ -79,23 +99,41 @@ function buildPuzzle(
     { rotation: Math.max(0, spawnRow - 1), action: "mark", x: center, z: 0 },
     { rotation: spawnRow, action: "capture", x: center, z: 0 },
   ];
-  if (protectVoid) solution.push({ rotation: spawnRow, action: "mark", x: protectionX, z: 0 });
+  if (protectVoid)
+    solution.push({ rotation: spawnRow, action: "mark", x: protectionX, z: 0 });
   for (let pair = 0; pair < pairCount; pair += 1) {
     solution.push({ rotation: spawnRow + pair, action: "area" });
   }
   for (const target of routeTargets) {
-    solution.push({ rotation: spawnRow + target.offset - 1, action: "mark", x: target.x, z: 0 });
-    solution.push({ rotation: spawnRow + target.offset, action: "capture", x: target.x, z: 0 });
+    solution.push({
+      rotation: spawnRow + target.offset - 1,
+      action: "mark",
+      x: target.x,
+      z: 0,
+    });
+    solution.push({
+      rotation: spawnRow + target.offset,
+      action: "capture",
+      x: target.x,
+      z: 0,
+    });
   }
 
   const finalRequiredRotation = Math.max(
     spawnRow + pairCount - 1,
-    ...routeTargets.map((target) => spawnRow + target.offset),
+    ...routeTargets.map(target => spawnRow + target.offset)
   );
-  const normal = layout.filter((cube) => cube.type === "normal").length;
-  const veil = layout.filter((cube) => cube.type === "veil").length;
+  const normal = layout.filter(cube => cube.type === "normal").length;
+  const veil = layout.filter(cube => cube.type === "veil").length;
   const voids = layout.length - normal - veil;
-  const difficultyTag = stage >= 6 ? "chain-protect" : stage >= 4 ? "chain" : stage >= 2 ? "route" : "read";
+  const difficultyTag =
+    stage >= 6
+      ? "chain-protect"
+      : stage >= 4
+        ? "chain"
+        : stage >= 2
+          ? "route"
+          : "read";
   const prefix = stage === 9 ? "FINAL" : `STAGE-${stage}`;
 
   return {

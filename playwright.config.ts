@@ -14,8 +14,17 @@ export default defineConfig({
     reuseExistingServer: false,
   },
   projects: [
-    { name: "chromium", use: { browserName: "chromium", launchOptions: { args: ["--no-sandbox", "--disable-dev-shm-usage"] } } },
-    { name: "webkit", use: { browserName: "webkit", hasTouch: true, isMobile: true } },
+    {
+      name: "chromium",
+      use: {
+        browserName: "chromium",
+        launchOptions: { args: ["--no-sandbox", "--disable-dev-shm-usage"] },
+      },
+    },
+    {
+      name: "webkit",
+      use: { browserName: "webkit", hasTouch: true, isMobile: true },
+    },
   ],
   reporter: [["list"]],
 });

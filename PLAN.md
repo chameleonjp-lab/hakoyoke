@@ -1,5 +1,7 @@
 # Game Plan: CUBIC ORDEAL
 
+> **履歴資料:** 初期実装計画です。完了・未完了の現行判定には使用せず、[CURRENT_STATE.md](./CURRENT_STATE.md)と[todo.md](./todo.md)を優先してください。
+
 ## Risk Tasks
 
 ### 1. 固定時間グリッド・シミュレーション
