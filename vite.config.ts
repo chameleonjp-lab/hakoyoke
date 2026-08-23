@@ -56,7 +56,7 @@ function writeToLogFile(source: LogSource, entries: unknown[]) {
   const logPath = path.join(LOG_DIR, `${source}.log`);
 
   // Format entries with timestamps
-  const lines = entries.map((entry) => {
+  const lines = entries.map(entry => {
     const ts = new Date().toISOString();
     return `[${ts}] ${JSON.stringify(entry)}`;
   });
@@ -132,7 +132,7 @@ function vitePluginManusDebugCollector(): Plugin {
         }
 
         let body = "";
-        req.on("data", (chunk) => {
+        req.on("data", chunk => {
           body += chunk.toString();
         });
 
@@ -162,7 +162,10 @@ function vitePluginStorageProxy(): Plugin {
           return;
         }
 
-        const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(/\/+$/, "");
+        const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(
+          /\/+$/,
+          ""
+        );
         const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
 
         if (!forgeBaseUrl || !forgeKey) {
@@ -172,7 +175,10 @@ function vitePluginStorageProxy(): Plugin {
         }
 
         try {
-          const forgeUrl = new URL("v1/storage/presign/get", forgeBaseUrl + "/");
+          const forgeUrl = new URL(
+            "v1/storage/presign/get",
+            forgeBaseUrl + "/"
+          );
           forgeUrl.searchParams.set("path", key);
 
           const forgeResp = await fetch(forgeUrl, {
@@ -203,21 +209,14 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-/** Keep the Babylon runtime cacheable and below the single-chunk warning threshold. */
-function splitBabylonRuntime(id: string): string | undefined {
-  if (!id.includes("/node_modules/@babylonjs/core/")) return undefined;
-  if (id.includes("/Engines/")) return "babylon-engine";
-  if (id.includes("/Cameras/") || id.includes("/Lights/") || id.endsWith("/scene.js")) return "babylon-scene";
-  if (id.includes("/Meshes/") || id.includes("/Maths/")) return "babylon-geometry";
-  if (id.includes("/Materials/Textures/")) return "babylon-textures";
-  if (id.includes("/Materials/")) return "babylon-materials";
-  if (id.includes("/Layers/") || id.includes("/PostProcesses/") || id.includes("/Shaders/")) return "babylon-effects";
-  if (id.includes("/Buffers/") || id.includes("/Rendering/") || id.includes("/Culling/")) return "babylon-rendering";
-  if (id.includes("/Misc/") || id.includes("/Events/") || id.includes("/DeviceInput/")) return "babylon-utils";
-  return "babylon-core";
-}
-
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime(),
+  vitePluginManusDebugCollector(),
+  vitePluginStorageProxy(),
+];
 
 export default defineConfig({
   plugins,
@@ -233,12 +232,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: splitBabylonRuntime,
-        onlyExplicitManualChunks: true,
-      },
-    },
+    // GameCanvas is already loaded only when an ordeal starts. Keep Babylon's cyclic graph intact rather than splitting it by folders.
+    chunkSizeWarningLimit: 1300,
   },
   server: {
     port: 3000,

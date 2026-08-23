@@ -1,94 +1,102 @@
 # LEVEL VALIDATION REPORT
 
-88件の問題は固定シードで生成され、重複ID、重複シード、配置範囲、必須対象、規定回転数、捕獲操作を検査対象とします。各問題の登録済み検査結果はPASSです。
+> このファイルは `client/src/game/puzzles.ts` と `client/src/game/stagePlan.ts` から自動生成されます。手編集せず、`pnpm puzzles:write` で更新してください。
 
-| ID | Stage | Wave | Size | Required rolls | Tag | Seed | Validation |
-| --- | --- | ---: | --- | ---: | --- | ---: | --- |
-| STAGE-1-W1-P01 | Stage 1 | 1 | 4×2 | 0 | read | 40711 | PASS |
-| STAGE-1-W1-P02 | Stage 1 | 1 | 4×2 | 0 | read | 48630 | PASS |
-| STAGE-1-W1-P03 | Stage 1 | 1 | 4×2 | 0 | read | 56549 | PASS |
-| STAGE-1-W2-P01 | Stage 1 | 2 | 4×2 | 0 | read | 64468 | PASS |
-| STAGE-1-W2-P02 | Stage 1 | 2 | 4×2 | 0 | read | 72387 | PASS |
-| STAGE-1-W2-P03 | Stage 1 | 2 | 4×2 | 0 | read | 80306 | PASS |
-| STAGE-1-W3-P01 | Stage 1 | 3 | 4×3 | 0 | read | 88225 | PASS |
-| STAGE-1-W3-P02 | Stage 1 | 3 | 4×3 | 0 | read | 96144 | PASS |
-| STAGE-1-W3-P03 | Stage 1 | 3 | 4×3 | 0 | read | 104063 | PASS |
-| STAGE-1-W4-P01 | Stage 1 | 4 | 4×4 | 0 | read | 111982 | PASS |
-| STAGE-1-W4-P02 | Stage 1 | 4 | 4×4 | 0 | read | 119901 | PASS |
-| STAGE-1-W4-P03 | Stage 1 | 4 | 4×4 | 0 | read | 127820 | PASS |
-| STAGE-2-W1-P01 | Stage 2 | 1 | 4×5 | 3 | read | 135739 | PASS |
-| STAGE-2-W1-P02 | Stage 2 | 1 | 4×5 | 3 | read | 143658 | PASS |
-| STAGE-2-W1-P03 | Stage 2 | 1 | 4×5 | 3 | read | 151577 | PASS |
-| STAGE-2-W2-P01 | Stage 2 | 2 | 4×5 | 3 | read | 159496 | PASS |
-| STAGE-2-W2-P02 | Stage 2 | 2 | 4×5 | 3 | read | 167415 | PASS |
-| STAGE-2-W2-P03 | Stage 2 | 2 | 4×5 | 3 | read | 175334 | PASS |
-| STAGE-2-W3-P01 | Stage 2 | 3 | 4×6 | 3 | read | 183253 | PASS |
-| STAGE-2-W3-P02 | Stage 2 | 3 | 4×6 | 3 | read | 191172 | PASS |
-| STAGE-2-W3-P03 | Stage 2 | 3 | 4×6 | 3 | read | 199091 | PASS |
-| STAGE-2-W4-P01 | Stage 2 | 4 | 4×6 | 3 | read | 207010 | PASS |
-| STAGE-2-W4-P02 | Stage 2 | 4 | 4×6 | 3 | read | 214929 | PASS |
-| STAGE-2-W4-P03 | Stage 2 | 4 | 4×6 | 3 | read | 222848 | PASS |
-| STAGE-3-W1-P01 | Stage 3 | 1 | 5×4 | 2 | route | 230767 | PASS |
-| STAGE-3-W1-P02 | Stage 3 | 1 | 5×4 | 2 | route | 238686 | PASS |
-| STAGE-3-W1-P03 | Stage 3 | 1 | 5×4 | 2 | route | 246605 | PASS |
-| STAGE-3-W2-P01 | Stage 3 | 2 | 5×5 | 3 | route | 254524 | PASS |
-| STAGE-3-W2-P02 | Stage 3 | 2 | 5×5 | 3 | route | 262443 | PASS |
-| STAGE-3-W2-P03 | Stage 3 | 2 | 5×5 | 3 | route | 270362 | PASS |
-| STAGE-3-W3-P01 | Stage 3 | 3 | 5×6 | 3 | route | 278281 | PASS |
-| STAGE-3-W3-P02 | Stage 3 | 3 | 5×6 | 3 | route | 286200 | PASS |
-| STAGE-3-W3-P03 | Stage 3 | 3 | 5×6 | 3 | route | 294119 | PASS |
-| STAGE-3-W4-P01 | Stage 3 | 4 | 5×6 | 3 | route | 302038 | PASS |
-| STAGE-3-W4-P02 | Stage 3 | 4 | 5×6 | 3 | route | 309957 | PASS |
-| STAGE-3-W4-P03 | Stage 3 | 4 | 5×6 | 3 | route | 317876 | PASS |
-| STAGE-4-W1-P01 | Stage 4 | 1 | 5×7 | 5 | route | 325795 | PASS |
-| STAGE-4-W1-P02 | Stage 4 | 1 | 5×7 | 5 | route | 333714 | PASS |
-| STAGE-4-W2-P01 | Stage 4 | 2 | 5×7 | 5 | route | 341633 | PASS |
-| STAGE-4-W2-P02 | Stage 4 | 2 | 5×7 | 5 | route | 349552 | PASS |
-| STAGE-4-W3-P01 | Stage 4 | 3 | 5×8 | 6 | route | 357471 | PASS |
-| STAGE-4-W3-P02 | Stage 4 | 3 | 5×8 | 6 | route | 365390 | PASS |
-| STAGE-4-W4-P01 | Stage 4 | 4 | 5×8 | 6 | route | 373309 | PASS |
-| STAGE-4-W4-P02 | Stage 4 | 4 | 5×8 | 6 | route | 381228 | PASS |
-| STAGE-5-W1-P01 | Stage 5 | 1 | 6×6 | 3 | route | 389147 | PASS |
-| STAGE-5-W1-P02 | Stage 5 | 1 | 6×6 | 3 | route | 397066 | PASS |
-| STAGE-5-W1-P03 | Stage 5 | 1 | 6×6 | 3 | route | 404985 | PASS |
-| STAGE-5-W2-P01 | Stage 5 | 2 | 6×6 | 2 | chain-protect | 412904 | PASS |
-| STAGE-5-W2-P02 | Stage 5 | 2 | 6×6 | 3 | route | 420823 | PASS |
-| STAGE-5-W2-P03 | Stage 5 | 2 | 6×6 | 3 | route | 428742 | PASS |
-| STAGE-5-W3-P01 | Stage 5 | 3 | 6×7 | 5 | route | 436661 | PASS |
-| STAGE-5-W3-P02 | Stage 5 | 3 | 6×7 | 5 | route | 444580 | PASS |
-| STAGE-5-W3-P03 | Stage 5 | 3 | 6×7 | 5 | route | 452499 | PASS |
-| STAGE-5-W4-P01 | Stage 5 | 4 | 6×7 | 5 | route | 460418 | PASS |
-| STAGE-5-W4-P02 | Stage 5 | 4 | 6×7 | 5 | route | 468337 | PASS |
-| STAGE-5-W4-P03 | Stage 5 | 4 | 6×7 | 5 | route | 476256 | PASS |
-| STAGE-6-W1-P01 | Stage 6 | 1 | 6×8 | 6 | chain | 484175 | PASS |
-| STAGE-6-W1-P02 | Stage 6 | 1 | 6×8 | 6 | chain | 492094 | PASS |
-| STAGE-6-W2-P01 | Stage 6 | 2 | 6×8 | 6 | chain | 500013 | PASS |
-| STAGE-6-W2-P02 | Stage 6 | 2 | 6×8 | 6 | chain | 507932 | PASS |
-| STAGE-6-W3-P01 | Stage 6 | 3 | 6×9 | 6 | chain | 515851 | PASS |
-| STAGE-6-W3-P02 | Stage 6 | 3 | 6×9 | 6 | chain | 523770 | PASS |
-| STAGE-6-W4-P01 | Stage 6 | 4 | 6×9 | 6 | chain | 531689 | PASS |
-| STAGE-6-W4-P02 | Stage 6 | 4 | 6×9 | 6 | chain | 539608 | PASS |
-| STAGE-7-W1-P01 | Stage 7 | 1 | 7×7 | 5 | chain | 547527 | PASS |
-| STAGE-7-W1-P02 | Stage 7 | 1 | 7×7 | 5 | chain | 555446 | PASS |
-| STAGE-7-W1-P03 | Stage 7 | 1 | 7×7 | 5 | chain | 563365 | PASS |
-| STAGE-7-W2-P01 | Stage 7 | 2 | 7×7 | 5 | chain | 571284 | PASS |
-| STAGE-7-W2-P02 | Stage 7 | 2 | 7×7 | 5 | chain | 579203 | PASS |
-| STAGE-7-W2-P03 | Stage 7 | 2 | 7×7 | 5 | chain | 587122 | PASS |
-| STAGE-7-W3-P01 | Stage 7 | 3 | 7×8 | 6 | chain | 595041 | PASS |
-| STAGE-7-W3-P02 | Stage 7 | 3 | 7×8 | 6 | chain | 602960 | PASS |
-| STAGE-7-W3-P03 | Stage 7 | 3 | 7×8 | 6 | chain | 610879 | PASS |
-| STAGE-7-W4-P01 | Stage 7 | 4 | 7×8 | 6 | chain | 618798 | PASS |
-| STAGE-7-W4-P02 | Stage 7 | 4 | 7×8 | 6 | chain | 626717 | PASS |
-| STAGE-7-W4-P03 | Stage 7 | 4 | 7×8 | 6 | chain | 634636 | PASS |
-| STAGE-8-W1-P01 | Stage 8 | 1 | 7×8 | 6 | chain | 642555 | PASS |
-| STAGE-8-W1-P02 | Stage 8 | 1 | 7×8 | 6 | chain | 650474 | PASS |
-| STAGE-8-W2-P01 | Stage 8 | 2 | 7×9 | 6 | chain | 658393 | PASS |
-| STAGE-8-W2-P02 | Stage 8 | 2 | 7×9 | 6 | chain | 666312 | PASS |
-| STAGE-8-W3-P01 | Stage 8 | 3 | 7×9 | 6 | chain | 674231 | PASS |
-| STAGE-8-W3-P02 | Stage 8 | 3 | 7×9 | 6 | chain | 682150 | PASS |
-| STAGE-8-W4-P01 | Stage 8 | 4 | 7×9 | 6 | chain | 690069 | PASS |
-| STAGE-8-W4-P02 | Stage 8 | 4 | 7×9 | 6 | chain | 697988 | PASS |
-| FINAL-W1-P01 | Final | 1 | 7×9 | 6 | memory | 705907 | PASS |
-| FINAL-W2-P01 | Final | 2 | 7×9 | 6 | memory | 713826 | PASS |
-| FINAL-W3-P01 | Final | 3 | 7×9 | 6 | memory | 721745 | PASS |
-| FINAL-W4-P01 | Final | 4 | 7×9 | 6 | memory | 729664 | PASS |
+## 検証結果
+
+- 問題数: 88
+- AREAを使用する問題: 88
+- AREAを2回以上使用する連鎖問題: 82
+- 検査内容: 問題数、ID・seedの一意性、Stage Plan、全マス形成、配置範囲、保存件数、MARK到達性、AREAの一回使用と再生成、必要キューブ全回収、VOID非捕獲、規定回転数
+- 結果: **PASS**
+
+| ID | Stage | Wave | Size | Required rolls | Tag | Seed | Required | VOID | AREA uses | Validation |
+| --- | --- | ---: | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |
+| STAGE-1-W1-P01 | Stage 1 | 1 | 4×2 | 0 | read | 101017 | 6 | 2 | 1 | PASS |
+| STAGE-1-W1-P02 | Stage 1 | 1 | 4×2 | 1 | read | 101034 | 7 | 1 | 1 | PASS |
+| STAGE-1-W1-P03 | Stage 1 | 1 | 4×2 | 1 | read | 101051 | 7 | 1 | 1 | PASS |
+| STAGE-1-W2-P01 | Stage 1 | 2 | 4×2 | 0 | read | 102017 | 6 | 2 | 1 | PASS |
+| STAGE-1-W2-P02 | Stage 1 | 2 | 4×2 | 1 | read | 102034 | 7 | 1 | 1 | PASS |
+| STAGE-1-W2-P03 | Stage 1 | 2 | 4×2 | 1 | read | 102051 | 7 | 1 | 1 | PASS |
+| STAGE-1-W3-P01 | Stage 1 | 3 | 4×3 | 1 | read | 103017 | 9 | 3 | 2 | PASS |
+| STAGE-1-W3-P02 | Stage 1 | 3 | 4×3 | 2 | read | 103034 | 10 | 2 | 2 | PASS |
+| STAGE-1-W3-P03 | Stage 1 | 3 | 4×3 | 2 | read | 103051 | 10 | 2 | 2 | PASS |
+| STAGE-1-W4-P01 | Stage 1 | 4 | 4×4 | 1 | read | 104017 | 12 | 4 | 2 | PASS |
+| STAGE-1-W4-P02 | Stage 1 | 4 | 4×4 | 3 | read | 104034 | 13 | 3 | 2 | PASS |
+| STAGE-1-W4-P03 | Stage 1 | 4 | 4×4 | 3 | read | 104051 | 13 | 3 | 2 | PASS |
+| STAGE-2-W1-P01 | Stage 2 | 1 | 4×5 | 4 | route | 201017 | 15 | 5 | 3 | PASS |
+| STAGE-2-W1-P02 | Stage 2 | 1 | 4×5 | 4 | route | 201034 | 16 | 4 | 3 | PASS |
+| STAGE-2-W1-P03 | Stage 2 | 1 | 4×5 | 4 | route | 201051 | 16 | 4 | 3 | PASS |
+| STAGE-2-W2-P01 | Stage 2 | 2 | 4×5 | 4 | route | 202017 | 15 | 5 | 3 | PASS |
+| STAGE-2-W2-P02 | Stage 2 | 2 | 4×5 | 4 | route | 202034 | 16 | 4 | 3 | PASS |
+| STAGE-2-W2-P03 | Stage 2 | 2 | 4×5 | 4 | route | 202051 | 16 | 4 | 3 | PASS |
+| STAGE-2-W3-P01 | Stage 2 | 3 | 4×6 | 5 | route | 203017 | 18 | 6 | 3 | PASS |
+| STAGE-2-W3-P02 | Stage 2 | 3 | 4×6 | 5 | route | 203034 | 19 | 5 | 3 | PASS |
+| STAGE-2-W3-P03 | Stage 2 | 3 | 4×6 | 5 | route | 203051 | 19 | 5 | 3 | PASS |
+| STAGE-2-W4-P01 | Stage 2 | 4 | 4×6 | 5 | route | 204017 | 18 | 6 | 3 | PASS |
+| STAGE-2-W4-P02 | Stage 2 | 4 | 4×6 | 5 | route | 204034 | 19 | 5 | 3 | PASS |
+| STAGE-2-W4-P03 | Stage 2 | 4 | 4×6 | 5 | route | 204051 | 19 | 5 | 3 | PASS |
+| STAGE-3-W1-P01 | Stage 3 | 1 | 5×4 | 3 | route | 301017 | 12 | 8 | 2 | PASS |
+| STAGE-3-W1-P02 | Stage 3 | 1 | 5×4 | 3 | route | 301034 | 13 | 7 | 2 | PASS |
+| STAGE-3-W1-P03 | Stage 3 | 1 | 5×4 | 3 | route | 301051 | 13 | 7 | 2 | PASS |
+| STAGE-3-W2-P01 | Stage 3 | 2 | 5×5 | 4 | route | 302017 | 15 | 10 | 3 | PASS |
+| STAGE-3-W2-P02 | Stage 3 | 2 | 5×5 | 4 | route | 302034 | 16 | 9 | 3 | PASS |
+| STAGE-3-W2-P03 | Stage 3 | 2 | 5×5 | 4 | route | 302051 | 16 | 9 | 3 | PASS |
+| STAGE-3-W3-P01 | Stage 3 | 3 | 5×6 | 5 | route | 303017 | 18 | 12 | 3 | PASS |
+| STAGE-3-W3-P02 | Stage 3 | 3 | 5×6 | 5 | route | 303034 | 19 | 11 | 3 | PASS |
+| STAGE-3-W3-P03 | Stage 3 | 3 | 5×6 | 5 | route | 303051 | 19 | 11 | 3 | PASS |
+| STAGE-3-W4-P01 | Stage 3 | 4 | 5×6 | 5 | route | 304017 | 18 | 12 | 3 | PASS |
+| STAGE-3-W4-P02 | Stage 3 | 4 | 5×6 | 5 | route | 304034 | 19 | 11 | 3 | PASS |
+| STAGE-3-W4-P03 | Stage 3 | 4 | 5×6 | 5 | route | 304051 | 19 | 11 | 3 | PASS |
+| STAGE-4-W1-P01 | Stage 4 | 1 | 5×7 | 6 | chain | 401017 | 21 | 14 | 4 | PASS |
+| STAGE-4-W1-P02 | Stage 4 | 1 | 5×7 | 6 | chain | 401034 | 22 | 13 | 4 | PASS |
+| STAGE-4-W2-P01 | Stage 4 | 2 | 5×7 | 6 | chain | 402017 | 21 | 14 | 4 | PASS |
+| STAGE-4-W2-P02 | Stage 4 | 2 | 5×7 | 6 | chain | 402034 | 22 | 13 | 4 | PASS |
+| STAGE-4-W3-P01 | Stage 4 | 3 | 5×8 | 7 | chain | 403017 | 24 | 16 | 4 | PASS |
+| STAGE-4-W3-P02 | Stage 4 | 3 | 5×8 | 7 | chain | 403034 | 25 | 15 | 4 | PASS |
+| STAGE-4-W4-P01 | Stage 4 | 4 | 5×8 | 7 | chain | 404017 | 24 | 16 | 4 | PASS |
+| STAGE-4-W4-P02 | Stage 4 | 4 | 5×8 | 7 | chain | 404034 | 25 | 15 | 4 | PASS |
+| STAGE-5-W1-P01 | Stage 5 | 1 | 6×6 | 5 | chain | 501017 | 19 | 17 | 3 | PASS |
+| STAGE-5-W1-P02 | Stage 5 | 1 | 6×6 | 5 | chain | 501034 | 20 | 16 | 3 | PASS |
+| STAGE-5-W1-P03 | Stage 5 | 1 | 6×6 | 5 | chain | 501051 | 19 | 17 | 3 | PASS |
+| STAGE-5-W2-P01 | Stage 5 | 2 | 6×6 | 5 | chain | 502017 | 19 | 17 | 3 | PASS |
+| STAGE-5-W2-P02 | Stage 5 | 2 | 6×6 | 5 | chain | 502034 | 20 | 16 | 3 | PASS |
+| STAGE-5-W2-P03 | Stage 5 | 2 | 6×6 | 5 | chain | 502051 | 19 | 17 | 3 | PASS |
+| STAGE-5-W3-P01 | Stage 5 | 3 | 6×7 | 6 | chain | 503017 | 22 | 20 | 4 | PASS |
+| STAGE-5-W3-P02 | Stage 5 | 3 | 6×7 | 6 | chain | 503034 | 23 | 19 | 4 | PASS |
+| STAGE-5-W3-P03 | Stage 5 | 3 | 6×7 | 6 | chain | 503051 | 22 | 20 | 4 | PASS |
+| STAGE-5-W4-P01 | Stage 5 | 4 | 6×7 | 6 | chain | 504017 | 22 | 20 | 4 | PASS |
+| STAGE-5-W4-P02 | Stage 5 | 4 | 6×7 | 6 | chain | 504034 | 23 | 19 | 4 | PASS |
+| STAGE-5-W4-P03 | Stage 5 | 4 | 6×7 | 6 | chain | 504051 | 22 | 20 | 4 | PASS |
+| STAGE-6-W1-P01 | Stage 6 | 1 | 6×8 | 7 | chain-protect | 601017 | 25 | 23 | 4 | PASS |
+| STAGE-6-W1-P02 | Stage 6 | 1 | 6×8 | 7 | chain-protect | 601034 | 26 | 22 | 4 | PASS |
+| STAGE-6-W2-P01 | Stage 6 | 2 | 6×8 | 7 | chain-protect | 602017 | 25 | 23 | 4 | PASS |
+| STAGE-6-W2-P02 | Stage 6 | 2 | 6×8 | 7 | chain-protect | 602034 | 26 | 22 | 4 | PASS |
+| STAGE-6-W3-P01 | Stage 6 | 3 | 6×9 | 8 | chain-protect | 603017 | 28 | 26 | 5 | PASS |
+| STAGE-6-W3-P02 | Stage 6 | 3 | 6×9 | 8 | chain-protect | 603034 | 29 | 25 | 5 | PASS |
+| STAGE-6-W4-P01 | Stage 6 | 4 | 6×9 | 8 | chain-protect | 604017 | 28 | 26 | 5 | PASS |
+| STAGE-6-W4-P02 | Stage 6 | 4 | 6×9 | 8 | chain-protect | 604034 | 29 | 25 | 5 | PASS |
+| STAGE-7-W1-P01 | Stage 7 | 1 | 7×7 | 6 | chain-protect | 701017 | 22 | 27 | 4 | PASS |
+| STAGE-7-W1-P02 | Stage 7 | 1 | 7×7 | 6 | chain-protect | 701034 | 22 | 27 | 4 | PASS |
+| STAGE-7-W1-P03 | Stage 7 | 1 | 7×7 | 6 | chain-protect | 701051 | 23 | 26 | 4 | PASS |
+| STAGE-7-W2-P01 | Stage 7 | 2 | 7×7 | 6 | chain-protect | 702017 | 22 | 27 | 4 | PASS |
+| STAGE-7-W2-P02 | Stage 7 | 2 | 7×7 | 6 | chain-protect | 702034 | 22 | 27 | 4 | PASS |
+| STAGE-7-W2-P03 | Stage 7 | 2 | 7×7 | 6 | chain-protect | 702051 | 23 | 26 | 4 | PASS |
+| STAGE-7-W3-P01 | Stage 7 | 3 | 7×8 | 7 | chain-protect | 703017 | 25 | 31 | 4 | PASS |
+| STAGE-7-W3-P02 | Stage 7 | 3 | 7×8 | 7 | chain-protect | 703034 | 25 | 31 | 4 | PASS |
+| STAGE-7-W3-P03 | Stage 7 | 3 | 7×8 | 7 | chain-protect | 703051 | 26 | 30 | 4 | PASS |
+| STAGE-7-W4-P01 | Stage 7 | 4 | 7×8 | 7 | chain-protect | 704017 | 25 | 31 | 4 | PASS |
+| STAGE-7-W4-P02 | Stage 7 | 4 | 7×8 | 7 | chain-protect | 704034 | 25 | 31 | 4 | PASS |
+| STAGE-7-W4-P03 | Stage 7 | 4 | 7×8 | 7 | chain-protect | 704051 | 26 | 30 | 4 | PASS |
+| STAGE-8-W1-P01 | Stage 8 | 1 | 7×8 | 7 | chain-protect | 801017 | 25 | 31 | 4 | PASS |
+| STAGE-8-W1-P02 | Stage 8 | 1 | 7×8 | 7 | chain-protect | 801034 | 25 | 31 | 4 | PASS |
+| STAGE-8-W2-P01 | Stage 8 | 2 | 7×9 | 8 | chain-protect | 802017 | 28 | 35 | 5 | PASS |
+| STAGE-8-W2-P02 | Stage 8 | 2 | 7×9 | 8 | chain-protect | 802034 | 28 | 35 | 5 | PASS |
+| STAGE-8-W3-P01 | Stage 8 | 3 | 7×9 | 8 | chain-protect | 803017 | 28 | 35 | 5 | PASS |
+| STAGE-8-W3-P02 | Stage 8 | 3 | 7×9 | 8 | chain-protect | 803034 | 28 | 35 | 5 | PASS |
+| STAGE-8-W4-P01 | Stage 8 | 4 | 7×9 | 8 | chain-protect | 804017 | 28 | 35 | 5 | PASS |
+| STAGE-8-W4-P02 | Stage 8 | 4 | 7×9 | 8 | chain-protect | 804034 | 28 | 35 | 5 | PASS |
+| FINAL-W1-P01 | Final | 1 | 7×9 | 8 | chain-protect | 901017 | 28 | 35 | 5 | PASS |
+| FINAL-W2-P01 | Final | 2 | 7×9 | 8 | chain-protect | 902017 | 28 | 35 | 5 | PASS |
+| FINAL-W3-P01 | Final | 3 | 7×9 | 8 | chain-protect | 903017 | 28 | 35 | 5 | PASS |
+| FINAL-W4-P01 | Final | 4 | 7×9 | 8 | chain-protect | 904017 | 28 | 35 | 5 | PASS |

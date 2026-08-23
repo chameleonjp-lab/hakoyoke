@@ -1,10 +1,12 @@
 # CUBIC ORDEAL — Build Memory
 
+> **履歴資料:** 初期の設計判断を保存した文書です。現行構成と検証状況は[CURRENT_STATE.md](./CURRENT_STATE.md)を優先してください。
+
 ## Research decisions
 
 - 参考作品の公開説明から、床印を置いて接近物を捕獲する時空間パズル、通常・有利・禁止の3区分、3×3範囲処理、足場損失、完全攻略と回転数の概念だけを抽象化した。
 - 固有名詞、ロゴ、画面、楽曲、モデル、配置、攻略例、評価名は使わない。評価は**MIND INDEX**とする。
-- 詳細はプロジェクト外の`/home/ubuntu/cubic-ordeal-research.md`に記録している。
+- 公開規則の調査メモは`REFERENCE_RULES_RESEARCH.md`に保存している。
 
 ## Technical decisions
 
@@ -17,4 +19,3 @@
 
 - Obsidian Observatory。中心は盤面、情報は画面端、軽いUIアニメーション、重いゲーム内アニメーション。
 - 通常: 石灰色の粗い石、VEIL: エメラルド線、VOID: 黒曜石とマゼンタ亀裂。色だけでなく材質と記号で識別する。
-
