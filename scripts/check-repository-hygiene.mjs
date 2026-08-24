@@ -98,9 +98,9 @@ if (issues.length > 0) {
   throw new Error(
     [
       "Repository hygiene check failed:",
-      ...issues.map((issue) => `- ${issue}`),
+      ...issues.map(issue => `- ${issue}`),
       "Keep local credentials and generated scaffold snapshots outside Git.",
-    ].join("\n"),
+    ].join("\n")
   );
 }
 
