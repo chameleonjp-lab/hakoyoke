@@ -3,7 +3,11 @@ import path from "node:path";
 
 const REPOSITORY_ROOT = path.resolve(import.meta.dirname, "..");
 const FORBIDDEN_PATHS = new Set([".project-config.json", "template.json"]);
-const SAFE_ENV_EXAMPLES = new Set([".env.example", ".env.sample", ".env.template"]);
+const SAFE_ENV_EXAMPLES = new Set([
+  ".env.example",
+  ".env.sample",
+  ".env.template",
+]);
 const FORBIDDEN_CREDENTIAL_FILES = new Set([
   ".netrc",
   ".npmrc",
@@ -66,11 +70,13 @@ const SECRET_RULES = [
   },
   {
     name: "embedded JSON Web Token",
-    pattern: /\beyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/,
+    pattern:
+      /\beyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/,
   },
   {
     name: "database URL containing a password",
-    pattern: /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^:\s/@]+:[^@\s/]+@/i,
+    pattern:
+      /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^:\s/@]+:[^@\s/]+@/i,
   },
   {
     name: "literal bearer credential",
@@ -92,9 +98,9 @@ if (issues.length > 0) {
   throw new Error(
     [
       "Repository hygiene check failed:",
-      ...issues.map(issue => `- ${issue}`),
+      ...issues.map((issue) => `- ${issue}`),
       "Keep local credentials and generated scaffold snapshots outside Git.",
-    ].join("\n")
+    ].join("\n"),
   );
 }
 
