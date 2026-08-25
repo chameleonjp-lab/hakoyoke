@@ -20,12 +20,6 @@ export interface SolutionSimulationResult {
   regeneratedAreaAnchors: number;
 }
 
-const ACTION_PRIORITY: Record<SolutionStep["action"], number> = {
-  capture: 0,
-  mark: 1,
-  area: 2,
-};
-
 export function simulatePuzzleSolution(
   puzzle: PuzzleDescriptor
 ): SolutionSimulationResult {
@@ -219,10 +213,9 @@ export function deriveDirectSolution(
 }
 
 function compareSteps(a: SolutionStep, b: SolutionStep): number {
-  return (
-    a.rotation - b.rotation ||
-    ACTION_PRIORITY[a.action] - ACTION_PRIORITY[b.action]
-  );
+  // The authored order is meaningful when several actions share one landing tick.
+  // This lets a direct solution mark/capture multiple same-row cubes sequentially.
+  return a.rotation - b.rotation;
 }
 
 function failure(
