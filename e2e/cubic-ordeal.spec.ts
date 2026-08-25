@@ -376,3 +376,21 @@ test("RUM観測面が初期ロード・3Dランタイム・初回フレームの
     /\d+ms/
   );
 });
+
+
+test("壊れたパズルアーカイブは開始前に安全に停止する", async ({ page }) => {
+  await page.route("**/data/puzzles.json", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([null]),
+    })
+  );
+  await page.goto("/?demo");
+
+  await expect(page.getByRole("alert")).toContainText(
+    "RENDERER // INITIALIZATION FAILED"
+  );
+  await expect(page.getByRole("button", { name: "RETRY" })).toBeVisible();
+  await expect(page.getByText("CUBIC", { exact: false })).toBeVisible();
+});
