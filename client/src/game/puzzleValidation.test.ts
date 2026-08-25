@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  parsePuzzleDescriptor,
-  validatePuzzle,
-} from "./puzzleValidation";
+import { parsePuzzleDescriptor, validatePuzzle } from "./puzzleValidation";
 import type { PuzzleDescriptor } from "./types";
 
 function customDescriptor(): PuzzleDescriptor {
@@ -48,31 +45,42 @@ describe("custom puzzle descriptor boundary", () => {
   });
 
   it.each([
-    ["duplicate layout positions", {
-      ...customDescriptor(),
-      layout: [
-        { x: 1, z: 0, type: "normal" as const },
-        { x: 1, z: 0, type: "veil" as const },
-      ],
-    }],
-    ["unknown cube type", {
-      ...customDescriptor(),
-      layout: [{ x: 1, z: 0, type: "corrupt" as never }],
-    }],
-    ["missing validation metadata", {
-      ...customDescriptor(),
-      validation: undefined,
-    }],
+    [
+      "duplicate layout positions",
+      {
+        ...customDescriptor(),
+        layout: [
+          { x: 1, z: 0, type: "normal" as const },
+          { x: 1, z: 0, type: "veil" as const },
+        ],
+      },
+    ],
+    [
+      "unknown cube type",
+      {
+        ...customDescriptor(),
+        layout: [{ x: 1, z: 0, type: "corrupt" as never }],
+      },
+    ],
+    [
+      "missing validation metadata",
+      {
+        ...customDescriptor(),
+        validation: undefined,
+      },
+    ],
   ])("rejects %s", (_reason, descriptor) => {
     expect(parsePuzzleDescriptor(descriptor).valid).toBe(false);
   });
 
   it("turns a malformed runtime value into a validation result instead of throwing", () => {
-    expect(validatePuzzle({ layout: [] } as unknown as PuzzleDescriptor)).toEqual(
+    expect(
+      validatePuzzle({ layout: [] } as unknown as PuzzleDescriptor),
+    ).toEqual(
       expect.objectContaining({
         valid: false,
         reason: expect.any(String),
-      })
+      }),
     );
   });
 });
