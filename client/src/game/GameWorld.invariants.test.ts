@@ -27,7 +27,7 @@ class TestEventTarget {
   }
 
   dispatchEvent(event: { type: string; detail?: unknown }): boolean {
-    this.listeners.get(event.type)?.forEach((listener) => listener(event));
+    this.listeners.get(event.type)?.forEach(listener => listener(event));
     return true;
   }
 }
@@ -129,7 +129,7 @@ describe("GameWorld state invariants", () => {
     const world = new GameWorld(
       [puzzle()],
       () => undefined,
-      () => undefined,
+      () => undefined
     );
     const state = internals(world);
 
@@ -156,7 +156,7 @@ describe("GameWorld state invariants", () => {
     const world = new GameWorld(
       [puzzle()],
       () => undefined,
-      () => undefined,
+      () => undefined
     );
     const state = internals(world);
 
@@ -178,7 +178,7 @@ describe("GameWorld state invariants", () => {
     const world = new GameWorld(
       [puzzle()],
       () => undefined,
-      () => undefined,
+      () => undefined
     );
     const state = internals(world);
     state.mode = "CAMPAIGN";
@@ -208,7 +208,7 @@ describe("GameWorld state invariants", () => {
     const world = new GameWorld(
       [puzzle()],
       () => undefined,
-      () => undefined,
+      () => undefined
     );
     const state = internals(world);
     state.mode = "CAMPAIGN";
@@ -225,7 +225,7 @@ describe("GameWorld state invariants", () => {
     expect(state.phase).toBe("FINAL_RESULT");
     expect(state.stats.score).toBe(12000);
     const saved = JSON.parse(
-      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}",
+      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}"
     );
     expect(saved.version).toBe(4);
     expect(saved.snapshot.phase).toBe("FINAL_RESULT");
@@ -238,7 +238,7 @@ describe("GameWorld state invariants", () => {
     const restoredWorld = new GameWorld(
       [puzzle()],
       () => undefined,
-      () => undefined,
+      () => undefined
     );
     const restoredState = internals(restoredWorld);
     command({
