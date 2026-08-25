@@ -20,6 +20,12 @@ export interface SolutionSimulationResult {
   regeneratedAreaAnchors: number;
 }
 
+const ACTION_PRIORITY: Record<SolutionStep["action"], number> = {
+  capture: 0,
+  mark: 1,
+  area: 2,
+};
+
 export function simulatePuzzleSolution(
   puzzle: PuzzleDescriptor
 ): SolutionSimulationResult {
@@ -195,27 +201,39 @@ export function deriveDirectSolution(
   puzzle: Pick<PuzzleDescriptor, "id" | "width" | "depth" | "layout">
 ): SolutionStep[] {
   const targetZ = 0;
-  return puzzle.layout
-    .filter(cube => cube.type !== "void")
-    .sort((a, b) => a.z - b.z || a.x - b.x)
-    .flatMap(cube => {
-      const rotation = cube.z - targetZ;
-      return [
-        {
-          rotation: Math.max(0, rotation - 1),
-          action: "mark" as const,
-          x: cube.x,
-          z: targetZ,
-        },
-        { rotation, action: "capture" as const, x: cube.x, z: targetZ },
-      ];
-    });
+  const steps: SolutionStep[] = [];
+  let sequence = 0;
+  for (const cube of puzzle.layout
+    .filter(item => item.type !== "void")
+    .sort((a, b) => a.z - b.z || a.x - b.x)) {
+    const rotation = cube.z - targetZ;
+    steps.push(
+      {
+        rotation: Math.max(0, rotation - 1),
+        action: "mark",
+        x: cube.x,
+        z: targetZ,
+        sequence: sequence++,
+      },
+      {
+        rotation,
+        action: "capture",
+        x: cube.x,
+        z: targetZ,
+        sequence: sequence++,
+      }
+    );
+  }
+  return steps;
 }
 
 function compareSteps(a: SolutionStep, b: SolutionStep): number {
-  // The authored order is meaningful when several actions share one landing tick.
-  // This lets a direct solution mark/capture multiple same-row cubes sequentially.
-  return a.rotation - b.rotation;
+  return (
+    a.rotation - b.rotation ||
+    (a.sequence !== undefined && b.sequence !== undefined
+      ? a.sequence - b.sequence
+      : ACTION_PRIORITY[a.action] - ACTION_PRIORITY[b.action])
+  );
 }
 
 function failure(
