@@ -7,11 +7,7 @@ class TestEventTarget {
   hidden = false;
   private readonly listeners = new Map<string, Set<Listener>>();
 
-  addEventListener(
-    type: string,
-    listener: Listener,
-    _options?: unknown
-  ): void {
+  addEventListener(type: string, listener: Listener, _options?: unknown): void {
     const bucket = this.listeners.get(type) ?? new Set<Listener>();
     bucket.add(listener);
     this.listeners.set(type, bucket);
