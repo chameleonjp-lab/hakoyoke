@@ -997,3 +997,294 @@ function PracticeTools() {
 function DebugPanel({ snapshot }: { snapshot: GameSnapshot }) {
   return (
     <aside className="debug-panel">
+      <span>
+        DEBUG // GRID {snapshot.player.x.toFixed(1)}:
+        {snapshot.player.z.toFixed(1)}
+      </span>
+      <span>STATE {snapshot.phase}</span>
+      <div>
+        <button onClick={() => command({ type: "step-roll" })}>STEP</button>
+        <button onClick={() => command({ type: "auto-solve" })}>AUTO</button>
+        <button
+          onClick={() =>
+            command({
+              type: "debug-platform",
+              rows: snapshot.stats.platformRows + 1,
+            })
+          }
+        >
+          +ROW
+        </button>
+      </div>
+    </aside>
+  );
+}
+function PauseOverlay({
+  snapshot,
+  onResume,
+  onQuit,
+}: {
+  snapshot: GameSnapshot;
+  onResume(): void;
+  onQuit(): void;
+}) {
+  return (
+    <div className="overlay-panel">
+      <span className="eyebrow">ORDEAL SUSPENDED</span>
+      <h2>PAUSED</h2>
+      <p>キューブ回転、判定、経過時間は停止しています。</p>
+      <Action label="RESUME" note="ESC" onClick={onResume} primary />
+      <Action label="QUIT TO MENU" note="ABORT RUN" onClick={onQuit} />
+    </div>
+  );
+}
+function ResultOverlay({
+  snapshot,
+  onContinue,
+}: {
+  snapshot: GameSnapshot;
+  onContinue(): void;
+}) {
+  const final = snapshot.phase === "FINAL_RESULT";
+  const gameOver = snapshot.phase === "GAME_OVER";
+  return (
+    <div className="overlay-panel result">
+      <span className="eyebrow">
+        {gameOver
+          ? "CONTACT LOST"
+          : final
+            ? "OBSERVATION COMPLETE"
+            : "ORDEAL ANALYSIS"}
+      </span>
+      <h2>{snapshot.banner}</h2>
+      <div className="result-grid">
+        <Metric
+          label="SCORE"
+          value={String(snapshot.stats.score).padStart(6, "0")}
+        />
+        <Metric
+          label="MIND INDEX"
+          value={String(
+            calculateMindIndex(
+              snapshot.stats.score,
+              snapshot.stage,
+              snapshot.stats.platformRows,
+              snapshot.stats.misses
+            )
+          ).padStart(3, "0")}
+        />
+        <Metric label="ROWS" value={String(snapshot.stats.platformRows)} />
+      </div>
+      <p>
+        {gameOver
+          ? "足場が必要な奥行を失いました。別の進路を試してください。"
+          : final
+            ? "すべての観測対象を通過しました。"
+            : "次の解析結果を待機しています。"}
+      </p>
+      <Action
+        label={final || gameOver ? "RETURN TO MENU" : "CONTINUE"}
+        note="ENTER"
+        onClick={
+          final || gameOver ? onContinue : () => command({ type: "continue" })
+        }
+        primary
+      />
+    </div>
+  );
+}
+
+function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
+  const [stick, setStick] = useState<{
+    originX: number;
+    originY: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
+  const activePointer = useRef<number | null>(null);
+  const activeFastPointer = useRef<number | null>(null);
+  const resetInput = useCallback(() => {
+    activePointer.current = null;
+    activeFastPointer.current = null;
+    setStick(null);
+    command({ type: "touch-move", x: 0, z: 0 });
+    command({ type: "touch-fast", active: false });
+  }, []);
+  const previousPhase = useRef(snapshot.phase);
+  useEffect(() => {
+    if (previousPhase.current !== snapshot.phase) resetInput();
+    previousPhase.current = snapshot.phase;
+  }, [resetInput, snapshot.phase]);
+  useEffect(() => () => resetInput(), [resetInput]);
+  const markHasTarget = Boolean(
+    snapshot.marker &&
+      snapshot.cubes.some(
+        cube =>
+          cube.x === snapshot.marker?.x &&
+          cube.z === snapshot.marker?.z &&
+          !cube.captured &&
+          !cube.falling
+      )
+  );
+  const markAction = !snapshot.marker
+    ? "MARK"
+    : markHasTarget
+      ? "CAPTURE"
+      : "CLEAR";
+  useEffect(() => {
+    const updateBasis = (event: Event) => {
+      basis.current = (event as CustomEvent<typeof basis.current>).detail;
+    };
+    window.addEventListener("cubic:camera-basis", updateBasis);
+    return () => window.removeEventListener("cubic:camera-basis", updateBasis);
+  }, []);
+  const begin = (event: PointerEvent<HTMLDivElement>) => {
+    if (activePointer.current !== null || !event.isPrimary) return;
+    activePointer.current = event.pointerId;
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      /* synthetic test events */
+    }
+    setStick({ originX: event.clientX, originY: event.clientY, x: 0, y: 0 });
+    command({ type: "touch-move", x: 0, z: 0 });
+  };
+  const update = (event: PointerEvent<HTMLDivElement>) => {
+    if (activePointer.current !== event.pointerId) return;
+    setStick(origin => {
+      if (!origin) return null;
+      const dx = Math.max(-52, Math.min(52, event.clientX - origin.originX));
+      const dy = Math.max(-52, Math.min(52, event.clientY - origin.originY));
+      const next = { ...origin, x: dx / 52, y: dy / 52 };
+      const screenForward = -next.y;
+      command({
+        type: "touch-move",
+        x:
+          basis.current.rightX * next.x +
+          basis.current.forwardX * screenForward,
+        z:
+          basis.current.rightZ * next.x +
+          basis.current.forwardZ * screenForward,
+      });
+      return next;
+    });
+  };
+  const release = (event: PointerEvent<HTMLDivElement>) => {
+    if (activePointer.current !== event.pointerId) return;
+    resetInput();
+  };
+  const pressAction = (
+    event: PointerEvent<HTMLButtonElement>,
+    action: "mark" | "area"
+  ) => {
+    if (!event.isPrimary) return;
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      /* synthetic test events */
+    }
+    command({ type: "touch-press", action });
+  };
+  const keyAction = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    action: "mark" | "area"
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      command({ type: "touch-press", action });
+    }
+  };
+  const beginFast = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!event.isPrimary || activeFastPointer.current !== null) return;
+    activeFastPointer.current = event.pointerId;
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      /* synthetic test events */
+    }
+    command({ type: "touch-fast", active: true });
+  };
+  const endFast = (event: PointerEvent<HTMLButtonElement>) => {
+    if (activeFastPointer.current !== event.pointerId) return;
+    activeFastPointer.current = null;
+    event.preventDefault();
+    event.stopPropagation();
+    command({ type: "touch-fast", active: false });
+  };
+  return (
+    <div
+      className="touch-controls"
+      aria-label="タッチ操作"
+      onContextMenu={event => event.preventDefault()}
+    >
+      <div
+        className="touch-zone"
+        aria-label="画面下半分のフローティング移動キー"
+        onPointerDown={begin}
+        onPointerMove={update}
+        onPointerUp={release}
+        onPointerCancel={release}
+        onLostPointerCapture={release}
+      >
+        {stick && (
+          <div
+            className="touch-stick floating"
+            data-origin={`${Math.round(stick.originX)}:${Math.round(stick.originY)}`}
+            style={{ left: stick.originX, top: stick.originY }}
+          >
+            <div
+              className="touch-knob"
+              style={{
+                transform: `translate(${stick.x * 35}px, ${stick.y * 35}px)`,
+              }}
+            />
+          </div>
+        )}
+        <span className="touch-zone-label">MOVE // TAP ORIGIN</span>
+      </div>
+      <div className="touch-actions">
+        <button
+          className="area"
+          aria-label="AREA"
+          disabled={!snapshot.areas.length}
+          onPointerDown={event => pressAction(event, "area")}
+          onKeyDown={event => keyAction(event, "area")}
+        >
+          AREA
+        </button>
+        <button
+          className="fast"
+          aria-label="FAST"
+          onPointerDown={beginFast}
+          onPointerUp={endFast}
+          onPointerCancel={endFast}
+          onPointerLeave={endFast}
+          onLostPointerCapture={endFast}
+        >
+          FAST
+        </button>
+        <button
+          className="mark"
+          aria-label={markAction}
+          onPointerDown={event => pressAction(event, "mark")}
+          onKeyDown={event => keyAction(event, "mark")}
+        >
+          {markAction}
+          <br />
+          <span>
+            {markAction === "MARK"
+              ? "SET TRAP"
+              : markAction === "CAPTURE"
+                ? "ON SIGNAL"
+                : "REMOVE TRAP"}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+}
