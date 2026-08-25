@@ -142,7 +142,11 @@ export function parsePuzzleDescriptor(
   )
     return parseFailure("validation metadata is invalid");
 
-  return { valid: true, reason: "ok", puzzle: value as unknown as PuzzleDescriptor };
+  return {
+    valid: true,
+    reason: "ok",
+    puzzle: value as unknown as PuzzleDescriptor,
+  };
 }
 
 export function validatePuzzle(
