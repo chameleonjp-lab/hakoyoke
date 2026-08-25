@@ -57,35 +57,41 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       }
     ],
     "validation": {
@@ -156,29 +162,34 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 3
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       }
     ],
     "validation": {
@@ -249,35 +260,41 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       }
     ],
     "validation": {
@@ -348,17 +365,20 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       }
     ],
     "validation": {
@@ -429,29 +449,34 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 3
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       }
     ],
     "validation": {
@@ -522,35 +547,41 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       }
     ],
     "validation": {
@@ -641,39 +672,46 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -764,33 +802,39 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       }
     ],
     "validation": {
@@ -881,39 +925,46 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -1024,21 +1075,25 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       }
     ],
     "validation": {
@@ -1149,33 +1204,39 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       }
     ],
     "validation": {
@@ -1286,39 +1347,46 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -1449,43 +1517,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -1616,43 +1692,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -1783,37 +1867,44 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -1944,43 +2035,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -2111,43 +2210,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -2278,37 +2385,44 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -2459,43 +2573,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -2646,43 +2768,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -2833,37 +2963,44 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -3014,43 +3151,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -3201,43 +3346,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -3388,37 +3541,44 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -3549,39 +3709,46 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -3712,33 +3879,39 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       }
     ],
     "validation": {
@@ -3869,39 +4042,46 @@
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -4057,43 +4237,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -4249,37 +4437,44 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -4435,43 +4630,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -4652,43 +4855,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -4869,37 +5080,44 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -5080,43 +5298,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -5297,43 +5523,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -5514,37 +5748,44 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -5725,43 +5966,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -5967,47 +6216,56 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -6213,41 +6471,49 @@
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -6453,47 +6719,56 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -6699,41 +6974,49 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -6964,47 +7247,56 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -7235,41 +7527,49 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -7500,47 +7800,56 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -7771,41 +8080,49 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -8016,43 +8333,51 @@
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -8263,55 +8588,65 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -8522,37 +8857,44 @@
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -8763,43 +9105,51 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -9010,55 +9360,65 @@
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 9,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -9269,37 +9629,44 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       }
     ],
     "validation": {
@@ -9540,59 +9907,70 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       }
     ],
     "validation": {
@@ -9833,47 +10211,56 @@
         "rotation": 4,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -10114,53 +10501,63 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -10401,59 +10798,70 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       }
     ],
     "validation": {
@@ -10694,47 +11102,56 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -10975,53 +11392,63 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -11292,47 +11719,56 @@
         "rotation": 4,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -11603,53 +12039,63 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -11920,47 +12366,56 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -12231,53 +12686,63 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -12578,63 +13043,75 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -12935,45 +13412,54 @@
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -13274,63 +13760,75 @@
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -13631,45 +14129,54 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -13945,59 +14452,70 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       }
     ],
     "validation": {
@@ -14273,41 +14791,49 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -14583,41 +15109,49 @@
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -14893,59 +15427,70 @@
         "rotation": 4,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       }
     ],
     "validation": {
@@ -15221,53 +15766,63 @@
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -15543,53 +16098,63 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -15900,47 +16465,56 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -16251,41 +16825,49 @@
         "rotation": 4,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -16596,53 +17178,63 @@
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 9,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -16953,59 +17545,70 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       }
     ],
     "validation": {
@@ -17316,53 +17919,63 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 9,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -17673,41 +18286,49 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 6
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       }
     ],
     "validation": {
@@ -18018,59 +18639,70 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       }
     ],
     "validation": {
@@ -18381,47 +19013,56 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 7
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       }
     ],
     "validation": {
@@ -18767,63 +19408,75 @@
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 13,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 14,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -19169,63 +19822,75 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -19571,51 +20236,61 @@
         "rotation": 4,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -19961,51 +20636,61 @@
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -20351,63 +21036,75 @@
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 13,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 14,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -20753,63 +21450,75 @@
         "rotation": 4,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 7,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 8,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -21155,63 +21864,75 @@
         "rotation": 5,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -21557,63 +22278,75 @@
         "rotation": 4,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 5,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
@@ -21959,51 +22692,61 @@
         "rotation": 5,
         "action": "mark",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 1,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 6,
         "action": "mark",
         "x": 2,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 10,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 9,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 10,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       }
     ],
     "validation": {
@@ -22349,63 +23092,75 @@
         "rotation": 4,
         "action": "mark",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 0
       },
       {
         "rotation": 5,
         "action": "capture",
         "x": 3,
-        "z": 0
+        "z": 0,
+        "sequence": 1
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 4,
-        "z": 0
+        "z": 0,
+        "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area"
+        "action": "area",
+        "sequence": 3
       },
       {
         "rotation": 6,
-        "action": "area"
+        "action": "area",
+        "sequence": 4
       },
       {
         "rotation": 7,
-        "action": "area"
+        "action": "area",
+        "sequence": 5
       },
       {
         "rotation": 8,
-        "action": "area"
+        "action": "area",
+        "sequence": 6
       },
       {
         "rotation": 9,
-        "action": "area"
+        "action": "area",
+        "sequence": 7
       },
       {
         "rotation": 11,
         "action": "mark",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 8
       },
       {
         "rotation": 12,
         "action": "capture",
         "x": 0,
-        "z": 0
+        "z": 0,
+        "sequence": 9
       },
       {
         "rotation": 5,
         "action": "mark",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 10
       },
       {
         "rotation": 6,
         "action": "capture",
         "x": 6,
-        "z": 0
+        "z": 0,
+        "sequence": 11
       }
     ],
     "validation": {
