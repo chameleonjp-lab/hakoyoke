@@ -16,8 +16,8 @@ function customDescriptor(): PuzzleDescriptor {
     seed: 1,
     layout: [{ x: 1, z: 0, type: "normal" }],
     solution: [
-      { rotation: 0, action: "mark", x: 1, z: 0 },
-      { rotation: 0, action: "capture", x: 1, z: 0 },
+      { rotation: 0, action: "mark", x: 1, z: 0, sequence: 0 },
+      { rotation: 0, action: "capture", x: 1, z: 0, sequence: 1 },
     ],
     validation: {
       valid: false,
