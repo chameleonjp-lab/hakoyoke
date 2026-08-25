@@ -1048,11 +1048,18 @@ h2 {
     justify-content: space-between;
     padding: 16px 23px calc(14px + env(safe-area-inset-bottom));
     pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
     background: linear-gradient(
       180deg,
       rgba(2, 8, 15, 0.06),
       rgba(2, 8, 15, 0.94) 30%
     );
+  }
+  .touch-zone {
+    touch-action: none;
   }
   .touch-stick {
     position: relative;

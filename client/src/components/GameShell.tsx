@@ -1103,8 +1103,10 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   } | null>(null);
   const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
   const activePointer = useRef<number | null>(null);
+  const activeFastPointer = useRef<number | null>(null);
   const resetInput = useCallback(() => {
     activePointer.current = null;
+    activeFastPointer.current = null;
     setStick(null);
     command({ type: "touch-move", x: 0, z: 0 });
     command({ type: "touch-fast", active: false });
@@ -1115,6 +1117,15 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     previousPhase.current = snapshot.phase;
   }, [resetInput, snapshot.phase]);
   useEffect(() => () => resetInput(), [resetInput]);
+  useEffect(() => {
+    const resetOnFocusLoss = () => resetInput();
+    window.addEventListener("blur", resetOnFocusLoss);
+    document.addEventListener("visibilitychange", resetOnFocusLoss);
+    return () => {
+      window.removeEventListener("blur", resetOnFocusLoss);
+      document.removeEventListener("visibilitychange", resetOnFocusLoss);
+    };
+  }, [resetInput]);
   const markHasTarget = Boolean(
     snapshot.marker &&
       snapshot.cubes.some(
@@ -1176,6 +1187,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     event: PointerEvent<HTMLButtonElement>,
     action: "mark" | "area"
   ) => {
+    if (!event.isPrimary) return;
     event.preventDefault();
     event.stopPropagation();
     try {
@@ -1195,6 +1207,8 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     }
   };
   const beginFast = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!event.isPrimary || activeFastPointer.current !== null) return;
+    activeFastPointer.current = event.pointerId;
     event.preventDefault();
     event.stopPropagation();
     try {
@@ -1205,12 +1219,18 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     command({ type: "touch-fast", active: true });
   };
   const endFast = (event: PointerEvent<HTMLButtonElement>) => {
+    if (activeFastPointer.current !== event.pointerId) return;
+    activeFastPointer.current = null;
     event.preventDefault();
     event.stopPropagation();
     command({ type: "touch-fast", active: false });
   };
   return (
-    <div className="touch-controls" aria-label="タッチ操作">
+    <div
+      className="touch-controls"
+      aria-label="タッチ操作"
+      onContextMenu={event => event.preventDefault()}
+    >
       <div
         className="touch-zone"
         aria-label="画面下半分のフローティング移動キー"
