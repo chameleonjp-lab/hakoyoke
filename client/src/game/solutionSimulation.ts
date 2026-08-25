@@ -203,13 +203,18 @@ export function deriveDirectSolution(
   const targetZ = 0;
   const steps: SolutionStep[] = [];
   let sequence = 0;
+  let previousRow: number | null = null;
+  let rowIndex = 0;
   for (const cube of puzzle.layout
     .filter(item => item.type !== "void")
     .sort((a, b) => a.z - b.z || a.x - b.x)) {
+    if (cube.z !== previousRow) rowIndex = 0;
     const rotation = cube.z - targetZ;
+    const markRotation =
+      rowIndex === 0 ? Math.max(0, rotation - 1) : rotation;
     steps.push(
       {
-        rotation: Math.max(0, rotation - 1),
+        rotation: markRotation,
         action: "mark",
         x: cube.x,
         z: targetZ,
@@ -223,6 +228,8 @@ export function deriveDirectSolution(
         sequence: sequence++,
       }
     );
+    previousRow = cube.z;
+    rowIndex += 1;
   }
   return steps;
 }
