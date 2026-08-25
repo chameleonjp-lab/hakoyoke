@@ -201,27 +201,44 @@ export function deriveDirectSolution(
   puzzle: Pick<PuzzleDescriptor, "id" | "width" | "depth" | "layout">
 ): SolutionStep[] {
   const targetZ = 0;
-  return puzzle.layout
-    .filter(cube => cube.type !== "void")
-    .sort((a, b) => a.z - b.z || a.x - b.x)
-    .flatMap(cube => {
-      const rotation = cube.z - targetZ;
-      return [
-        {
-          rotation: Math.max(0, rotation - 1),
-          action: "mark" as const,
-          x: cube.x,
-          z: targetZ,
-        },
-        { rotation, action: "capture" as const, x: cube.x, z: targetZ },
-      ];
-    });
+  const steps: SolutionStep[] = [];
+  let sequence = 0;
+  let previousRow: number | null = null;
+  let rowIndex = 0;
+  for (const cube of puzzle.layout
+    .filter(item => item.type !== "void")
+    .sort((a, b) => a.z - b.z || a.x - b.x)) {
+    if (cube.z !== previousRow) rowIndex = 0;
+    const rotation = cube.z - targetZ;
+    const markRotation = rowIndex === 0 ? Math.max(0, rotation - 1) : rotation;
+    steps.push(
+      {
+        rotation: markRotation,
+        action: "mark",
+        x: cube.x,
+        z: targetZ,
+        sequence: sequence++,
+      },
+      {
+        rotation,
+        action: "capture",
+        x: cube.x,
+        z: targetZ,
+        sequence: sequence++,
+      }
+    );
+    previousRow = cube.z;
+    rowIndex += 1;
+  }
+  return steps;
 }
 
 function compareSteps(a: SolutionStep, b: SolutionStep): number {
   return (
     a.rotation - b.rotation ||
-    ACTION_PRIORITY[a.action] - ACTION_PRIORITY[b.action]
+    (a.sequence !== undefined && b.sequence !== undefined
+      ? a.sequence - b.sequence
+      : ACTION_PRIORITY[a.action] - ACTION_PRIORITY[b.action])
   );
 }
 

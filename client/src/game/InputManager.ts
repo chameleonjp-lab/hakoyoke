@@ -73,11 +73,11 @@ export class InputManager {
       candidate => candidate?.connected
     );
     const padX =
-      pad && Math.abs(pad.axes[0] ?? 0) > 0.18 ? -(pad.axes[0] ?? 0) : 0;
+      pad && Math.abs(pad.axes[0] ?? 0) > 0.18 ? (pad.axes[0] ?? 0) : 0;
     const padZ =
       pad && Math.abs(pad.axes[1] ?? 0) > 0.18 ? -(pad.axes[1] ?? 0) : 0;
     const dpadX =
-      (pad?.buttons[14]?.pressed ? 1 : 0) - (pad?.buttons[15]?.pressed ? 1 : 0);
+      (pad?.buttons[15]?.pressed ? 1 : 0) - (pad?.buttons[14]?.pressed ? 1 : 0);
     const dpadZ =
       (pad?.buttons[12]?.pressed ? 1 : 0) - (pad?.buttons[13]?.pressed ? 1 : 0);
     if (pad)
@@ -87,8 +87,8 @@ export class InputManager {
         this.previousButtons[index] = button.pressed;
       });
     const moveX =
-      (this.down.has("a") || this.down.has("arrowleft") ? 1 : 0) -
-      (this.down.has("d") || this.down.has("arrowright") ? 1 : 0) +
+      (this.down.has("d") || this.down.has("arrowright") ? 1 : 0) -
+      (this.down.has("a") || this.down.has("arrowleft") ? 1 : 0) +
       this.touchX +
       padX +
       dpadX;

@@ -204,6 +204,27 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
+  it("rejects malformed custom puzzles before entering a run", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const invalid = {
+      ...puzzle(),
+      layout: [{ x: 99, z: 0, type: "normal" as const }],
+    };
+
+    command({ type: "load-custom", puzzle: invalid });
+
+    const state = internals(world);
+    expect(state.phase).toBe("MENU");
+    expect((world as unknown as { banner: string }).banner).toContain(
+      "CUSTOM INVALID"
+    );
+    world.dispose();
+  });
+
   it("persists FINAL_RESULT after the final bonus and makes it idempotent", () => {
     const world = new GameWorld(
       [puzzle()],
