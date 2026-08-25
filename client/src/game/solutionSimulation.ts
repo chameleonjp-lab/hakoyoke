@@ -210,8 +210,7 @@ export function deriveDirectSolution(
     .sort((a, b) => a.z - b.z || a.x - b.x)) {
     if (cube.z !== previousRow) rowIndex = 0;
     const rotation = cube.z - targetZ;
-    const markRotation =
-      rowIndex === 0 ? Math.max(0, rotation - 1) : rotation;
+    const markRotation = rowIndex === 0 ? Math.max(0, rotation - 1) : rotation;
     steps.push(
       {
         rotation: markRotation,
