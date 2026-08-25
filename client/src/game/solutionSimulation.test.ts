@@ -7,7 +7,7 @@ import type { PuzzleDescriptor } from "./types";
 
 function puzzle(
   layout: PuzzleDescriptor["layout"],
-  requiredRolls = 0,
+  requiredRolls = 0
 ): PuzzleDescriptor {
   const base = {
     id: "SIM",
@@ -24,8 +24,8 @@ function puzzle(
   };
   const solution = deriveDirectSolution(base);
   const captures = solution
-    .filter((step) => step.action === "capture")
-    .map((step) => step.rotation);
+    .filter(step => step.action === "capture")
+    .map(step => step.rotation);
   return {
     ...base,
     requiredRolls:
@@ -42,8 +42,8 @@ describe("headless registered solution replay", () => {
         puzzle([
           { x: 1, z: 1, type: "normal" },
           { x: 3, z: 3, type: "normal" },
-        ]),
-      ).valid,
+        ])
+      ).valid
     ).toBe(true));
 
   it("keeps authored mark/capture order for multiple cubes in one row", () =>
@@ -52,8 +52,8 @@ describe("headless registered solution replay", () => {
         puzzle([
           { x: 1, z: 1, type: "normal" },
           { x: 2, z: 1, type: "normal" },
-        ]),
-      ).valid,
+        ])
+      ).valid
     ).toBe(true));
   it("rejects a solution whose declared required rolls do not match replay", () =>
     expect(
@@ -63,9 +63,9 @@ describe("headless registered solution replay", () => {
             { x: 1, z: 1, type: "normal" },
             { x: 3, z: 3, type: "normal" },
           ],
-          9,
-        ),
-      ).reason,
+          9
+        )
+      ).reason
     ).toBe("requiredRolls differs from replay"));
   it("rejects a direct schedule that asks one player to cross too far without time", () =>
     expect(
@@ -82,6 +82,6 @@ describe("headless registered solution replay", () => {
           { rotation: 1, action: "capture", x: 7, z: 0 },
         ],
         requiredRolls: 0,
-      }).valid,
+      }).valid
     ).toBe(false));
 });
