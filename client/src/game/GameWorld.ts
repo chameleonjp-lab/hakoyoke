@@ -28,7 +28,7 @@ import {
 const FIXED_STEP = 1 / 30;
 const STORAGE_KEY = "cubic-ordeal-campaign-v1";
 const HIGH_SCORE_KEY = "cubic-ordeal-highscore-v1";
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
 
 export type CubicCommand =
   | {
@@ -59,6 +59,19 @@ interface CaptureOptions {
   batch?: boolean;
 }
 
+const PAUSABLE_PHASES = new Set<GamePhase>([
+  "TUTORIAL",
+  "STAGE_INTRO",
+  "COUNTDOWN",
+  "PLAYING",
+  "CAPTURE_PAUSE",
+  "CRUSHED",
+]);
+const TERMINAL_PHASES = new Set<GamePhase>(["GAME_OVER", "FINAL_RESULT"]);
+
+const isPausablePhase = (phase: GamePhase): boolean =>
+  PAUSABLE_PHASES.has(phase);
+
 export class GameWorld {
   private readonly input = new InputManager();
   private readonly history: GameSnapshot[] = [];
@@ -78,14 +91,15 @@ export class GameWorld {
         "STAGE_INTRO",
       ].includes(this.phase)
     ) {
-      this.phase = "PAUSED";
-      this.banner = "PAUSED // VIEW HIDDEN";
+      this.pauseGame("PAUSED // VIEW HIDDEN");
     }
   };
 
   private accumulator = 0;
   private elapsed = 0;
   private phaseTimer = 0;
+  private pausedFromPhase: GamePhase | null = null;
+  private completionAwardedForPuzzle: string | null = null;
   private rollElapsed = 0;
   private lastCampaignSaveSecond = -1;
   private settleElapsed = 0;
@@ -151,8 +165,7 @@ export class GameWorld {
     const input = this.input.sample(
       this.phase === "PLAYING" || this.phase === "TUTORIAL"
     );
-    if (input.pause && this.phase !== "TITLE" && this.phase !== "MENU")
-      this.togglePause();
+    if (input.pause) this.togglePause();
     if (
       [
         "PAUSED",
@@ -287,9 +300,13 @@ export class GameWorld {
     for (const cube of this.cubes) {
       if (cube.captured || cube.falling) continue;
       Object.assign(cube, advanceOneCell(cube));
-      if (cube.z < 0) this.handleFalling(cube);
+      if (cube.z < 0) {
+        this.handleFalling(cube);
+        if (this.phase === "GAME_OVER") break;
+      }
     }
     this.cubes = this.cubes.filter(cube => !cube.falling && !cube.captured);
+    if (this.phase === "GAME_OVER") return;
     this.resolveIfEmpty();
   }
 
@@ -311,6 +328,7 @@ export class GameWorld {
     this.stats.perfect = false;
     this.phase = "GAME_OVER";
     this.banner = "FALL INTO VOID";
+    this.input.clear();
     this.onSignal("collapse");
   }
 
@@ -437,6 +455,7 @@ export class GameWorld {
   }
 
   private resolveIfEmpty(): void {
+    if (TERMINAL_PHASES.has(this.phase)) return;
     if (
       this.cubes.some(
         cube => !cube.captured && !cube.falling && cube.type !== "void"
@@ -453,8 +472,13 @@ export class GameWorld {
   }
 
   private completePuzzle(): void {
-    if (["PUZZLE_RESULT", "STAGE_RESULT", "FINAL_RESULT"].includes(this.phase))
+    if (
+      TERMINAL_PHASES.has(this.phase) ||
+      ["PUZZLE_RESULT", "STAGE_RESULT", "FINAL_RESULT"].includes(this.phase) ||
+      this.completionAwardedForPuzzle === this.currentPuzzle.id
+    )
       return;
+    this.completionAwardedForPuzzle = this.currentPuzzle.id;
     const allRequiredCaptured =
       this.stats.misses === 0 && this.stats.voidCaptured === 0;
     const rollDiff = this.stats.rotations - this.currentPuzzle.requiredRolls;
@@ -474,6 +498,7 @@ export class GameWorld {
     if (this.mode === "TUTORIAL") this.tutorialStep = 7;
     this.phase = "PUZZLE_RESULT";
     this.phaseTimer = 2.3;
+    this.input.clear();
   }
 
   private losePlatformRow(reason: string, preserveMisses = false): boolean {
@@ -487,6 +512,7 @@ export class GameWorld {
     ) {
       this.phase = "GAME_OVER";
       this.banner = "OBSERVATORY LOST";
+      this.input.clear();
       return true;
     }
     return false;
@@ -513,6 +539,7 @@ export class GameWorld {
   }
 
   private advanceAfterResult(): void {
+    if (TERMINAL_PHASES.has(this.phase)) return;
     if (this.phase === "CRUSHED") {
       const residualMisses = this.stats.misses;
       this.loadPuzzle(this.currentPuzzle, false);
@@ -537,10 +564,13 @@ export class GameWorld {
     const next = this.puzzles[this.puzzleIndex + 1];
     if (!next) {
       this.stats.score += this.stats.platformRows * 1000;
-      this.saveCampaign();
       this.saveHighScore();
       this.phase = "FINAL_RESULT";
       this.banner = `MIND INDEX ${this.mindIndex}`;
+      this.input.clear();
+      // Persist the terminal phase after applying the final bonus. A reload must not
+      // turn the result back into an active run that can award the bonus again.
+      this.saveCampaign();
       return;
     }
 
@@ -617,6 +647,8 @@ export class GameWorld {
     this.rollElapsed = 0;
     this.settleElapsed = 0;
     this.phaseTimer = 0;
+    this.pausedFromPhase = null;
+    this.completionAwardedForPuzzle = null;
     if (this.mode === "PRACTICE") {
       this.history.length = 0;
       this.quickSave = null;
@@ -635,8 +667,17 @@ export class GameWorld {
       if (restored) {
         this.restore(restored);
         this.mode = "CAMPAIGN";
-        this.phase = "PAUSED";
-        this.banner = "CAMPAIGN RESTORED";
+        if (isPausablePhase(this.phase)) {
+          this.pausedFromPhase = this.phase;
+          this.phase = "PAUSED";
+          this.banner = "CAMPAIGN RESTORED";
+        } else if (this.phase === "FINAL_RESULT") {
+          this.banner = "CAMPAIGN COMPLETE";
+        } else if (this.phase === "GAME_OVER") {
+          this.banner = "CAMPAIGN RESTORED // GAME OVER";
+        } else {
+          this.banner = "CAMPAIGN RESTORED";
+        }
         return;
       }
     }
@@ -673,18 +714,28 @@ export class GameWorld {
     else this.pauseGame();
   }
 
-  private pauseGame(): void {
-    if (this.phase !== "PAUSED") {
-      this.phase = "PAUSED";
-      this.banner = "PAUSED";
-    }
+  private pauseGame(reason = "PAUSED"): void {
+    if (!isPausablePhase(this.phase)) return;
+    this.pausedFromPhase = this.phase;
+    this.phase = "PAUSED";
+    this.banner = reason;
+    this.input.clear();
   }
 
   private resumeGame(): void {
-    if (this.phase === "PAUSED") {
-      this.phase = this.mode === "TUTORIAL" ? "TUTORIAL" : "PLAYING";
-      this.banner = "ORDEAL ACTIVE";
-    }
+    if (this.phase !== "PAUSED" || !isPausablePhase(this.pausedFromPhase ?? "TITLE"))
+      return;
+    this.phase = this.pausedFromPhase as GamePhase;
+    this.pausedFromPhase = null;
+    this.banner =
+      this.phase === "COUNTDOWN"
+        ? String(Math.max(1, Math.ceil(this.phaseTimer)))
+        : this.phase === "CRUSHED"
+          ? "CRUSHED — AGAIN"
+          : this.phase === "STAGE_INTRO"
+            ? "STAGE INTRO"
+            : "ORDEAL ACTIVE";
+    this.input.clear();
   }
 
   private command(command: CubicCommand): void {
@@ -851,16 +902,39 @@ export class GameWorld {
     this.marker = snapshot.marker ? { ...snapshot.marker } : null;
     this.areas = snapshot.areas.map(area => ({ ...area }));
     this.stats = { ...snapshot.stats };
-    this.puzzleIndex = snapshot.puzzleIndex;
-    this.currentPuzzle = this.puzzles[this.puzzleIndex] ?? this.currentPuzzle;
+    const restoredIndex = snapshot.puzzleId
+      ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
+      : snapshot.puzzleIndex;
+    if (restoredIndex >= 0 && this.puzzles[restoredIndex]) {
+      this.puzzleIndex = restoredIndex;
+      this.currentPuzzle = this.puzzles[restoredIndex];
+    }
     this.banner = snapshot.banner;
     this.hint = snapshot.hint;
     this.duelTurn = snapshot.duelTurn;
     this.duelScore = [...snapshot.duelScore] as [number, number];
-    this.isRolling = false;
-    this.rollElapsed = 0;
-    this.settleElapsed = 0;
-    this.phaseTimer = 0;
+    this.elapsed = snapshot.elapsed ?? 0;
+    this.phaseTimer = snapshot.phaseTimer ?? 0;
+    this.isRolling = snapshot.isRolling ?? snapshot.rollProgress > 0;
+    this.rollElapsed =
+      snapshot.rollElapsed ??
+      (this.isRolling
+        ? snapshot.rollProgress * DIFFICULTIES[this.difficulty].rollSeconds
+        : 0);
+    this.settleElapsed = snapshot.settleElapsed ?? 0;
+    this.hasScoringStarted =
+      snapshot.hasScoringStarted ??
+      snapshot.stats.score > 0 || snapshot.stats.rotations > 0;
+    this.tutorialStep = snapshot.tutorialStep ?? 0;
+    this.pausedFromPhase =
+      snapshot.pausedFromPhase ??
+      (snapshot.phase === "PAUSED"
+        ? snapshot.mode === "TUTORIAL"
+          ? "TUTORIAL"
+          : "PLAYING"
+        : null);
+    this.completionAwardedForPuzzle =
+      snapshot.completionAwardedForPuzzle ?? null;
   }
 
   private saveCampaign(): void {
@@ -881,12 +955,21 @@ export class GameWorld {
       const saved = raw
         ? (JSON.parse(raw) as { version?: number; snapshot?: GameSnapshot })
         : null;
+      const snapshot = saved?.snapshot;
+      if (saved?.version !== SAVE_VERSION || !snapshot) return null;
+      const index = snapshot.puzzleId
+        ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
+        : snapshot.puzzleIndex;
       if (
-        saved?.version === SAVE_VERSION &&
-        saved.snapshot &&
-        this.puzzles[saved.snapshot.puzzleIndex]
+        !Number.isInteger(index) ||
+        index < 0 ||
+        !this.puzzles[index] ||
+        (snapshot.puzzleId && this.puzzles[index].id !== snapshot.puzzleId) ||
+        !snapshot.stats ||
+        !Array.isArray(snapshot.cubes)
       )
-        return saved.snapshot;
+        return null;
+      return snapshot;
     } catch {
       // Invalid or obsolete data starts a fresh campaign.
     }
@@ -933,6 +1016,15 @@ export class GameWorld {
       duelTurn: this.duelTurn,
       duelScore: [...this.duelScore] as [number, number],
       tutorialStep: this.tutorialStep,
+      pausedFromPhase: this.pausedFromPhase,
+      phaseTimer: this.phaseTimer,
+      rollElapsed: this.rollElapsed,
+      settleElapsed: this.settleElapsed,
+      isRolling: this.isRolling,
+      hasScoringStarted: this.hasScoringStarted,
+      elapsed: this.elapsed,
+      puzzleId: this.currentPuzzle.id,
+      completionAwardedForPuzzle: this.completionAwardedForPuzzle,
       captureProgress:
         this.phase === "CAPTURE_PAUSE"
           ? Math.max(
