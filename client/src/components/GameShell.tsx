@@ -45,7 +45,7 @@ function command(detail: unknown): void {
 }
 function setting(key: "quality" | "audio", value: string): void {
   window.dispatchEvent(
-    new CustomEvent("cubic:settings", { detail: { key, value } }),
+    new CustomEvent("cubic:settings", { detail: { key, value } })
   );
 }
 
@@ -106,7 +106,7 @@ export default function GameShell({
     mode = chosenMode,
     stage = practice.stage,
     wave = practice.wave,
-    ordinal = practice.ordinal,
+    ordinal = practice.ordinal
   ) => {
     launch({ type: "start", mode, difficulty, stage, wave, ordinal });
     setPanel(null);
@@ -158,7 +158,7 @@ export default function GameShell({
           execute={execute}
           practice={practice}
           setPractice={setPractice}
-          onTest={(puzzle) => {
+          onTest={puzzle => {
             launch({ type: "load-custom", puzzle });
             setPanel(null);
           }}
@@ -210,7 +210,7 @@ function MenuPanel({
     mode?: GameMode,
     stage?: number,
     wave?: number,
-    ordinal?: number,
+    ordinal?: number
   ) => void;
   practice: { stage: number; wave: number; ordinal: number };
   setPractice: (value: {
@@ -249,7 +249,7 @@ function MenuPanel({
                   ? "practice"
                   : chosenMode === "CREATE"
                     ? "create"
-                    : "difficulty",
+                    : "difficulty"
               )
             }
             onBack={() => setPanel("title")}
@@ -388,7 +388,7 @@ function DifficultyActions({
       <span className="eyebrow">THREAT VELOCITY</span>
       <h2>SELECT DIFFICULTY</h2>
       <div className="difficulty-row">
-        {difficulties.map((item) => (
+        {difficulties.map(item => (
           <button
             onClick={() => setDifficulty(item)}
             className={difficulty === item ? "active" : ""}
@@ -448,25 +448,25 @@ function PracticeActions({
           value={practice.stage}
           min={1}
           max={9}
-          onChange={(stage) => update({ stage })}
+          onChange={stage => update({ stage })}
         />
         <LabeledSelect
           label="WAVE"
           value={practice.wave}
           min={1}
           max={4}
-          onChange={(wave) => update({ wave })}
+          onChange={wave => update({ wave })}
         />
         <LabeledSelect
           label="PUZZLE"
           value={practice.ordinal}
           min={1}
           max={Math.max(1, maxPuzzle)}
-          onChange={(ordinal) => update({ ordinal })}
+          onChange={ordinal => update({ ordinal })}
         />
       </div>
       <div className="difficulty-row compact">
-        {difficulties.slice(0, 4).map((item) => (
+        {difficulties.slice(0, 4).map(item => (
           <button
             onClick={() => setDifficulty(item)}
             className={difficulty === item ? "active" : ""}
@@ -510,7 +510,7 @@ function LabeledSelect({
       <span>{label}</span>
       <select
         value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
+        onChange={event => onChange(Number(event.target.value))}
       >
         {Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => (
           <option value={min + index} key={min + index}>
@@ -534,37 +534,37 @@ function CreatePanel({
   const [width, setWidth] = useState(4);
   const [depth, setDepth] = useState(3);
   const [cells, setCells] = useState<EditorCell[]>(
-    Array.from({ length: 12 }, () => "empty"),
+    Array.from({ length: 12 }, () => "empty")
   );
   const [requiredRolls, setRequiredRolls] = useState(0);
   const [notice, setNotice] = useState(
-    "セルをクリックして EMPTY → NORMAL → VEIL → VOID を切り替えます。",
+    "セルをクリックして EMPTY → NORMAL → VEIL → VOID を切り替えます。"
   );
   const [seed] = useState(() => Date.now());
   const input = useRef<HTMLInputElement>(null);
   useEffect(
     () => setCells(Array.from({ length: width * depth }, () => "empty")),
-    [width, depth],
+    [width, depth]
   );
   const layout = useMemo(
     () =>
       cells.flatMap((cell, index) =>
         cell === "empty"
           ? []
-          : [{ x: index % width, z: Math.floor(index / width), type: cell }],
+          : [{ x: index % width, z: Math.floor(index / width), type: cell }]
       ),
-    [cells, width],
+    [cells, width]
   );
   const derived = useMemo(
     () => deriveDirectSolution({ id: `CUSTOM-${seed}`, width, depth, layout }),
-    [depth, layout, seed, width],
+    [depth, layout, seed, width]
   );
   useEffect(() => {
     const captures = derived
-      .filter((step) => step.action === "capture")
-      .map((step) => step.rotation);
+      .filter(step => step.action === "capture")
+      .map(step => step.rotation);
     setRequiredRolls(
-      captures.length < 2 ? 0 : Math.max(...captures) - Math.min(...captures),
+      captures.length < 2 ? 0 : Math.max(...captures) - Math.min(...captures)
     );
   }, [derived]);
   const descriptor = useMemo<PuzzleDescriptor>(
@@ -583,18 +583,18 @@ function CreatePanel({
       solution: derived,
       validation: {
         valid: false,
-        normal: layout.filter((cell) => cell.type === "normal").length,
-        veil: layout.filter((cell) => cell.type === "veil").length,
-        void: layout.filter((cell) => cell.type === "void").length,
+        normal: layout.filter(cell => cell.type === "normal").length,
+        veil: layout.filter(cell => cell.type === "veil").length,
+        void: layout.filter(cell => cell.type === "void").length,
         travelBudget: width + depth + 4,
       },
       featured: true,
     }),
-    [depth, derived, layout, requiredRolls, seed, width],
+    [depth, derived, layout, requiredRolls, seed, width]
   );
   const validation = useMemo(() => validatePuzzle(descriptor), [descriptor]);
   const cycle = (index: number) =>
-    setCells((previous) =>
+    setCells(previous =>
       previous.map((cell, cellIndex) =>
         cellIndex !== index
           ? cell
@@ -604,28 +604,28 @@ function CreatePanel({
               ? "veil"
               : cell === "veil"
                 ? "void"
-                : "empty",
-      ),
+                : "empty"
+      )
     );
   const mirror = () => {
-    setCells((previous) =>
+    setCells(previous =>
       Array.from(
         { length: width * depth },
         (_, index) =>
           previous[
             Math.floor(index / width) * width + (width - 1 - (index % width))
-          ],
-      ),
+          ]
+      )
     );
     setNotice("盤面を左右反転しました。");
   };
   const save = () => {
     const archive = JSON.parse(
-      localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]",
+      localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]"
     ) as PuzzleDescriptor[];
     localStorage.setItem(
       "cubic-ordeal-custom-v1",
-      JSON.stringify([...archive, descriptor]),
+      JSON.stringify([...archive, descriptor])
     );
     setNotice(`CUSTOM ARCHIVEへ保存しました。保存数: ${archive.length + 1}`);
   };
@@ -634,14 +634,14 @@ function CreatePanel({
     setNotice(
       result.valid
         ? `VALID // 必須 ${result.required}、VOID ${result.voids}、AREA ${result.areaUses}回`
-        : `WARNING // ${result.reason}`,
+        : `WARNING // ${result.reason}`
     );
   };
   const exportJson = () => {
     const url = URL.createObjectURL(
       new Blob([JSON.stringify(descriptor, null, 2)], {
         type: "application/json",
-      }),
+      })
     );
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -653,7 +653,7 @@ function CreatePanel({
     if (!file) return;
     try {
       const parsed = parsePuzzleDescriptor(
-        JSON.parse(await file.text()) as unknown,
+        JSON.parse(await file.text()) as unknown
       );
       if (!parsed.valid || !parsed.puzzle) throw new Error(parsed.reason);
       const imported = parsed.puzzle;
@@ -669,16 +669,16 @@ function CreatePanel({
       setCells(
         Array.from({ length: imported.width * imported.depth }, (_, index) => {
           const cube = imported.layout.find(
-            (item) =>
+            item =>
               item.x === index % imported.width &&
-              item.z === Math.floor(index / imported.width),
+              item.z === Math.floor(index / imported.width)
           );
           return cube?.type ?? "empty";
-        }),
+        })
       );
       setRequiredRolls(imported.requiredRolls);
       setNotice(
-        "JSONを読み込みました。VALIDATEで現在の規則に照合してください。",
+        "JSONを読み込みました。VALIDATEで現在の規則に照合してください。"
       );
     } catch {
       setNotice("WARNING // 読み込めないCUBIC ORDEAL JSONです。");
@@ -689,7 +689,7 @@ function CreatePanel({
   const loadLatest = () => {
     try {
       const archive = JSON.parse(
-        localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]",
+        localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]"
       ) as unknown;
       if (!Array.isArray(archive)) throw new Error("archive");
       const latest = archive.at(-1);
@@ -700,7 +700,7 @@ function CreatePanel({
       void importJson(
         new File([JSON.stringify(latest)], "archive.json", {
           type: "application/json",
-        }),
+        })
       );
     } catch {
       setNotice("WARNING // 保存済み問題アーカイブが壊れています。");
@@ -731,7 +731,7 @@ function CreatePanel({
             min="0"
             max="99"
             value={requiredRolls}
-            onChange={(event) =>
+            onChange={event =>
               setRequiredRolls(Math.max(0, Number(event.target.value)))
             }
           />
@@ -764,7 +764,7 @@ function CreatePanel({
         type="file"
         accept="application/json,.json"
         hidden
-        onChange={(event) => void importJson(event.target.files?.[0])}
+        onChange={event => void importJson(event.target.files?.[0])}
       />
       <div className="editor-actions">
         <Action label="VALIDATE" note="CHECK" onClick={test} />
@@ -794,10 +794,10 @@ function CreatePanel({
 
 function SettingsPanel({ onBack }: { onBack(): void }) {
   const [quality, setQuality] = useState(
-    localStorage.getItem("cubic-ordeal-quality") ?? "AUTO",
+    localStorage.getItem("cubic-ordeal-quality") ?? "AUTO"
   );
   const [audio, setAudio] = useState(
-    localStorage.getItem("cubic-ordeal-audio") ?? "ON",
+    localStorage.getItem("cubic-ordeal-audio") ?? "ON"
   );
   const set = (key: "quality" | "audio", value: string) => {
     localStorage.setItem(`cubic-ordeal-${key}`, value);
@@ -811,7 +811,7 @@ function SettingsPanel({ onBack }: { onBack(): void }) {
         <span>QUALITY</span>
         <select
           value={quality}
-          onChange={(event) => {
+          onChange={event => {
             setQuality(event.target.value);
             set("quality", event.target.value);
           }}
@@ -826,7 +826,7 @@ function SettingsPanel({ onBack }: { onBack(): void }) {
         <span>AUDIO</span>
         <select
           value={audio}
-          onChange={(event) => {
+          onChange={event => {
             setAudio(event.target.value);
             set("audio", event.target.value);
           }}
@@ -884,7 +884,7 @@ function Hud({ snapshot, onMenu }: { snapshot: GameSnapshot; onMenu(): void }) {
     snapshot.stats.score,
     snapshot.stage,
     snapshot.stats.platformRows,
-    snapshot.stats.misses,
+    snapshot.stats.misses
   );
   return (
     <>
@@ -1069,8 +1069,8 @@ function ResultOverlay({
               snapshot.stats.score,
               snapshot.stage,
               snapshot.stats.platformRows,
-              snapshot.stats.misses,
-            ),
+              snapshot.stats.misses
+            )
           ).padStart(3, "0")}
         />
         <Metric label="ROWS" value={String(snapshot.stats.platformRows)} />
@@ -1118,12 +1118,12 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   const markHasTarget = Boolean(
     snapshot.marker &&
       snapshot.cubes.some(
-        (cube) =>
+        cube =>
           cube.x === snapshot.marker?.x &&
           cube.z === snapshot.marker?.z &&
           !cube.captured &&
-          !cube.falling,
-      ),
+          !cube.falling
+      )
   );
   const markAction = !snapshot.marker
     ? "MARK"
@@ -1150,7 +1150,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const update = (event: PointerEvent<HTMLDivElement>) => {
     if (activePointer.current !== event.pointerId) return;
-    setStick((origin) => {
+    setStick(origin => {
       if (!origin) return null;
       const dx = Math.max(-52, Math.min(52, event.clientX - origin.originX));
       const dy = Math.max(-52, Math.min(52, event.clientY - origin.originY));
@@ -1174,7 +1174,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const pressAction = (
     event: PointerEvent<HTMLButtonElement>,
-    action: "mark" | "area",
+    action: "mark" | "area"
   ) => {
     event.preventDefault();
     event.stopPropagation();
@@ -1187,7 +1187,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const keyAction = (
     event: KeyboardEvent<HTMLButtonElement>,
-    action: "mark" | "area",
+    action: "mark" | "area"
   ) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -1241,8 +1241,8 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
           className="area"
           aria-label="AREA"
           disabled={!snapshot.areas.length}
-          onPointerDown={(event) => pressAction(event, "area")}
-          onKeyDown={(event) => keyAction(event, "area")}
+          onPointerDown={event => pressAction(event, "area")}
+          onKeyDown={event => keyAction(event, "area")}
         >
           AREA
         </button>
@@ -1260,8 +1260,8 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         <button
           className="mark"
           aria-label={markAction}
-          onPointerDown={(event) => pressAction(event, "mark")}
-          onKeyDown={(event) => keyAction(event, "mark")}
+          onPointerDown={event => pressAction(event, "mark")}
+          onKeyDown={event => keyAction(event, "mark")}
         >
           {markAction}
           <br />
