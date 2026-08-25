@@ -265,6 +265,44 @@ function invalidPuzzleValidation(reason: string): PuzzleValidationResult {
   };
 }
 
+function compareSolutionSteps(
+  a: PuzzleDescriptor["solution"][number],
+  b: PuzzleDescriptor["solution"][number]
+): number {
+  return (
+    a.rotation - b.rotation ||
+    (a.sequence ?? Number.MAX_SAFE_INTEGER) -
+      (b.sequence ?? Number.MAX_SAFE_INTEGER) ||
+    a.action.localeCompare(b.action) ||
+    (a.x ?? -1) - (b.x ?? -1) ||
+    (a.z ?? -1) - (b.z ?? -1)
+  );
+}
+
+function gameplayFingerprint(puzzle: PuzzleDescriptor): string {
+  const spawnRow = puzzle.spawnRow ?? 0;
+  const layout = [...puzzle.layout]
+    .sort((a, b) => a.z - b.z || a.x - b.x)
+    .map(cube => [cube.x, cube.z - spawnRow, cube.type]);
+  const solution = [...puzzle.solution]
+    .sort(compareSolutionSteps)
+    .map(step => [
+      step.rotation - spawnRow,
+      step.action,
+      step.x ?? null,
+      step.z ?? null,
+      step.sequence ?? null,
+    ]);
+
+  return JSON.stringify({
+    width: puzzle.width,
+    depth: puzzle.depth,
+    requiredRolls: puzzle.requiredRolls,
+    layout,
+    solution,
+  });
+}
+
 export function validatePuzzleArchive(
   puzzles: PuzzleDescriptor[]
 ): PuzzleArchiveValidationResult {
@@ -280,6 +318,18 @@ export function validatePuzzleArchive(
     ids.add(puzzle.id);
     if (seeds.has(puzzle.seed)) issues.push(`duplicate seed: ${puzzle.seed}`);
     seeds.add(puzzle.seed);
+  }
+  const gameplayFingerprints = new Map<string, string>();
+  for (const puzzle of puzzles) {
+    const fingerprint = gameplayFingerprint(puzzle);
+    const duplicateOf = gameplayFingerprints.get(fingerprint);
+    if (duplicateOf) {
+      issues.push(
+        `duplicate gameplay pattern: ${duplicateOf} and ${puzzle.id}`
+      );
+    } else {
+      gameplayFingerprints.set(fingerprint, puzzle.id);
+    }
   }
   const results = validateAllPuzzles(puzzles);
   results.forEach((result, index) => {

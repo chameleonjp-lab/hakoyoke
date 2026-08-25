@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { parsePuzzleDescriptor, validatePuzzle } from "./puzzleValidation";
+import { generatePuzzles } from "./puzzles";
+import {
+  parsePuzzleDescriptor,
+  validatePuzzle,
+  validatePuzzleArchive,
+} from "./puzzleValidation";
 import type { PuzzleDescriptor } from "./types";
 
 function customDescriptor(): PuzzleDescriptor {
@@ -82,5 +87,16 @@ describe("custom puzzle descriptor boundary", () => {
         reason: expect.any(String),
       })
     );
+  });
+
+  it("keeps generated gameplay patterns unique across the archive", () => {
+    const result = validatePuzzleArchive(generatePuzzles());
+
+    expect(result.valid).toBe(true);
+    expect(
+      result.issues.filter(issue =>
+        issue.includes("duplicate gameplay pattern")
+      )
+    ).toEqual([]);
   });
 });
