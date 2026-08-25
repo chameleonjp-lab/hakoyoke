@@ -1492,3 +1492,153 @@ h2 {
     }
   }
 }
+
+/* Keep mobile input hit areas explicit and below blocking result/pause overlays. */
+@media (max-width: 720px), (max-height: 520px) and (orientation: landscape) {
+  .touch-controls {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    display: block;
+    padding: 0;
+    pointer-events: none;
+    touch-action: auto;
+    background: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .touch-zone {
+    position: fixed;
+    top: 50dvh;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    display: block;
+    pointer-events: auto;
+    touch-action: none;
+    overscroll-behavior: contain;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 9, 16, 0),
+      rgba(2, 9, 16, 0.18)
+    );
+  }
+
+  .touch-zone-label {
+    position: absolute;
+    left: 14px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    color: rgba(146, 214, 234, 0.48);
+    font:
+      500 8px/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.14em;
+    pointer-events: none;
+  }
+
+  .touch-stick.floating {
+    position: fixed;
+    z-index: 2;
+    width: 104px;
+    height: 104px;
+    margin: -52px 0 0 -52px;
+    border: 1px solid rgba(107, 225, 255, 0.88);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(38, 174, 215, 0.28) 0 21%,
+      rgba(4, 19, 31, 0.66) 62%,
+      rgba(4, 11, 20, 0.1) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(1, 7, 14, 0.85),
+      0 0 24px rgba(40, 190, 235, 0.26),
+      inset 0 0 26px rgba(40, 190, 235, 0.18);
+    pointer-events: none;
+  }
+
+  .touch-stick.floating::before,
+  .touch-stick.floating::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: rgba(157, 233, 255, 0.36);
+    transform: translate(-50%, -50%);
+  }
+
+  .touch-stick.floating::before {
+    width: 76px;
+    height: 1px;
+  }
+
+  .touch-stick.floating::after {
+    width: 1px;
+    height: 76px;
+  }
+
+  .touch-stick.floating .touch-knob {
+    left: 34px;
+    top: 34px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #d9faff;
+    border-radius: 50%;
+    background: rgba(40, 190, 235, 0.54);
+    box-shadow: 0 0 12px rgba(78, 219, 255, 0.62);
+    transition: transform 40ms linear;
+  }
+
+  .touch-actions {
+    position: fixed;
+    right: max(13px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 64px 64px;
+    grid-template-rows: 38px 66px;
+    gap: 7px;
+    pointer-events: auto;
+  }
+
+  .touch-actions button {
+    position: relative;
+    z-index: 3;
+    min-height: 0;
+    pointer-events: auto;
+    border: 1px solid rgba(124, 222, 249, 0.66);
+    color: #e8fbff;
+    background: linear-gradient(
+      145deg,
+      rgba(11, 44, 61, 0.94),
+      rgba(3, 13, 25, 0.96)
+    );
+    font:
+      700 10px/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.07em;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
+    touch-action: none;
+  }
+
+  .touch-actions .mark {
+    grid-column: 1 / span 2;
+    border-color: #51dbff;
+    background: linear-gradient(135deg, #137694, #075066);
+    font-size: 13px;
+  }
+
+  .touch-actions .mark span {
+    font-size: 8px;
+    color: #c2f5ff;
+  }
+
+  .touch-actions button:disabled {
+    opacity: 0.38;
+    border-color: rgba(112, 151, 166, 0.42);
+    color: #7896a3;
+    box-shadow: none;
+  }
+}
