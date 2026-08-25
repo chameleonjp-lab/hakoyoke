@@ -110,6 +110,7 @@ export class GameWorld {
   private duelTurn = 0;
   private duelScore: [number, number] = [0, 0];
   private currentPuzzle: PuzzleDescriptor;
+  private customPuzzle: PuzzleDescriptor | null = null;
   private puzzleIndex = 0;
   private mode: GameMode = "CAMPAIGN";
   private difficulty: Difficulty = "NORMAL";
@@ -538,6 +539,14 @@ export class GameWorld {
     this.onSignal("crush");
   }
 
+  private endStandaloneRun(message: string): void {
+    this.phase = "MENU";
+    this.phaseTimer = 0;
+    this.banner = message;
+    this.input.clear();
+    this.onSignal("menu");
+  }
+
   private advanceAfterResult(): void {
     if (TERMINAL_PHASES.has(this.phase)) return;
     if (this.phase === "CRUSHED") {
@@ -558,6 +567,19 @@ export class GameWorld {
 
     if (this.mode === "DUEL") {
       this.advanceDuel();
+      return;
+    }
+
+    if (this.mode === "TUTORIAL") {
+      this.endStandaloneRun("TUTORIAL COMPLETE");
+      return;
+    }
+    if (this.mode === "CREATE") {
+      this.endStandaloneRun("CUSTOM ORDEAL COMPLETE");
+      return;
+    }
+    if (this.mode === "PRACTICE") {
+      this.endStandaloneRun("PRACTICE COMPLETE");
       return;
     }
 
@@ -684,6 +706,7 @@ export class GameWorld {
 
     this.mode = mode;
     this.difficulty = difficulty;
+    this.customPuzzle = null;
     const puzzle =
       mode === "TUTORIAL"
         ? makeTutorialPuzzle()
@@ -818,7 +841,7 @@ export class GameWorld {
     }
     if (command.type === "load-custom") {
       this.mode = "CREATE";
-      this.puzzles.unshift(command.puzzle);
+      this.customPuzzle = command.puzzle;
       this.puzzleIndex = 0;
       this.loadPuzzle(command.puzzle, true);
       this.phase = "STAGE_INTRO";
