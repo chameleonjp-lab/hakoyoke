@@ -128,7 +128,7 @@ export class GameWorld {
   constructor(
     private readonly puzzles: PuzzleDescriptor[],
     onPublish: (snapshot: GameSnapshot) => void,
-    onSignal: (signal: string) => void,
+    onSignal: (signal: string) => void
   ) {
     if (!puzzles.length) throw new Error("Puzzle archive is empty.");
     this.onPublish = onPublish;
@@ -163,7 +163,7 @@ export class GameWorld {
     this.elapsed += dt;
     if (this.demo) this.runDemo(dt);
     const input = this.input.sample(
-      this.phase === "PLAYING" || this.phase === "TUTORIAL",
+      this.phase === "PLAYING" || this.phase === "TUTORIAL"
     );
     if (input.pause) this.togglePause();
     if (
@@ -251,7 +251,7 @@ export class GameWorld {
       !isPositionOnPlatform(
         this.player,
         this.currentPuzzle.width,
-        this.stats.platformRows,
+        this.stats.platformRows
       )
     ) {
       this.fallFromPlatform();
@@ -288,15 +288,10 @@ export class GameWorld {
 
   private checkRollCollision(previousProgress: number, progress: number): void {
     const crushing = this.cubes.some(
-      (cube) =>
+      cube =>
         !cube.captured &&
         !cube.falling &&
-        playerIntersectsRollSweep(
-          cube,
-          this.player,
-          previousProgress,
-          progress,
-        ),
+        playerIntersectsRollSweep(cube, this.player, previousProgress, progress)
     );
     if (crushing) this.crush();
   }
@@ -310,7 +305,7 @@ export class GameWorld {
         if (this.phase === "GAME_OVER") break;
       }
     }
-    this.cubes = this.cubes.filter((cube) => !cube.falling && !cube.captured);
+    this.cubes = this.cubes.filter(cube => !cube.falling && !cube.captured);
     if (this.phase === "GAME_OVER") return;
     this.resolveIfEmpty();
   }
@@ -347,19 +342,17 @@ export class GameWorld {
       this.onSignal("mark");
       if (this.mode === "TUTORIAL") {
         const protectsVoid = this.cubes.some(
-          (cube) =>
+          cube =>
             cube.type === "void" &&
             cube.x === this.marker?.x &&
-            cube.z === this.marker?.z,
+            cube.z === this.marker?.z
         );
         this.tutorialStep = Math.max(this.tutorialStep, protectsVoid ? 3 : 1);
       }
       return;
     }
 
-    const target = this.cubes.find((cube) =>
-      markerCanCapture(this.marker, cube),
-    );
+    const target = this.cubes.find(cube => markerCanCapture(this.marker, cube));
     if (!target) {
       this.marker = null;
       this.banner = "MARK CLEARED";
@@ -383,7 +376,7 @@ export class GameWorld {
     };
     if (
       !this.areas.some(
-        (existing) => existing.x === area.x && existing.z === area.z,
+        existing => existing.x === area.x && existing.z === area.z
       )
     )
       this.areas.push(area);
@@ -393,14 +386,14 @@ export class GameWorld {
   private captureCube(
     cube: CubeState,
     source: "manual" | "area",
-    options: CaptureOptions = {},
+    options: CaptureOptions = {}
   ): void {
     cube.captured = true;
     if (cube.type === "void") {
       this.stats.voidCaptured += 1;
       this.stats.perfect = false;
       this.losePlatformRow(
-        source === "area" ? "AREA VOID BREACH" : "VOID BREACH",
+        source === "area" ? "AREA VOID BREACH" : "VOID BREACH"
       );
       if (!options.batch) this.onSignal("warning");
       return;
@@ -435,7 +428,7 @@ export class GameWorld {
 
     // AREA anchors are consumed before targets are captured. VEIL targets therefore create
     // a fresh set that can only be used by a later AREA input.
-    const activeAreas = this.areas.map((area) => ({ ...area }));
+    const activeAreas = this.areas.map(area => ({ ...area }));
     this.areas = [];
     this.stats.areaMarks = 0;
     const targets = areaTargets(this.cubes, activeAreas, this.marker);
@@ -465,13 +458,13 @@ export class GameWorld {
     if (TERMINAL_PHASES.has(this.phase)) return;
     if (
       this.cubes.some(
-        (cube) => !cube.captured && !cube.falling && cube.type !== "void",
+        cube => !cube.captured && !cube.falling && cube.type !== "void"
       )
     )
       return;
     if (
       this.cubes.some(
-        (cube) => !cube.captured && !cube.falling && cube.type === "void",
+        cube => !cube.captured && !cube.falling && cube.type === "void"
       )
     )
       return;
@@ -528,7 +521,7 @@ export class GameWorld {
   private crush(): void {
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
     const escaped = unresolvedCubeCount(this.cubes);
-    this.cubes.forEach((cube) => {
+    this.cubes.forEach(cube => {
       if (!cube.captured) cube.falling = true;
     });
     const combinedMisses = this.stats.misses + escaped;
@@ -603,7 +596,7 @@ export class GameWorld {
     const resolution = resolveDuelRound(
       this.duelScore,
       this.duelTurn as 0 | 1,
-      succeeded,
+      succeeded
     );
     this.duelScore = resolution.scores;
     this.duelTurn = resolution.nextTurn;
@@ -667,7 +660,7 @@ export class GameWorld {
     difficulty: Difficulty,
     stage = 1,
     wave = 1,
-    ordinal = 1,
+    ordinal = 1
   ): void {
     if (mode === "CAMPAIGN" && stage === 1 && wave === 1 && ordinal === 1) {
       const restored = this.readCampaign();
@@ -758,7 +751,7 @@ export class GameWorld {
         command.difficulty,
         command.stage,
         command.wave,
-        command.ordinal,
+        command.ordinal
       );
       return;
     }
@@ -839,14 +832,14 @@ export class GameWorld {
     if (command.type === "debug-platform" && this.debug) {
       this.stats.platformRows = Math.max(
         this.currentPuzzle.depth + 2,
-        command.rows,
+        command.rows
       );
       return;
     }
     if (command.type === "auto-solve" && this.debug) {
       this.cubes
-        .filter((cube) => cube.type !== "void" && !cube.captured)
-        .forEach((cube) => this.captureCube(cube, "manual", { batch: true }));
+        .filter(cube => cube.type !== "void" && !cube.captured)
+        .forEach(cube => this.captureCube(cube, "manual", { batch: true }));
       this.resolveIfEmpty();
     }
   }
@@ -881,8 +874,8 @@ export class GameWorld {
       return;
     this.demoElapsed = 0;
     const landed = this.cubes.find(
-      (cube) =>
-        cube.type !== "void" && !cube.captured && !cube.falling && cube.z === 0,
+      cube =>
+        cube.type !== "void" && !cube.captured && !cube.falling && cube.z === 0
     );
     if (landed) {
       this.marker = { x: landed.x, z: landed.z };
@@ -908,12 +901,12 @@ export class GameWorld {
     this.mode = snapshot.mode;
     this.difficulty = snapshot.difficulty;
     this.player = { ...snapshot.player };
-    this.cubes = snapshot.cubes.map((cube) => ({ ...cube }));
+    this.cubes = snapshot.cubes.map(cube => ({ ...cube }));
     this.marker = snapshot.marker ? { ...snapshot.marker } : null;
-    this.areas = snapshot.areas.map((area) => ({ ...area }));
+    this.areas = snapshot.areas.map(area => ({ ...area }));
     this.stats = { ...snapshot.stats };
     const restoredIndex = snapshot.puzzleId
-      ? this.puzzles.findIndex((puzzle) => puzzle.id === snapshot.puzzleId)
+      ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
       : snapshot.puzzleIndex;
     if (restoredIndex >= 0 && this.puzzles[restoredIndex]) {
       this.puzzleIndex = restoredIndex;
@@ -952,7 +945,7 @@ export class GameWorld {
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ version: SAVE_VERSION, snapshot: this.snapshot() }),
+        JSON.stringify({ version: SAVE_VERSION, snapshot: this.snapshot() })
       );
     } catch {
       // localStorage can be unavailable in strict privacy contexts.
@@ -968,7 +961,7 @@ export class GameWorld {
       const snapshot = saved?.snapshot;
       if (saved?.version !== SAVE_VERSION || !snapshot) return null;
       const index = snapshot.puzzleId
-        ? this.puzzles.findIndex((puzzle) => puzzle.id === snapshot.puzzleId)
+        ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
         : snapshot.puzzleIndex;
       if (
         !Number.isInteger(index) ||
@@ -994,7 +987,7 @@ export class GameWorld {
         at: Date.now(),
       };
       const previous = JSON.parse(
-        localStorage.getItem(HIGH_SCORE_KEY) ?? "null",
+        localStorage.getItem(HIGH_SCORE_KEY) ?? "null"
       ) as { score?: number } | null;
       if (!previous || current.score > (previous.score ?? 0))
         localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(current));
@@ -1009,9 +1002,9 @@ export class GameWorld {
       mode: this.mode,
       difficulty: this.difficulty,
       player: { ...this.player },
-      cubes: this.cubes.map((cube) => ({ ...cube })),
+      cubes: this.cubes.map(cube => ({ ...cube })),
       marker: this.marker ? { ...this.marker } : null,
-      areas: this.areas.map((area) => ({ ...area })),
+      areas: this.areas.map(area => ({ ...area })),
       stats: { ...this.stats },
       stage: this.currentPuzzle.stage,
       wave: this.currentPuzzle.wave,
@@ -1042,9 +1035,8 @@ export class GameWorld {
               Math.min(
                 1,
                 1 -
-                  this.phaseTimer /
-                    DIFFICULTIES[this.difficulty].captureSeconds,
-              ),
+                  this.phaseTimer / DIFFICULTIES[this.difficulty].captureSeconds
+              )
             )
           : 0,
       crushProgress:
@@ -1062,7 +1054,7 @@ export class GameWorld {
     return this.isRolling
       ? Math.min(
           1,
-          this.rollElapsed / DIFFICULTIES[this.difficulty].rollSeconds,
+          this.rollElapsed / DIFFICULTIES[this.difficulty].rollSeconds
         )
       : 0;
   }
@@ -1072,7 +1064,7 @@ export class GameWorld {
       this.stats.score,
       this.currentPuzzle.stage,
       this.stats.platformRows,
-      this.stats.misses,
+      this.stats.misses
     );
   }
 
