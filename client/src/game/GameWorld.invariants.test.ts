@@ -27,7 +27,7 @@ class TestEventTarget {
   }
 
   dispatchEvent(event: { type: string; detail?: unknown }): boolean {
-    this.listeners.get(event.type)?.forEach(listener => listener(event));
+    this.listeners.get(event.type)?.forEach((listener) => listener(event));
     return true;
   }
 }
@@ -126,7 +126,11 @@ describe("GameWorld state invariants", () => {
   });
 
   it("restores the exact pausable phase instead of skipping to PLAYING", () => {
-    const world = new GameWorld([puzzle()], () => undefined, () => undefined);
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined,
+    );
     const state = internals(world);
 
     command({
@@ -149,7 +153,11 @@ describe("GameWorld state invariants", () => {
   });
 
   it("does not pause or resume terminal phases", () => {
-    const world = new GameWorld([puzzle()], () => undefined, () => undefined);
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined,
+    );
     const state = internals(world);
 
     state.phase = "GAME_OVER";
@@ -167,7 +175,11 @@ describe("GameWorld state invariants", () => {
   });
 
   it("does not turn a terminal loss into a successful result during rotation cleanup", () => {
-    const world = new GameWorld([puzzle()], () => undefined, () => undefined);
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined,
+    );
     const state = internals(world);
     state.mode = "CAMPAIGN";
     state.phase = "PLAYING";
@@ -193,7 +205,11 @@ describe("GameWorld state invariants", () => {
   });
 
   it("persists FINAL_RESULT after the final bonus and makes it idempotent", () => {
-    const world = new GameWorld([puzzle()], () => undefined, () => undefined);
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined,
+    );
     const state = internals(world);
     state.mode = "CAMPAIGN";
     state.phase = "PUZZLE_RESULT";
@@ -208,7 +224,9 @@ describe("GameWorld state invariants", () => {
 
     expect(state.phase).toBe("FINAL_RESULT");
     expect(state.stats.score).toBe(12000);
-    const saved = JSON.parse(storage.getItem("cubic-ordeal-campaign-v1") ?? "{}");
+    const saved = JSON.parse(
+      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}",
+    );
     expect(saved.version).toBe(4);
     expect(saved.snapshot.phase).toBe("FINAL_RESULT");
     expect(saved.snapshot.puzzleId).toBe("TEST-PUZZLE");
@@ -220,7 +238,7 @@ describe("GameWorld state invariants", () => {
     const restoredWorld = new GameWorld(
       [puzzle()],
       () => undefined,
-      () => undefined
+      () => undefined,
     );
     const restoredState = internals(restoredWorld);
     command({
