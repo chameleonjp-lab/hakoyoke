@@ -27,7 +27,7 @@ const ACTION_PRIORITY: Record<SolutionStep["action"], number> = {
 };
 
 export function simulatePuzzleSolution(
-  puzzle: PuzzleDescriptor
+  puzzle: PuzzleDescriptor,
 ): SolutionSimulationResult {
   const cubes: CubeState[] = puzzle.layout.map((cube, index) => ({
     ...cube,
@@ -81,11 +81,11 @@ export function simulatePuzzleSolution(
     if (step.action === "capture") {
       if (!marker) return failure("capture without marker");
       const target = cubes.find(
-        cube =>
+        (cube) =>
           !cube.captured &&
           !cube.falling &&
           cube.x === marker?.x &&
-          cube.z === marker?.z
+          cube.z === marker?.z,
       );
       if (!target) return failure("marker has no landed cube");
       target.captured = true;
@@ -98,7 +98,7 @@ export function simulatePuzzleSolution(
           z: target.z,
           armed: true,
         };
-        if (!areas.some(area => area.x === next.x && area.z === next.z)) {
+        if (!areas.some((area) => area.x === next.x && area.z === next.z)) {
           areas.push(next);
           regeneratedAreaAnchors += 1;
         }
@@ -126,7 +126,7 @@ export function simulatePuzzleSolution(
           z: target.z,
           armed: true,
         };
-        if (!areas.some(area => area.x === next.x && area.z === next.z)) {
+        if (!areas.some((area) => area.x === next.x && area.z === next.z)) {
           areas.push(next);
           regeneratedAreaAnchors += 1;
         }
@@ -136,7 +136,7 @@ export function simulatePuzzleSolution(
   }
 
   const remaining = cubes.filter(
-    cube => cube.type !== "void" && !cube.captured
+    (cube) => cube.type !== "void" && !cube.captured,
   ).length;
   const measuredRolls =
     captureRotations.length < 2
@@ -150,7 +150,7 @@ export function simulatePuzzleSolution(
       voidCaptured,
       areaUses,
       consumedAreaAnchors,
-      regeneratedAreaAnchors
+      regeneratedAreaAnchors,
     );
   if (voidCaptured)
     return failure(
@@ -160,7 +160,7 @@ export function simulatePuzzleSolution(
       voidCaptured,
       areaUses,
       consumedAreaAnchors,
-      regeneratedAreaAnchors
+      regeneratedAreaAnchors,
     );
   if (remaining)
     return failure(
@@ -170,7 +170,7 @@ export function simulatePuzzleSolution(
       voidCaptured,
       areaUses,
       consumedAreaAnchors,
-      regeneratedAreaAnchors
+      regeneratedAreaAnchors,
     );
   if (measuredRolls !== puzzle.requiredRolls)
     return failure(
@@ -180,13 +180,13 @@ export function simulatePuzzleSolution(
       voidCaptured,
       areaUses,
       consumedAreaAnchors,
-      regeneratedAreaAnchors
+      regeneratedAreaAnchors,
     );
   return {
     valid: true,
     reason: "ok",
     requiredCaptured: cubes.filter(
-      cube => cube.type !== "void" && cube.captured
+      (cube) => cube.type !== "void" && cube.captured,
     ).length,
     voidCaptured,
     measuredRolls,
@@ -198,13 +198,13 @@ export function simulatePuzzleSolution(
 }
 
 export function deriveDirectSolution(
-  puzzle: Pick<PuzzleDescriptor, "id" | "width" | "depth" | "layout">
+  puzzle: Pick<PuzzleDescriptor, "id" | "width" | "depth" | "layout">,
 ): SolutionStep[] {
   const targetZ = 0;
   const steps: SolutionStep[] = [];
   let sequence = 0;
   for (const cube of puzzle.layout
-    .filter(item => item.type !== "void")
+    .filter((item) => item.type !== "void")
     .sort((a, b) => a.z - b.z || a.x - b.x)) {
     const rotation = cube.z - targetZ;
     steps.push(
@@ -221,7 +221,7 @@ export function deriveDirectSolution(
         x: cube.x,
         z: targetZ,
         sequence: sequence++,
-      }
+      },
     );
   }
   return steps;
@@ -243,7 +243,7 @@ function failure(
   voidCaptured = 0,
   areaUses = 0,
   consumedAreaAnchors = 0,
-  regeneratedAreaAnchors = 0
+  regeneratedAreaAnchors = 0,
 ): SolutionSimulationResult {
   return {
     valid: false,
