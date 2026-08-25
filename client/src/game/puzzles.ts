@@ -66,8 +66,7 @@ function buildPuzzle(
   const pairCount = Math.ceil(depth / 2);
   const pattern = (stage * 7 + wave * 3 + ordinal * 2) % 6;
   const center =
-    1 +
-    ((seed + wave * 37 + ordinal * 17) % Math.max(1, width - 2));
+    1 + ((seed + wave * 37 + ordinal * 17) % Math.max(1, width - 2));
   const protectVoid =
     stage >= 2
       ? ordinal === 1 || pattern % 3 === 0
@@ -85,9 +84,7 @@ function buildPuzzle(
     }
   }
 
-  const routeCandidates = [0, width - 1].filter(
-    x => Math.abs(x - center) > 1
-  );
+  const routeCandidates = [0, width - 1].filter(x => Math.abs(x - center) > 1);
   const routeNeeded =
     ordinal > 1 || stage >= 2 || (stage === 1 && pattern % 2 === 0);
   const routeCount = routeNeeded
@@ -97,9 +94,7 @@ function buildPuzzle(
   for (let index = 0; index < routeCount; index += 1) {
     const x =
       routeCandidates[(pattern + index + ordinal) % routeCandidates.length];
-    let offset =
-      1 +
-      ((pattern + ordinal + index * 2) % Math.max(1, depth - 1));
+    let offset = 1 + ((pattern + ordinal + index * 2) % Math.max(1, depth - 1));
     while (routeTargets.some(target => target.offset === offset)) {
       offset = offset === depth - 1 ? 1 : offset + 1;
     }
