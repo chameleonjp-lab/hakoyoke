@@ -1,6 +1,7 @@
 /** Obsidian Observatory: deterministic 30Hz rules; Babylon only reads snapshots. */
 import { InputManager } from "./InputManager";
 import { findPuzzle } from "./puzzles";
+import { validatePuzzle } from "./puzzleValidation";
 import { resolveDuelRound } from "./duelRules";
 import {
   advanceOneCell,
@@ -817,6 +818,14 @@ export class GameWorld {
       return;
     }
     if (command.type === "load-custom") {
+      const validation = validatePuzzle(command.puzzle);
+      if (!validation.valid) {
+        this.mode = "CREATE";
+        this.phase = "MENU";
+        this.banner = `CUSTOM INVALID // ${validation.reason}`;
+        this.input.clear();
+        return;
+      }
       this.mode = "CREATE";
       this.puzzles.unshift(command.puzzle);
       this.puzzleIndex = 0;
