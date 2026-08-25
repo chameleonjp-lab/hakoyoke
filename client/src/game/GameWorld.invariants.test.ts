@@ -225,6 +225,65 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
+  it("starts a validated custom puzzle in CREATE mode", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const custom = {
+      ...puzzle(),
+      id: "CUSTOM-VALID",
+      difficultyTag: "custom",
+      solution: [
+        { rotation: 0, action: "mark" as const, x: 1, z: 0, sequence: 0 },
+        {
+          rotation: 0,
+          action: "capture" as const,
+          x: 1,
+          z: 0,
+          sequence: 1,
+        },
+      ],
+    };
+
+    command({ type: "load-custom", puzzle: custom });
+
+    const state = internals(world);
+    expect(state.mode).toBe("CREATE");
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.currentPuzzle.id).toBe("CUSTOM-VALID");
+    expect((world as unknown as { banner: string }).banner).toBe(
+      "CUSTOM ORDEAL"
+    );
+    world.dispose();
+  });
+
+  it("ignores a corrupted campaign snapshot and starts a fresh run", () => {
+    storage.setItem("cubic-ordeal-campaign-v1", "{broken");
+
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+
+    command({
+      type: "start",
+      mode: "CAMPAIGN",
+      difficulty: "NORMAL",
+      stage: 1,
+      wave: 1,
+      ordinal: 1,
+    });
+
+    const state = internals(world);
+    expect(state.mode).toBe("CAMPAIGN");
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect((world as unknown as { banner: string }).banner).toBe("STAGE 1");
+    world.dispose();
+  });
+
   it("persists FINAL_RESULT after the final bonus and makes it idempotent", () => {
     const world = new GameWorld(
       [puzzle()],

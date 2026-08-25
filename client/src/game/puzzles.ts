@@ -1,15 +1,37 @@
 /** Deterministic 88-puzzle archive generated from the documented stage plan. */
+import {
+  parsePuzzleDescriptor,
+  validatePuzzleArchive,
+} from "./puzzleValidation";
 import { STAGE_PLAN } from "./stagePlan";
 import type { CubeType, PuzzleDescriptor, SolutionStep } from "./types";
 
 export async function loadPuzzles(): Promise<PuzzleDescriptor[]> {
   const response = await fetch("/data/puzzles.json", { cache: "no-cache" });
   if (!response.ok) throw new Error("Puzzle archive could not be loaded.");
-  const puzzles = (await response.json()) as unknown;
-  if (!Array.isArray(puzzles)) {
+  const payload = (await response.json()) as unknown;
+  if (!Array.isArray(payload)) {
     throw new Error("Puzzle archive has an invalid format.");
   }
-  return puzzles as PuzzleDescriptor[];
+
+  const parsed = payload.map(parsePuzzleDescriptor);
+  const invalidIndex = parsed.findIndex(
+    result => !result.valid || !result.puzzle
+  );
+  if (invalidIndex >= 0) {
+    throw new Error(
+      `Puzzle archive entry ${invalidIndex + 1} invalid: ${parsed[invalidIndex]?.reason}`
+    );
+  }
+
+  const puzzles = parsed.map(result => result.puzzle as PuzzleDescriptor);
+  const validation = validatePuzzleArchive(puzzles);
+  if (!validation.valid) {
+    throw new Error(
+      `Puzzle archive failed validation: ${validation.issues[0] ?? "unknown error"}`
+    );
+  }
+  return puzzles;
 }
 
 export function generatePuzzles(): PuzzleDescriptor[] {

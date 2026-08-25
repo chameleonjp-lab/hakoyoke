@@ -376,3 +376,128 @@ test("RUM観測面が初期ロード・3Dランタイム・初回フレームの
     /\d+ms/
   );
 });
+
+test("モバイル入力は複数指とブラウザジェスチャーを無視し、解除を取りこぼさない", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  const zone = page.locator(".touch-zone");
+  await expect(zone).toBeVisible();
+  await expect(zone).toHaveCSS("touch-action", "none");
+
+  const contextMenuCanceled = await zone.evaluate(element => {
+    const event = new Event("contextmenu", {
+      bubbles: true,
+      cancelable: true,
+    });
+    return !element.dispatchEvent(event);
+  });
+  expect(contextMenuCanceled).toBe(true);
+
+  await zone.dispatchEvent("pointerdown", {
+    pointerId: 91,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    clientX: 100,
+    clientY: 650,
+  });
+  await zone.dispatchEvent("pointermove", {
+    pointerId: 91,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    clientX: 100,
+    clientY: 600,
+  });
+  await expect(zone.locator(".touch-stick.floating")).toHaveAttribute(
+    "data-origin",
+    "100:650"
+  );
+
+  await zone.dispatchEvent("pointerdown", {
+    pointerId: 92,
+    pointerType: "touch",
+    isPrimary: false,
+    button: 0,
+    clientX: 240,
+    clientY: 650,
+  });
+  await expect(zone.locator(".touch-stick.floating")).toHaveAttribute(
+    "data-origin",
+    "100:650"
+  );
+  await zone.dispatchEvent("pointercancel", {
+    pointerId: 91,
+    pointerType: "touch",
+    isPrimary: true,
+  });
+  await expect(zone.locator(".touch-stick.floating")).toHaveCount(0);
+
+  await page.evaluate(() => {
+    const target = window as Window & { touchCommands?: unknown[] };
+    target.touchCommands = [];
+    window.addEventListener("cubic:command", event => {
+      const detail = (event as CustomEvent).detail;
+      if (detail?.type === "touch-fast") target.touchCommands?.push(detail);
+    });
+  });
+  const fast = page.getByRole("button", { name: "FAST" });
+  await fast.dispatchEvent("pointerdown", {
+    pointerId: 101,
+    pointerType: "touch",
+    isPrimary: true,
+  });
+  await fast.dispatchEvent("pointerdown", {
+    pointerId: 102,
+    pointerType: "touch",
+    isPrimary: false,
+  });
+  await fast.dispatchEvent("pointerup", {
+    pointerId: 102,
+    pointerType: "touch",
+    isPrimary: false,
+  });
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await fast.dispatchEvent("pointerdown", {
+    pointerId: 103,
+    pointerType: "touch",
+    isPrimary: true,
+  });
+  await fast.dispatchEvent("pointercancel", {
+    pointerId: 103,
+    pointerType: "touch",
+    isPrimary: true,
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { touchCommands?: unknown[] }).touchCommands
+      )
+    )
+    .toEqual([
+      { type: "touch-fast", active: true },
+      { type: "touch-fast", active: false },
+      { type: "touch-fast", active: true },
+      { type: "touch-fast", active: false },
+    ]);
+});
+
+test("壊れたパズルアーカイブは開始前に安全に停止する", async ({ page }) => {
+  await page.route("**/data/puzzles.json", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([null]),
+    })
+  );
+  await page.goto("/?demo");
+
+  await expect(page.getByRole("alert")).toContainText(
+    "RENDERER // INITIALIZATION FAILED"
+  );
+  await expect(page.getByRole("button", { name: "RETRY" })).toBeVisible();
+  await expect(page.getByText("CUBIC", { exact: false })).toBeVisible();
+});
