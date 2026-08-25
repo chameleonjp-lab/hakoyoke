@@ -16,6 +16,9 @@ export class InputManager {
   private touchFast = false;
   private readonly gamepadEdges = new Set<number>();
   private previousButtons: boolean[] = [];
+  private readonly onVisibility = () => {
+    if (document.hidden) this.clear();
+  };
   private onKeyDown = (event: KeyboardEvent) => {
     const key = event.key.toLowerCase();
     if (
@@ -39,14 +42,14 @@ export class InputManager {
     window.addEventListener("keydown", this.onKeyDown, { passive: false });
     window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("blur", this.clear);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) this.clear();
-    });
+    document.addEventListener("visibilitychange", this.onVisibility);
   }
 
-  private clear = () => {
+  clear = () => {
     this.down.clear();
     this.edges.clear();
+    this.gamepadEdges.clear();
+    this.previousButtons = [];
     this.touchX = 0;
     this.touchZ = 0;
     this.touchFast = false;
@@ -139,6 +142,7 @@ export class InputManager {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("blur", this.clear);
+    document.removeEventListener("visibilitychange", this.onVisibility);
     this.clear();
   }
 }

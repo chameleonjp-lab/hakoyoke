@@ -107,6 +107,16 @@ export interface GameSnapshot {
   tutorialStep: number;
   captureProgress: number;
   crushProgress: number;
+  /** State required to restore a run without changing its phase or score. */
+  pausedFromPhase?: GamePhase | null;
+  phaseTimer?: number;
+  rollElapsed?: number;
+  settleElapsed?: number;
+  isRolling?: boolean;
+  hasScoringStarted?: boolean;
+  elapsed?: number;
+  puzzleId?: string;
+  completionAwardedForPuzzle?: string | null;
 }
 
 export interface DifficultyConfig {
