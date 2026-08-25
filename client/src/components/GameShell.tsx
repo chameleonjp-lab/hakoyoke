@@ -895,6 +895,7 @@ function Hud({ snapshot, onMenu }: { snapshot: GameSnapshot; onMenu(): void }) {
         </div>
         <button
           className="pause-button"
+          aria-label="PAUSE"
           onClick={() => command({ type: "pause" })}
         >
           Ⅱ <span>PAUSE</span>
