@@ -1,5 +1,6 @@
 /** Obsidian Observatory UI: edge instrumentation, not a centered generic dashboard. */
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -80,6 +81,9 @@ export default function GameShell({
       "PAUSED",
       "CRUSHED",
     ].includes(snapshot.phase);
+  const touchInput =
+    snapshot &&
+    ["PLAYING", "TUTORIAL", "CAPTURE_PAUSE"].includes(snapshot.phase);
   const result =
     snapshot &&
     [
@@ -179,7 +183,7 @@ export default function GameShell({
           }}
         />
       )}
-      {playing && snapshot && <TouchControls snapshot={snapshot} />}
+      {touchInput && snapshot && <TouchControls snapshot={snapshot} />}
     </div>
   );
 }
@@ -1086,6 +1090,18 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   } | null>(null);
   const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
   const activePointer = useRef<number | null>(null);
+  const resetInput = useCallback(() => {
+    activePointer.current = null;
+    setStick(null);
+    command({ type: "touch-move", x: 0, z: 0 });
+    command({ type: "touch-fast", active: false });
+  }, []);
+  const previousPhase = useRef(snapshot.phase);
+  useEffect(() => {
+    if (previousPhase.current !== snapshot.phase) resetInput();
+    previousPhase.current = snapshot.phase;
+  }, [resetInput, snapshot.phase]);
+  useEffect(() => () => resetInput(), [resetInput]);
   const markHasTarget = Boolean(
     snapshot.marker &&
       snapshot.cubes.some(
@@ -1141,9 +1157,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const release = (event: PointerEvent<HTMLDivElement>) => {
     if (activePointer.current !== event.pointerId) return;
-    activePointer.current = null;
-    setStick(null);
-    command({ type: "touch-move", x: 0, z: 0 });
+    resetInput();
   };
   const pressAction = (
     event: PointerEvent<HTMLButtonElement>,
@@ -1191,6 +1205,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         onPointerMove={update}
         onPointerUp={release}
         onPointerCancel={release}
+        onLostPointerCapture={release}
       >
         {stick && (
           <div
