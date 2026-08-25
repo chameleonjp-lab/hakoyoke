@@ -997,3 +997,655 @@ h2 {
   .hud-top {
     height: 55px;
     padding-left: 12px;
+    padding-right: 12px;
+  }
+  .hud-brand .brand-symbol {
+    width: 23px;
+    height: 23px;
+    border-width: 2px;
+  }
+  .hud-brand .brand-symbol i {
+    display: none;
+  }
+  .hud-brand span,
+  .pause-button span {
+    display: none;
+  }
+  .hud-bottom {
+    bottom: 172px;
+    width: min(370px, 92vw);
+  }
+  .tutorial-callout {
+    left: 12px;
+    bottom: 174px;
+    width: min(300px, 75vw);
+  }
+  .practice-tools {
+    display: none;
+  }
+  .debug-panel {
+    left: 8px;
+    top: 62px;
+    transform: scale(0.83);
+    transform-origin: top left;
+  }
+  .signal-banner {
+    top: 67px;
+    font-size: 13px;
+    max-width: 88vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .touch-controls {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 12;
+    height: max(160px, calc(154px + env(safe-area-inset-bottom)));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 23px calc(14px + env(safe-area-inset-bottom));
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 8, 15, 0.06),
+      rgba(2, 8, 15, 0.94) 30%
+    );
+  }
+  .touch-zone {
+    touch-action: none;
+  }
+  .touch-stick {
+    position: relative;
+    width: 106px;
+    aspect-ratio: 1;
+    border: 1px solid rgba(102, 191, 223, 0.4);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(29, 98, 121, 0.22),
+      rgba(4, 13, 23, 0.65)
+    );
+    touch-action: none;
+  }
+  .touch-stick::before,
+  .touch-stick::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: rgba(102, 190, 220, 0.25);
+    transform: translate(-50%, -50%);
+  }
+  .touch-stick::before {
+    width: 78%;
+    height: 1px;
+  }
+  .touch-stick::after {
+    height: 78%;
+    width: 1px;
+  }
+  .touch-knob {
+    position: absolute;
+    left: 34px;
+    top: 34px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #74e1ff;
+    border-radius: 50%;
+    background: rgba(40, 190, 235, 0.2);
+    transition: transform 0.04s linear;
+  }
+  .touch-actions {
+    display: grid;
+    grid-template-columns: 68px 68px;
+    grid-template-rows: 42px 65px;
+    gap: 7px;
+  }
+  .touch-actions button {
+    border: 1px solid rgba(96, 203, 235, 0.45);
+    color: #d9f6ff;
+    background: rgba(5, 22, 33, 0.88);
+    font:
+      600 10px/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.06em;
+    touch-action: none;
+  }
+  .touch-actions .area {
+    grid-column: 1;
+  }
+  .touch-actions .fast {
+    grid-column: 2;
+  }
+  .touch-actions .mark {
+    grid-column: 1 / span 2;
+    border-color: #28beeb;
+    background: linear-gradient(135deg, #0a5069, #063548);
+    font-size: 13px;
+  }
+  .touch-actions .mark span {
+    font-size: 8px;
+    color: #86dff6;
+  }
+  .game-canvas {
+    height: calc(100dvh - 160px - env(safe-area-inset-bottom));
+    bottom: auto;
+  }
+  .void-vignette {
+    bottom: 160px;
+  }
+  .overlay-panel {
+    padding: 26px;
+  }
+  .result-grid {
+    gap: 5px;
+  }
+  .result-grid .hud-stat b {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 400px) {
+  .menu-lead {
+    font-size: 13px;
+  }
+  .brand-lockup {
+    gap: 11px;
+  }
+  .brand-lockup img {
+    width: 42px;
+    height: 42px;
+  }
+  .difficulty-row button {
+    padding: 8px 7px;
+    font-size: 9px;
+  }
+  .touch-controls {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .touch-stick {
+    width: 92px;
+  }
+  .touch-knob {
+    left: 28px;
+    top: 28px;
+  }
+  .touch-actions {
+    grid-template-columns: 62px 62px;
+  }
+  .hud-bottom {
+    font-size: 8px;
+  }
+  .editor-actions .signal-action {
+    font-size: 9px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .title-rail {
+    padding-top: 26px;
+    padding-bottom: 42px;
+    justify-content: flex-start;
+  }
+  .brand-lockup {
+    margin-bottom: 20px;
+  }
+  .menu-actions {
+    gap: 6px;
+  }
+  .signal-action {
+    min-height: 43px;
+    padding: 9px 12px;
+  }
+  .menu-lead {
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  .title-footer {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+  .touch-controls {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 12;
+    height: 116px;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: auto;
+    background: linear-gradient(180deg, transparent, rgba(2, 8, 15, 0.87));
+  }
+  .touch-stick {
+    position: relative;
+    width: 82px;
+    aspect-ratio: 1;
+    border: 1px solid rgba(102, 191, 223, 0.4);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(29, 98, 121, 0.22),
+      rgba(4, 13, 23, 0.65)
+    );
+    touch-action: none;
+  }
+  .touch-stick::before,
+  .touch-stick::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: rgba(102, 190, 220, 0.25);
+    transform: translate(-50%, -50%);
+  }
+  .touch-stick::before {
+    width: 78%;
+    height: 1px;
+  }
+  .touch-stick::after {
+    height: 78%;
+    width: 1px;
+  }
+  .touch-knob {
+    position: absolute;
+    left: 23px;
+    top: 23px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #74e1ff;
+    border-radius: 50%;
+    background: rgba(40, 190, 235, 0.2);
+  }
+  .touch-actions {
+    display: grid;
+    grid-template-columns: 58px 58px;
+    grid-template-rows: 35px 52px;
+    gap: 7px;
+  }
+  .touch-actions button {
+    border: 1px solid rgba(96, 203, 235, 0.45);
+    color: #d9f6ff;
+    background: rgba(5, 22, 33, 0.88);
+    font:
+      600 10px/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.06em;
+    touch-action: none;
+  }
+  .touch-actions .mark {
+    grid-column: 1 / span 2;
+    border-color: #28beeb;
+    background: linear-gradient(135deg, #0a5069, #063548);
+  }
+  .game-canvas {
+    height: 100%;
+  }
+  .hud-bottom {
+    bottom: 10px;
+  }
+  .tutorial-callout {
+    bottom: 48px;
+  }
+  .practice-tools {
+    display: none;
+  }
+
+  /* Mobile-first instrument surface: the movement key appears only at the exact touch origin. */
+  @media (max-width: 720px), (max-height: 520px) and (orientation: landscape) {
+    .touch-controls {
+      position: fixed;
+      inset: 0;
+      z-index: 12;
+      display: block;
+      padding: 0;
+      pointer-events: none;
+      touch-action: auto;
+      background: none;
+    }
+    .touch-zone {
+      position: fixed;
+      inset: 50dvh 0 0;
+      z-index: 1;
+      pointer-events: auto;
+      touch-action: none;
+      background: linear-gradient(
+        180deg,
+        rgba(2, 9, 16, 0),
+        rgba(2, 9, 16, 0.18)
+      );
+    }
+    .touch-zone-label {
+      position: absolute;
+      left: 14px;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      color: rgba(146, 214, 234, 0.48);
+      font:
+        500 8px/1 "IBM Plex Mono",
+        monospace;
+      letter-spacing: 0.14em;
+      pointer-events: none;
+    }
+    .touch-stick.floating {
+      position: fixed;
+      z-index: 2;
+      width: 104px;
+      height: 104px;
+      margin: -52px 0 0 -52px;
+      border: 1px solid rgba(107, 225, 255, 0.88);
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(38, 174, 215, 0.28) 0 21%,
+        rgba(4, 19, 31, 0.66) 62%,
+        rgba(4, 11, 20, 0.1) 100%
+      );
+      box-shadow:
+        0 0 0 1px rgba(1, 7, 14, 0.85),
+        0 0 24px rgba(40, 190, 235, 0.26),
+        inset 0 0 26px rgba(40, 190, 235, 0.18);
+      pointer-events: none;
+    }
+    .touch-stick.floating::before,
+    .touch-stick.floating::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      background: rgba(157, 233, 255, 0.36);
+      transform: translate(-50%, -50%);
+    }
+    .touch-stick.floating::before {
+      width: 76px;
+      height: 1px;
+    }
+    .touch-stick.floating::after {
+      width: 1px;
+      height: 76px;
+    }
+    .touch-stick.floating .touch-knob {
+      left: 34px;
+      top: 34px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid #d9faff;
+      border-radius: 50%;
+      background: rgba(40, 190, 235, 0.54);
+      box-shadow: 0 0 12px rgba(78, 219, 255, 0.62);
+      transition: transform 40ms linear;
+    }
+    .touch-actions {
+      position: fixed;
+      right: max(13px, env(safe-area-inset-right));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 64px 64px;
+      grid-template-rows: 38px 66px;
+      gap: 7px;
+      pointer-events: auto;
+    }
+    .touch-actions button {
+      position: relative;
+      z-index: 4;
+      pointer-events: auto;
+      border: 1px solid rgba(124, 222, 249, 0.66);
+      color: #e8fbff;
+      background: linear-gradient(
+        145deg,
+        rgba(11, 44, 61, 0.94),
+        rgba(3, 13, 25, 0.96)
+      );
+      font:
+        700 10px/1 "IBM Plex Mono",
+        monospace;
+      letter-spacing: 0.07em;
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
+      touch-action: none;
+    }
+    .touch-actions .mark {
+      grid-column: 1 / span 2;
+      border-color: #51dbff;
+      background: linear-gradient(135deg, #137694, #075066);
+      font-size: 13px;
+    }
+    .touch-actions .mark span {
+      font-size: 8px;
+      color: #c2f5ff;
+    }
+    .touch-actions button:disabled {
+      opacity: 0.38;
+      border-color: rgba(112, 151, 166, 0.42);
+      color: #7896a3;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 720px) and (orientation: portrait) {
+    .instrument-frame {
+      inset: 8px;
+      opacity: 0.44;
+    }
+    .hud-top {
+      height: 56px;
+      padding: max(10px, env(safe-area-inset-top)) 12px 8px;
+    }
+    .hud-left,
+    .hud-right {
+      top: 67px;
+      transform: none;
+      display: flex;
+      gap: 9px;
+    }
+    .hud-left {
+      left: 12px;
+    }
+    .hud-right {
+      right: 12px;
+    }
+    .hud-stat {
+      gap: 1px;
+    }
+    .hud-stat span {
+      font-size: 7px;
+    }
+    .hud-stat b {
+      font-size: 12px;
+    }
+    .hud-stat.score b {
+      font-size: 16px;
+    }
+    .hud-left .hud-stat:nth-child(3),
+    .hud-right .hud-stat:nth-child(4) {
+      display: none;
+    }
+    .hud-bottom {
+      bottom: 112px;
+      width: min(330px, calc(100vw - 32px));
+      min-height: 28px;
+      padding: 6px 9px;
+      font-size: 8px;
+    }
+    .tutorial-callout {
+      left: 12px;
+      bottom: 112px;
+      width: min(290px, calc(100vw - 176px));
+      padding: 9px 10px;
+    }
+    .tutorial-callout p {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .signal-banner {
+      top: 112px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+    }
+    .game-canvas {
+      height: 100dvh;
+    }
+    .void-vignette {
+      bottom: 0;
+    }
+  }
+}
+
+/* Keep mobile input hit areas explicit and below blocking result/pause overlays. */
+@media (max-width: 720px), (max-height: 520px) and (orientation: landscape) {
+  .touch-controls {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    display: block;
+    padding: 0;
+    pointer-events: none;
+    touch-action: auto;
+    background: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .touch-zone {
+    position: fixed;
+    top: 50dvh;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    display: block;
+    pointer-events: auto;
+    touch-action: none;
+    overscroll-behavior: contain;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 9, 16, 0),
+      rgba(2, 9, 16, 0.18)
+    );
+  }
+
+  .touch-zone-label {
+    position: absolute;
+    left: 14px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    color: rgba(146, 214, 234, 0.48);
+    font:
+      500 8px/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.14em;
+    pointer-events: none;
+  }
+
+  .touch-stick.floating {
+    position: fixed;
+    z-index: 2;
+    width: 104px;
+    height: 104px;
+    margin: -52px 0 0 -52px;
+    border: 1px solid rgba(107, 225, 255, 0.88);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(38, 174, 215, 0.28) 0 21%,
+      rgba(4, 19, 31, 0.66) 62%,
+      rgba(4, 11, 20, 0.1) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(1, 7, 14, 0.85),
+      0 0 24px rgba(40, 190, 235, 0.26),
+      inset 0 0 26px rgba(40, 190, 235, 0.18);
+    pointer-events: none;
+  }
+
+  .touch-stick.floating::before,
+  .touch-stick.floating::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: rgba(157, 233, 255, 0.36);
+    transform: translate(-50%, -50%);
+  }
+
+  .touch-stick.floating::before {
+    width: 76px;
+    height: 1px;
+  }
+
+  .touch-stick.floating::after {
+    width: 1px;
+    height: 76px;
+  }
+
+  .touch-stick.floating .touch-knob {
+    left: 34px;
+    top: 34px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #d9faff;
+    border-radius: 50%;
+    background: rgba(40, 190, 235, 0.54);
+    box-shadow: 0 0 12px rgba(78, 219, 255, 0.62);
+    transition: transform 40ms linear;
+  }
+
+  .touch-actions {
+    position: fixed;
+    right: max(13px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 64px 64px;
+    grid-template-rows: 38px 66px;
+    gap: 7px;
+    pointer-events: auto;
+  }
+
+  .touch-actions button {
+    position: relative;
+    z-index: 3;
+    min-height: 0;
+    pointer-events: auto;
+    border: 1px solid rgba(124, 222, 249, 0.66);
+    color: #e8fbff;
+    background: linear-gradient(
+      145deg,
+      rgba(11, 44, 61, 0.94),
+      rgba(3, 13, 25, 0.96)
+    );
+    font:
+      700 10px/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.07em;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
+    touch-action: none;
+  }
+
+  .touch-actions .mark {
+    grid-column: 1 / span 2;
+    border-color: #51dbff;
+    background: linear-gradient(135deg, #137694, #075066);
+    font-size: 13px;
+  }
+
+  .touch-actions .mark span {
+    font-size: 8px;
+    color: #c2f5ff;
+  }
+
+  .touch-actions button:disabled {
+    opacity: 0.38;
+    border-color: rgba(112, 151, 166, 0.42);
+    color: #7896a3;
+    box-shadow: none;
+  }
+}
