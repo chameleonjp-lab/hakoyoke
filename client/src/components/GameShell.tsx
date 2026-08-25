@@ -9,7 +9,10 @@ import {
   type PointerEvent,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { validatePuzzle } from "@/game/puzzleValidation";
+import {
+  parsePuzzleDescriptor,
+  validatePuzzle,
+} from "@/game/puzzleValidation";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { calculateMindIndex } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
@@ -592,6 +595,7 @@ function CreatePanel({
     }),
     [depth, derived, layout, requiredRolls, seed, width]
   );
+  const validation = useMemo(() => validatePuzzle(descriptor), [descriptor]);
   const cycle = (index: number) =>
     setCells(previous =>
       previous.map((cell, cellIndex) =>
@@ -629,7 +633,7 @@ function CreatePanel({
     setNotice(`CUSTOM ARCHIVEへ保存しました。保存数: ${archive.length + 1}`);
   };
   const test = () => {
-    const result = validatePuzzle(descriptor);
+    const result = validation;
     setNotice(
       result.valid
         ? `VALID // 必須 ${result.required}、VOID ${result.voids}、AREA ${result.areaUses}回`
@@ -651,16 +655,18 @@ function CreatePanel({
   const importJson = async (file?: File) => {
     if (!file) return;
     try {
-      const imported = JSON.parse(await file.text()) as PuzzleDescriptor;
+      const parsed = parsePuzzleDescriptor(
+        JSON.parse(await file.text()) as unknown
+      );
+      if (!parsed.valid || !parsed.puzzle) throw new Error(parsed.reason);
+      const imported = parsed.puzzle;
       if (
-        !imported ||
-        !Array.isArray(imported.layout) ||
         imported.width < 4 ||
         imported.width > 7 ||
         imported.depth < 2 ||
         imported.depth > 9
       )
-        throw new Error("format");
+        throw new Error("grid bounds");
       setWidth(imported.width);
       setDepth(imported.depth);
       setCells(
@@ -684,19 +690,24 @@ function CreatePanel({
     }
   };
   const loadLatest = () => {
-    const archive = JSON.parse(
-      localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]"
-    ) as PuzzleDescriptor[];
-    const latest = archive.at(-1);
-    if (!latest) {
-      setNotice("保存済み問題がありません。");
-      return;
+    try {
+      const archive = JSON.parse(
+        localStorage.getItem("cubic-ordeal-custom-v1") ?? "[]"
+      ) as unknown;
+      if (!Array.isArray(archive)) throw new Error("archive");
+      const latest = archive.at(-1);
+      if (!latest) {
+        setNotice("保存済み問題がありません。");
+        return;
+      }
+      void importJson(
+        new File([JSON.stringify(latest)], "archive.json", {
+          type: "application/json",
+        })
+      );
+    } catch {
+      setNotice("WARNING // 保存済み問題アーカイブが壊れています。");
     }
-    void importJson(
-      new File([JSON.stringify(latest)], "archive.json", {
-        type: "application/json",
-      })
-    );
   };
   return (
     <div className="menu-actions create-panel">
@@ -774,8 +785,9 @@ function CreatePanel({
         <Action label="BACK" note="MODE" onClick={onBack} />
         <Action
           label="TEST ORDEAL"
-          note={difficulty}
+          note={validation.valid ? difficulty : "VALIDATE"}
           onClick={() => onTest(descriptor)}
+          disabled={!validation.valid}
           primary
         />
       </div>
@@ -839,16 +851,19 @@ function Action({
   note,
   onClick,
   primary = false,
+  disabled = false,
 }: {
   label: string;
   note: string;
   onClick(): void;
   primary?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <Button
       className={`signal-action ${primary ? "primary" : ""}`}
       onClick={onClick}
+      disabled={disabled}
     >
       <span>{label}</span>
       <small>{note}</small>
