@@ -75,12 +75,12 @@ describe("custom puzzle descriptor boundary", () => {
 
   it("turns a malformed runtime value into a validation result instead of throwing", () => {
     expect(
-      validatePuzzle({ layout: [] } as unknown as PuzzleDescriptor),
+      validatePuzzle({ layout: [] } as unknown as PuzzleDescriptor)
     ).toEqual(
       expect.objectContaining({
         valid: false,
         reason: expect.any(String),
-      }),
+      })
     );
   });
 });
