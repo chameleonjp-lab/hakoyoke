@@ -253,3 +253,54 @@ describe("GameWorld state invariants", () => {
     restoredWorld.dispose();
   });
 });
+
+describe("GameWorld mode boundaries", () => {
+  beforeEach(() => {
+    storage.clear();
+    installBrowserStubs();
+  });
+
+  afterEach(() => {
+    storage.clear();
+  });
+
+  it("does not route standalone modes into the campaign archive", () => {
+    const modes: GameMode[] = ["TUTORIAL", "CREATE", "PRACTICE"];
+
+    for (const mode of modes) {
+      const world = new GameWorld(
+        [puzzle(), { ...puzzle(), id: "NEXT-PUZZLE", ordinal: 2 }],
+        () => undefined,
+        () => undefined
+      );
+      const state = internals(world);
+      state.mode = mode;
+      state.phase = "PUZZLE_RESULT";
+      state.puzzleIndex = 0;
+
+      state.advanceAfterResult();
+
+      expect(state.phase).toBe("MENU");
+      world.dispose();
+    }
+  });
+
+  it("keeps campaign progression inside the campaign archive", () => {
+    const world = new GameWorld(
+      [puzzle(), { ...puzzle(), id: "NEXT-PUZZLE", ordinal: 2 }],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "CAMPAIGN";
+    state.phase = "PUZZLE_RESULT";
+    state.puzzleIndex = 0;
+
+    state.advanceAfterResult();
+
+    expect(state.currentPuzzle.id).toBe("NEXT-PUZZLE");
+    expect(state.puzzleIndex).toBe(1);
+    expect(state.phase).toBe("PLAYING");
+    world.dispose();
+  });
+});
