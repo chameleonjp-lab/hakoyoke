@@ -14,9 +14,7 @@ describe("puzzle archive runtime boundary", () => {
   });
 
   it("loads the complete generated archive only after validation", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(response(generatePuzzles()));
+    const fetchMock = vi.fn().mockResolvedValue(response(generatePuzzles()));
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(loadPuzzles()).resolves.toHaveLength(88);
@@ -42,9 +40,7 @@ describe("puzzle archive runtime boundary", () => {
     };
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response(archive)));
 
-    await expect(loadPuzzles()).rejects.toThrow(
-      "duplicate gameplay pattern"
-    );
+    await expect(loadPuzzles()).rejects.toThrow("duplicate gameplay pattern");
   });
 
   it("reports an unavailable archive response", async () => {
