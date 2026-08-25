@@ -1,5 +1,8 @@
 /** Deterministic 88-puzzle archive generated from the documented stage plan. */
-import { parsePuzzleDescriptor, validatePuzzleArchive } from "./puzzleValidation";
+import {
+  parsePuzzleDescriptor,
+  validatePuzzleArchive,
+} from "./puzzleValidation";
 import { STAGE_PLAN } from "./stagePlan";
 import type { CubeType, PuzzleDescriptor, SolutionStep } from "./types";
 
