@@ -460,8 +460,14 @@ test("モバイル入力は複数指とブラウザジェスチャーを無視�
     pointerType: "touch",
     isPrimary: false,
   });
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await fast.dispatchEvent("pointerdown", {
+    pointerId: 103,
+    pointerType: "touch",
+    isPrimary: true,
+  });
   await fast.dispatchEvent("pointercancel", {
-    pointerId: 101,
+    pointerId: 103,
     pointerType: "touch",
     isPrimary: true,
   });
@@ -472,6 +478,8 @@ test("モバイル入力は複数指とブラウザジェスチャーを無視�
       )
     )
     .toEqual([
+      { type: "touch-fast", active: true },
+      { type: "touch-fast", active: false },
       { type: "touch-fast", active: true },
       { type: "touch-fast", active: false },
     ]);
