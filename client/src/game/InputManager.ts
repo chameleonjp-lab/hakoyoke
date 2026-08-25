@@ -73,7 +73,7 @@ export class InputManager {
       candidate => candidate?.connected
     );
     const padX =
-      pad && Math.abs(pad.axes[0] ?? 0) > 0.18 ? pad.axes[0] ?? 0 : 0;
+      pad && Math.abs(pad.axes[0] ?? 0) > 0.18 ? (pad.axes[0] ?? 0) : 0;
     const padZ =
       pad && Math.abs(pad.axes[1] ?? 0) > 0.18 ? -(pad.axes[1] ?? 0) : 0;
     const dpadX =
