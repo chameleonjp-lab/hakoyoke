@@ -112,14 +112,37 @@ function buildPuzzle(
     if (cube) cube.type = "normal";
   }
 
+  let sequence = 0;
   const solution: SolutionStep[] = [
-    { rotation: Math.max(0, spawnRow - 1), action: "mark", x: center, z: 0 },
-    { rotation: spawnRow, action: "capture", x: center, z: 0 },
+    {
+      rotation: Math.max(0, spawnRow - 1),
+      action: "mark",
+      x: center,
+      z: 0,
+      sequence: sequence++,
+    },
+    {
+      rotation: spawnRow,
+      action: "capture",
+      x: center,
+      z: 0,
+      sequence: sequence++,
+    },
   ];
   if (protectVoid)
-    solution.push({ rotation: spawnRow, action: "mark", x: protectionX, z: 0 });
+    solution.push({
+      rotation: spawnRow,
+      action: "mark",
+      x: protectionX,
+      z: 0,
+      sequence: sequence++,
+    });
   for (let pair = 0; pair < pairCount; pair += 1) {
-    solution.push({ rotation: spawnRow + pair, action: "area" });
+    solution.push({
+      rotation: spawnRow + pair,
+      action: "area",
+      sequence: sequence++,
+    });
   }
   for (const target of routeTargets) {
     solution.push({
@@ -127,12 +150,14 @@ function buildPuzzle(
       action: "mark",
       x: target.x,
       z: 0,
+      sequence: sequence++,
     });
     solution.push({
       rotation: spawnRow + target.offset,
       action: "capture",
       x: target.x,
       z: 0,
+      sequence: sequence++,
     });
   }
 
