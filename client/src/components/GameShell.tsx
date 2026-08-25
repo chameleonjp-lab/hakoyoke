@@ -1117,6 +1117,15 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     previousPhase.current = snapshot.phase;
   }, [resetInput, snapshot.phase]);
   useEffect(() => () => resetInput(), [resetInput]);
+  useEffect(() => {
+    const resetOnFocusLoss = () => resetInput();
+    window.addEventListener("blur", resetOnFocusLoss);
+    document.addEventListener("visibilitychange", resetOnFocusLoss);
+    return () => {
+      window.removeEventListener("blur", resetOnFocusLoss);
+      document.removeEventListener("visibilitychange", resetOnFocusLoss);
+    };
+  }, [resetInput]);
   const markHasTarget = Boolean(
     snapshot.marker &&
       snapshot.cubes.some(
