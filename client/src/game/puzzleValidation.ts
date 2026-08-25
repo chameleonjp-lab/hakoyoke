@@ -125,6 +125,11 @@ export function parsePuzzleDescriptor(
       return parseFailure("solution x position is invalid");
     if (step.z !== undefined && !isInteger(step.z))
       return parseFailure("solution z position is invalid");
+    if (
+      step.sequence !== undefined &&
+      !isNonNegativeInteger(step.sequence)
+    )
+      return parseFailure("solution sequence is invalid");
   }
 
   if (!isRecord(value.validation))
