@@ -48,7 +48,7 @@ function parseFailure(reason: string): PuzzleDescriptorParseResult {
 }
 
 export function parsePuzzleDescriptor(
-  value: unknown
+  value: unknown,
 ): PuzzleDescriptorParseResult {
   if (!isRecord(value)) return parseFailure("descriptor is not an object");
 
@@ -97,7 +97,8 @@ export function parsePuzzleDescriptor(
     )
       return parseFailure("layout cell is invalid");
     const key = `${cube.x}:${cube.z}`;
-    if (positions.has(key)) return parseFailure("layout has duplicate positions");
+    if (positions.has(key))
+      return parseFailure("layout has duplicate positions");
     positions.add(key);
   }
 
@@ -125,10 +126,7 @@ export function parsePuzzleDescriptor(
       return parseFailure("solution x position is invalid");
     if (step.z !== undefined && !isInteger(step.z))
       return parseFailure("solution z position is invalid");
-    if (
-      step.sequence !== undefined &&
-      !isNonNegativeInteger(step.sequence)
-    )
+    if (step.sequence !== undefined && !isNonNegativeInteger(step.sequence))
       return parseFailure("solution sequence is invalid");
   }
 
@@ -148,16 +146,16 @@ export function parsePuzzleDescriptor(
 }
 
 export function validatePuzzle(
-  puzzle: PuzzleDescriptor
+  puzzle: PuzzleDescriptor,
 ): PuzzleValidationResult {
   const parsed = parsePuzzleDescriptor(puzzle);
   if (!parsed.valid || !parsed.puzzle)
     return invalidPuzzleValidation(parsed.reason);
   puzzle = parsed.puzzle;
-  const requiredCubes = puzzle.layout.filter(cube => cube.type !== "void");
-  const voids = puzzle.layout.filter(cube => cube.type === "void").length;
+  const requiredCubes = puzzle.layout.filter((cube) => cube.type !== "void");
+  const voids = puzzle.layout.filter((cube) => cube.type === "void").length;
   const positions = new Set<string>();
-  const duplicate = puzzle.layout.some(cube => {
+  const duplicate = puzzle.layout.some((cube) => {
     const key = `${cube.x}:${cube.z}`;
     if (positions.has(key)) return true;
     positions.add(key);
@@ -165,11 +163,11 @@ export function validatePuzzle(
   });
   const spawnRow = puzzle.spawnRow ?? 0;
   const isInBounds = puzzle.layout.every(
-    cube =>
+    (cube) =>
       cube.x >= 0 &&
       cube.x < puzzle.width &&
       cube.z >= spawnRow &&
-      cube.z < spawnRow + puzzle.depth
+      cube.z < spawnRow + puzzle.depth,
   );
   const expectedPositions = new Set<string>();
   for (let z = spawnRow; z < spawnRow + puzzle.depth; z += 1) {
@@ -178,13 +176,13 @@ export function validatePuzzle(
   }
   const fullFormation =
     puzzle.layout.length === puzzle.width * puzzle.depth &&
-    puzzle.layout.every(cube => expectedPositions.has(`${cube.x}:${cube.z}`));
+    puzzle.layout.every((cube) => expectedPositions.has(`${cube.x}:${cube.z}`));
   const replay = simulatePuzzleSolution(puzzle);
   const countsMatch =
     puzzle.validation.normal ===
-      puzzle.layout.filter(cube => cube.type === "normal").length &&
+      puzzle.layout.filter((cube) => cube.type === "normal").length &&
     puzzle.validation.veil ===
-      puzzle.layout.filter(cube => cube.type === "veil").length &&
+      puzzle.layout.filter((cube) => cube.type === "veil").length &&
     puzzle.validation.void === voids;
   const custom = puzzle.difficultyTag === "custom";
   const plan = wavePlan(puzzle.stage, puzzle.wave);
@@ -195,7 +193,7 @@ export function validatePuzzle(
         plan.width === puzzle.width &&
         plan.depth === puzzle.depth &&
         puzzle.ordinal >= 1 &&
-        puzzle.ordinal <= plan.puzzles
+        puzzle.ordinal <= plan.puzzles,
     );
   const requiredRatio =
     requiredCubes.length / Math.max(1, puzzle.layout.length);
@@ -246,7 +244,7 @@ export function validatePuzzle(
 }
 
 export function validateAllPuzzles(
-  puzzles: PuzzleDescriptor[]
+  puzzles: PuzzleDescriptor[],
 ): PuzzleValidationResult[] {
   return puzzles.map(validatePuzzle);
 }
@@ -264,12 +262,12 @@ function invalidPuzzleValidation(reason: string): PuzzleValidationResult {
 }
 
 export function validatePuzzleArchive(
-  puzzles: PuzzleDescriptor[]
+  puzzles: PuzzleDescriptor[],
 ): PuzzleArchiveValidationResult {
   const issues: string[] = [];
   if (puzzles.length !== EXPECTED_PUZZLE_COUNT)
     issues.push(
-      `expected ${EXPECTED_PUZZLE_COUNT} puzzles, got ${puzzles.length}`
+      `expected ${EXPECTED_PUZZLE_COUNT} puzzles, got ${puzzles.length}`,
     );
   const ids = new Set<string>();
   const seeds = new Set<number>();
