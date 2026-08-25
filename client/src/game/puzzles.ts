@@ -64,9 +64,15 @@ function buildPuzzle(
   const seed = stage * 100_000 + wave * 1_000 + ordinal * 17;
   const spawnRow = 5 + ((stage + wave + ordinal) % 2);
   const pairCount = Math.ceil(depth / 2);
-  const center = 1 + (seed % Math.max(1, width - 2));
-  const protectVoid = stage >= 2 && ordinal === 1;
-  const protectionX = center + ((stage + wave) % 2 === 0 ? 1 : -1);
+  const pattern = (stage * 7 + wave * 3 + ordinal * 2) % 6;
+  const center =
+    1 +
+    ((seed + wave * 37 + ordinal * 17) % Math.max(1, width - 2));
+  const protectVoid =
+    stage >= 2
+      ? ordinal === 1 || pattern % 3 === 0
+      : ordinal === 3 || pattern === 0;
+  const protectionX = center + (ordinal % 3 === 0 ? -1 : 1);
   const layout: Array<{ x: number; z: number; type: CubeType }> = [];
 
   for (let offset = 0; offset < depth; offset += 1) {
@@ -79,14 +85,25 @@ function buildPuzzle(
     }
   }
 
+  const routeCandidates = [0, width - 1].filter(
+    x => Math.abs(x - center) > 1
+  );
+  const routeNeeded =
+    ordinal > 1 || stage >= 2 || (stage === 1 && pattern % 2 === 0);
+  const routeCount = routeNeeded
+    ? Math.min(stage >= 5 ? 2 : 1, routeCandidates.length)
+    : 0;
   const routeTargets: Array<{ x: number; offset: number }> = [];
-  if (ordinal > 1 || stage >= 2) {
-    routeTargets.push({ x: center === 1 ? width - 1 : 0, offset: depth - 1 });
-  }
-  if (stage >= 5) {
-    const otherEdge = routeTargets[0]?.x === width - 1 ? 0 : width - 1;
-    if (Math.abs(otherEdge - center) > 1)
-      routeTargets.push({ x: otherEdge, offset: Math.max(1, depth - 2) });
+  for (let index = 0; index < routeCount; index += 1) {
+    const x =
+      routeCandidates[(pattern + index + ordinal) % routeCandidates.length];
+    let offset =
+      1 +
+      ((pattern + ordinal + index * 2) % Math.max(1, depth - 1));
+    while (routeTargets.some(target => target.offset === offset)) {
+      offset = offset === depth - 1 ? 1 : offset + 1;
+    }
+    routeTargets.push({ x, offset });
   }
   for (const target of routeTargets) {
     const cube = layout.find(
