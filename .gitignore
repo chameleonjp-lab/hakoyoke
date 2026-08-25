@@ -7,12 +7,23 @@ dist/
 build/
 *.dist
 
-# Environment variables
+# Environment variables and local credential stores
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.envrc
+.netrc
+.npmrc
+.pypirc
+credentials.json
+service-account*.json
+id_rsa
+id_ed25519
+*.pem
+*.p12
+*.pfx
 
 # Local platform metadata and scaffold snapshots
 .project-config.json
