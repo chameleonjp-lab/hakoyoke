@@ -60,9 +60,7 @@ test("縦画面の移動領域は下半分に限定され、pause中は入力面
     };
   });
 
-  expect(geometry.top).toBeGreaterThanOrEqual(
-    geometry.viewportHeight / 2 - 1
-  );
+  expect(geometry.top).toBeGreaterThanOrEqual(geometry.viewportHeight / 2 - 1);
   expect(geometry.bottom).toBeCloseTo(geometry.viewportHeight, 0);
   expect(geometry.topInZone).toBe(false);
   expect(geometry.bottomInZone).toBe(true);
