@@ -377,7 +377,6 @@ test("RUM観測面が初期ロード・3Dランタイム・初回フレームの
   );
 });
 
-
 test("壊れたパズルアーカイブは開始前に安全に停止する", async ({ page }) => {
   await page.route("**/data/puzzles.json", route =>
     route.fulfill({
