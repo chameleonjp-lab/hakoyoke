@@ -45,6 +45,16 @@ describe("headless registered solution replay", () => {
         ])
       ).valid
     ).toBe(true));
+
+  it("keeps authored mark/capture order for multiple cubes in one row", () =>
+    expect(
+      simulatePuzzleSolution(
+        puzzle([
+          { x: 1, z: 1, type: "normal" },
+          { x: 2, z: 1, type: "normal" },
+        ])
+      ).valid
+    ).toBe(true));
   it("rejects a solution whose declared required rolls do not match replay", () =>
     expect(
       simulatePuzzleSolution(
@@ -62,13 +72,14 @@ describe("headless registered solution replay", () => {
       simulatePuzzleSolution({
         ...puzzle([
           { x: 0, z: 1, type: "normal" },
-          { x: 3, z: 1, type: "normal" },
+          { x: 7, z: 1, type: "normal" },
         ]),
+        width: 8,
         solution: [
           { rotation: 0, action: "mark", x: 0, z: 0 },
           { rotation: 1, action: "capture", x: 0, z: 0 },
-          { rotation: 1, action: "mark", x: 3, z: 0 },
-          { rotation: 1, action: "capture", x: 3, z: 0 },
+          { rotation: 1, action: "mark", x: 7, z: 0 },
+          { rotation: 1, action: "capture", x: 7, z: 0 },
         ],
         requiredRolls: 0,
       }).valid
