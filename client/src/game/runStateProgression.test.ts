@@ -54,11 +54,7 @@ describe("run-state progression", () => {
   });
 
   it("clears carried state on an explicit run reset", () => {
-    const carried = shouldCarryRunState(
-      puzzle(1, 1, 1),
-      puzzle(1, 1, 2),
-      true
-    );
+    const carried = shouldCarryRunState(puzzle(1, 1, 1), puzzle(1, 1, 2), true);
     expect(carried).toBe(false);
   });
 
@@ -68,8 +64,6 @@ describe("run-state progression", () => {
 
     areas[0]!.z = 99;
     expect(retained.misses).toBe(2);
-    expect(retained.areas).toEqual([
-      { id: "area-1", x: 2, z: 3, armed: true },
-    ]);
+    expect(retained.areas).toEqual([{ id: "area-1", x: 2, z: 3, armed: true }]);
   });
 });
