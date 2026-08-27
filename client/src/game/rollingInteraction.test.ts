@@ -29,12 +29,7 @@ describe("rolling MARK and AREA interactions", () => {
       0.65,
       true
     );
-    const canCapture = markerCanCapture(
-      { x: 2, z: 3 },
-      target,
-      0.65,
-      true
-    );
+    const canCapture = markerCanCapture({ x: 2, z: 3 }, target, 0.65, true);
     expect(occupiesDestination).toBe(true);
     expect(canCapture).toBe(true);
   });
