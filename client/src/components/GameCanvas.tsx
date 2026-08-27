@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import "@/game/platformProgressionPatch";
+import "@/game/rollingInteractionPatch";
 import { createGameScene, type GameHandle } from "@/game/scene";
 
 export default function GameCanvas({
