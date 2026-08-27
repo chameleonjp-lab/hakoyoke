@@ -4,11 +4,22 @@ import {
   projectPuzzleCubesToPlatform,
   shouldResetPlatformAtLoad,
 } from "./platformProgression";
-import type { CubeState, GameMode, PuzzleDescriptor, RunStats } from "./types";
+import {
+  retainRunState,
+  shouldCarryRunState,
+} from "./runStateProgression";
+import type {
+  AreaMark,
+  CubeState,
+  GameMode,
+  PuzzleDescriptor,
+  RunStats,
+} from "./types";
 
 type GameWorldInternals = {
   currentPuzzle: PuzzleDescriptor;
   cubes: CubeState[];
+  areas: AreaMark[];
   stats: RunStats;
   mode: GameMode;
   loadPuzzle(puzzle: PuzzleDescriptor, resetPlatform: boolean): void;
@@ -28,7 +39,16 @@ if (!prototype.__platformProgressionPatched) {
     puzzle: PuzzleDescriptor,
     resetPlatform: boolean
   ): void {
-    const previousStage = this.currentPuzzle?.stage;
+    const previousPuzzle = this.currentPuzzle;
+    const previousStage = previousPuzzle?.stage;
+    const carriedState = shouldCarryRunState(
+      previousPuzzle,
+      puzzle,
+      resetPlatform
+    )
+      ? retainRunState(this.stats.misses, this.areas)
+      : null;
+
     originalLoadPuzzle.call(this, puzzle, resetPlatform);
 
     if (
@@ -43,6 +63,12 @@ if (!prototype.__platformProgressionPatched) {
         puzzle.stage,
         puzzle.depth
       );
+    }
+
+    if (carriedState) {
+      this.stats.misses = Math.min(carriedState.misses, this.stats.missLimit);
+      this.areas = carriedState.areas;
+      this.stats.areaMarks = this.areas.length;
     }
 
     this.cubes = projectPuzzleCubesToPlatform(
