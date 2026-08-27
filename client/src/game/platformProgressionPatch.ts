@@ -4,7 +4,12 @@ import {
   projectPuzzleCubesToPlatform,
   shouldResetPlatformAtLoad,
 } from "./platformProgression";
-import type { CubeState, GameMode, PuzzleDescriptor, RunStats } from "./types";
+import type {
+  CubeState,
+  GameMode,
+  PuzzleDescriptor,
+  RunStats,
+} from "./types";
 
 type GameWorldInternals = {
   currentPuzzle: PuzzleDescriptor;
