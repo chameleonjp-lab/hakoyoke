@@ -4,10 +4,7 @@ import {
   projectPuzzleCubesToPlatform,
   shouldResetPlatformAtLoad,
 } from "./platformProgression";
-import {
-  retainRunState,
-  shouldCarryRunState,
-} from "./runStateProgression";
+import { retainRunState, shouldCarryRunState } from "./runStateProgression";
 import type {
   AreaMark,
   CubeState,
