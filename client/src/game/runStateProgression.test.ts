@@ -30,24 +30,36 @@ const puzzle = (
 
 describe("run-state progression", () => {
   it("carries misses and unused AREA to the next puzzle in the same wave", () => {
-    expect(
-      shouldCarryRunState(puzzle(1, 1, 1), puzzle(1, 1, 2), false)
-    ).toBe(true);
+    const carried = shouldCarryRunState(
+      puzzle(1, 1, 1),
+      puzzle(1, 1, 2),
+      false
+    );
+    expect(carried).toBe(true);
   });
 
   it("clears carried state when the wave or stage changes", () => {
-    expect(
-      shouldCarryRunState(puzzle(1, 1, 1), puzzle(1, 2, 1), false)
-    ).toBe(false);
-    expect(
-      shouldCarryRunState(puzzle(1, 2, 1), puzzle(2, 1, 1), false)
-    ).toBe(false);
+    const nextWave = shouldCarryRunState(
+      puzzle(1, 1, 1),
+      puzzle(1, 2, 1),
+      false
+    );
+    const nextStage = shouldCarryRunState(
+      puzzle(1, 2, 1),
+      puzzle(2, 1, 1),
+      false
+    );
+    expect(nextWave).toBe(false);
+    expect(nextStage).toBe(false);
   });
 
   it("clears carried state on an explicit run reset", () => {
-    expect(
-      shouldCarryRunState(puzzle(1, 1, 1), puzzle(1, 1, 2), true)
-    ).toBe(false);
+    const carried = shouldCarryRunState(
+      puzzle(1, 1, 1),
+      puzzle(1, 1, 2),
+      true
+    );
+    expect(carried).toBe(false);
   });
 
   it("copies AREA anchors so a later load cannot mutate the saved state", () => {
