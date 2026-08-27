@@ -35,5 +35,9 @@ export function shouldResetPlatformAtLoad(
   resetRequested: boolean
 ): boolean {
   if (resetRequested) return true;
-  return mode === "CAMPAIGN" && previousStage !== undefined && previousStage !== nextStage;
+  return (
+    mode === "CAMPAIGN" &&
+    previousStage !== undefined &&
+    previousStage !== nextStage
+  );
 }
