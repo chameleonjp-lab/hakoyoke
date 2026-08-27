@@ -26,7 +26,7 @@ if (!prototype.__platformProgressionPatched) {
   prototype.loadPuzzle = function (
     this: GameWorldInternals,
     puzzle: PuzzleDescriptor,
-    resetPlatform: boolean,
+    resetPlatform: boolean
   ): void {
     const previousStage = this.currentPuzzle?.stage;
     originalLoadPuzzle.call(this, puzzle, resetPlatform);
@@ -36,16 +36,19 @@ if (!prototype.__platformProgressionPatched) {
         this.mode,
         previousStage,
         puzzle.stage,
-        resetPlatform,
+        resetPlatform
       )
     ) {
-      this.stats.platformRows = platformRowsForStage(puzzle.stage, puzzle.depth);
+      this.stats.platformRows = platformRowsForStage(
+        puzzle.stage,
+        puzzle.depth
+      );
     }
 
     this.cubes = projectPuzzleCubesToPlatform(
       puzzle,
       this.cubes,
-      this.stats.platformRows,
+      this.stats.platformRows
     );
   };
 
