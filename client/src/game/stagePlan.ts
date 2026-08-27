@@ -61,6 +61,23 @@ export const STAGE_PLAN: Readonly<Record<number, readonly WavePlan[]>> = {
   ],
 };
 
+/**
+ * Independent visual/gameplay baseline for each stage.
+ * Keeping the current value at 12 preserves mobile readability while allowing
+ * PERFECT/loss adjustments to matter inside a stage without growing across all 88 puzzles.
+ */
+export const STAGE_BASE_PLATFORM_ROWS: Readonly<Record<number, number>> = {
+  1: 12,
+  2: 12,
+  3: 12,
+  4: 12,
+  5: 12,
+  6: 12,
+  7: 12,
+  8: 12,
+  9: 12,
+};
+
 export const EXPECTED_PUZZLE_COUNT = Object.values(STAGE_PLAN)
   .flat()
   .reduce((total, wave) => total + wave.puzzles, 0);
