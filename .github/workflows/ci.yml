@@ -79,13 +79,7 @@ jobs:
         run: pnpm puzzles:check
 
       - name: Source formatting
-        run: |
-          pnpm format:check || {
-            echo '--- PRETTIER EXPECTED START ---'
-            pnpm exec prettier client/src/game/rollingInteraction.test.ts
-            echo '--- PRETTIER EXPECTED END ---'
-            exit 1
-          }
+        run: pnpm format:check
 
       - name: Type check
         run: pnpm check
