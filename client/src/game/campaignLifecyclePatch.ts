@@ -133,7 +133,11 @@ if (!prototype.__campaignLifecyclePatched) {
     const campaignStart =
       extended.type === "start" && extended.mode === "CAMPAIGN";
     originalCommand.call(this, command);
-    if (campaignStart && this.mode === "CAMPAIGN" && this.phase === "STAGE_INTRO") {
+    if (
+      campaignStart &&
+      this.mode === "CAMPAIGN" &&
+      this.phase === "STAGE_INTRO"
+    ) {
       writeCheckpoint(this);
       this.saveCampaign();
     }
