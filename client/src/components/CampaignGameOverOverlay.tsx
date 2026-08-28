@@ -3,14 +3,13 @@ import { calculateMindIndex } from "@/game/rules";
 import type { GameSnapshot } from "@/game/types";
 
 function command(type: "campaign-continue" | "campaign-new"): void {
-  window.dispatchEvent(
-    new CustomEvent("cubic:command", { detail: { type } })
-  );
+  window.dispatchEvent(new CustomEvent("cubic:command", { detail: { type } }));
 }
 
 export default function CampaignGameOverOverlay() {
   const [snapshot, setSnapshot] = useState<GameSnapshot | null>(null);
-  const active = snapshot?.mode === "CAMPAIGN" && snapshot.phase === "GAME_OVER";
+  const active =
+    snapshot?.mode === "CAMPAIGN" && snapshot.phase === "GAME_OVER";
 
   useEffect(() => {
     const update = (event: Event) =>
@@ -58,7 +57,8 @@ export default function CampaignGameOverOverlay() {
           </div>
         </div>
         <p>
-          CONTINUEはこのステージの開始時点へ戻ります。NEW CAMPAIGNは保存を消してSTAGE 1から始めます。
+          CONTINUEはこのステージの開始時点へ戻ります。NEW
+          CAMPAIGNは保存を消してSTAGE 1から始めます。
         </p>
         <div className="campaign-gameover-actions">
           <button
