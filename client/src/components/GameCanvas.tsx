@@ -68,7 +68,7 @@ export default function GameCanvas({
         ref={canvasRef}
         className="game-canvas"
         aria-hidden="true"
-        style={{ touchAction: "none" }}
+        style={{ touchAction: "none", pointerEvents: "none" }}
       />
       <CampaignGameOverOverlay />
       {error && (
