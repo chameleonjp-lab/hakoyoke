@@ -1,5 +1,8 @@
 /** Obsidian Observatory: renderer-free rules shared by runtime, replay, and tests. */
+import { rollingCubeBounds } from "./rollPhysics";
 import type { AreaMark, CubeState, GridPosition, RunStats } from "./types";
+
+const CELL_HALF = 0.49;
 
 /** z=0 is the player-side front edge; cubes descend from larger z values. */
 export function advanceOneCell(cube: CubeState): CubeState {
@@ -20,39 +23,76 @@ export function isPositionOnPlatform(
   );
 }
 
+/**
+ * MARK and AREA use the same physical occupancy as the visible roll. During a
+ * roll a cube can overlap both the source and destination floor cells; either
+ * cell can therefore interact with the cube while it is visibly above it.
+ */
+export function cubeOccupiesCell(
+  cube: CubeState,
+  cell: GridPosition,
+  rollProgress = 0,
+  isRolling = false
+): boolean {
+  if (cube.captured || cube.falling || cube.x !== cell.x) return false;
+  if (!isRolling) return cube.z === cell.z;
+
+  const bounds = rollingCubeBounds(cube, rollProgress);
+  const cellMinZ = cell.z - CELL_HALF;
+  const cellMaxZ = cell.z + CELL_HALF;
+  return bounds.z.max >= cellMinZ && bounds.z.min <= cellMaxZ;
+}
+
 export function markerCanCapture(
   marker: GridPosition | null,
-  cube: CubeState
+  cube: CubeState,
+  rollProgress = 0,
+  isRolling = false
 ): boolean {
   return Boolean(
-    marker &&
-      !cube.captured &&
-      !cube.falling &&
-      marker.x === cube.x &&
-      marker.z === cube.z
+    marker && cubeOccupiesCell(cube, marker, rollProgress, isRolling)
   );
 }
 
-export function isProtectedVoid(
+export function isProtectedByMarker(
   marker: GridPosition | null,
-  cube: CubeState
+  cube: CubeState,
+  rollProgress = 0,
+  isRolling = false
 ): boolean {
-  return cube.type === "void" && markerCanCapture(marker, cube);
+  return markerCanCapture(marker, cube, rollProgress, isRolling);
+}
+
+function areaContainsCube(
+  area: AreaMark,
+  cube: CubeState,
+  rollProgress: number,
+  isRolling: boolean
+): boolean {
+  if (Math.abs(cube.x - area.x) > 1) return false;
+  if (!isRolling) return Math.abs(cube.z - area.z) <= 1;
+
+  const bounds = rollingCubeBounds(cube, rollProgress);
+  const areaMinZ = area.z - 1 - CELL_HALF;
+  const areaMaxZ = area.z + 1 + CELL_HALF;
+  return bounds.z.max >= areaMinZ && bounds.z.min <= areaMaxZ;
 }
 
 /** AREA anchors are one-shot. Callers must snapshot and clear the anchor list before capturing targets. */
 export function areaTargets(
   cubes: CubeState[],
   activeAreas: AreaMark[],
-  marker: GridPosition | null
+  marker: GridPosition | null,
+  rollProgress = 0,
+  isRolling = false
 ): CubeState[] {
   return cubes.filter(
     cube =>
       !cube.captured &&
       !cube.falling &&
-      !isProtectedVoid(marker, cube) &&
-      activeAreas.some(
-        area => Math.abs(cube.x - area.x) <= 1 && Math.abs(cube.z - area.z) <= 1
+      !isProtectedByMarker(marker, cube, rollProgress, isRolling) &&
+      activeAreas.some(area =>
+        areaContainsCube(area, cube, rollProgress, isRolling)
       )
   );
 }
