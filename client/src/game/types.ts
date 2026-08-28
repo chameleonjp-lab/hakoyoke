@@ -129,40 +129,42 @@ export interface DifficultyConfig {
   assistance: "high" | "medium" | "low";
 }
 
+const PLAYER_SPEED = 4.45;
+
 export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
   BEGINNER: {
     rollSeconds: 0.82,
     settleSeconds: 1.05,
     captureSeconds: 0.82,
-    playerSpeed: 4.8,
+    playerSpeed: PLAYER_SPEED,
     assistance: "high",
   },
   EASY: {
     rollSeconds: 0.72,
     settleSeconds: 0.9,
     captureSeconds: 0.7,
-    playerSpeed: 4.65,
+    playerSpeed: PLAYER_SPEED,
     assistance: "high",
   },
   NORMAL: {
     rollSeconds: 0.62,
     settleSeconds: 0.76,
     captureSeconds: 0.58,
-    playerSpeed: 4.45,
+    playerSpeed: PLAYER_SPEED,
     assistance: "medium",
   },
   HARD: {
     rollSeconds: 0.52,
     settleSeconds: 0.62,
     captureSeconds: 0.46,
-    playerSpeed: 4.25,
+    playerSpeed: PLAYER_SPEED,
     assistance: "low",
   },
   EXTREME: {
     rollSeconds: 0.44,
     settleSeconds: 0.54,
     captureSeconds: 0.38,
-    playerSpeed: 4.1,
+    playerSpeed: PLAYER_SPEED,
     assistance: "low",
   },
 };
