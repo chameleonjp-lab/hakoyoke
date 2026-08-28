@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import "@/game/platformProgressionPatch";
 import "@/game/rollingInteractionPatch";
+import "@/game/campaignLifecyclePatch";
+import CampaignGameOverOverlay from "@/components/CampaignGameOverOverlay";
 import { createGameScene, type GameHandle } from "@/game/scene";
 
 export default function GameCanvas({
@@ -68,6 +70,7 @@ export default function GameCanvas({
         aria-hidden="true"
         style={{ touchAction: "none" }}
       />
+      <CampaignGameOverOverlay />
       {error && (
         <section className="engine-failure" role="alert" aria-live="assertive">
           <span>RENDERER // INITIALIZATION FAILED</span>
