@@ -7,7 +7,7 @@ import {
 import type { GameSnapshot, PuzzleDescriptor } from "./types";
 
 const puzzle = (stage: number, id: string): PuzzleDescriptor =>
-  ({ stage, id } as PuzzleDescriptor);
+  ({ stage, id }) as PuzzleDescriptor;
 
 describe("campaign lifecycle", () => {
   it("awards remaining platform rows at a campaign stage boundary only", () => {
