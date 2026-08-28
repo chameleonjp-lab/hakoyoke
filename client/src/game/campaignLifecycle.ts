@@ -1,4 +1,9 @@
-import type { GameMode, GamePhase, GameSnapshot, PuzzleDescriptor } from "./types";
+import type {
+  GameMode,
+  GamePhase,
+  GameSnapshot,
+  PuzzleDescriptor,
+} from "./types";
 
 export function stageCompletionBonus(platformRows: number): number {
   return Math.max(0, platformRows) * 1000;
