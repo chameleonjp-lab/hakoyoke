@@ -79,18 +79,7 @@ jobs:
         run: pnpm puzzles:check
 
       - name: Source formatting
-        run: |
-          pnpm format:check || {
-            for file in \
-              client/src/components/CampaignGameOverOverlay.tsx \
-              client/src/game/campaignLifecycle.test.ts \
-              client/src/game/campaignLifecycle.ts \
-              client/src/game/campaignLifecyclePatch.ts; do
-              echo "--- PRETTIER EXPECTED: $file ---"
-              pnpm exec prettier "$file"
-            done
-            exit 1
-          }
+        run: pnpm format:check
 
       - name: Type check
         run: pnpm check
