@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { parsePuzzleDescriptor, validatePuzzle } from "@/game/puzzleValidation";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
-import { calculateMindIndex } from "@/game/rules";
+import { calculateMindIndex, cubeOccupiesCell } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
 import type { CubicCommand } from "@/game/GameWorld";
 import type {
@@ -1128,12 +1128,13 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   }, [resetInput]);
   const markHasTarget = Boolean(
     snapshot.marker &&
-      snapshot.cubes.some(
-        cube =>
-          cube.x === snapshot.marker?.x &&
-          cube.z === snapshot.marker?.z &&
-          !cube.captured &&
-          !cube.falling
+      snapshot.cubes.some(cube =>
+        cubeOccupiesCell(
+          cube,
+          snapshot.marker!,
+          snapshot.rollProgress,
+          snapshot.isRolling ?? false
+        )
       )
   );
   const markAction = !snapshot.marker
