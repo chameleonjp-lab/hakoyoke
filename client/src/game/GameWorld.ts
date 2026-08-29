@@ -4,6 +4,17 @@ import { findPuzzle } from "./puzzles";
 import { validatePuzzle } from "./puzzleValidation";
 import { resolveDuelRound } from "./duelRules";
 import {
+  makeStageCheckpoint,
+  shouldAwardStageCompletion,
+  stageCompletionBonus,
+} from "./campaignLifecycle";
+import {
+  platformRowsForStage,
+  projectPuzzleCubesToPlatform,
+  shouldResetPlatformAtLoad,
+} from "./platformProgression";
+import { retainRunState, shouldCarryRunState } from "./runStateProgression";
+import {
   advanceOneCell,
   areaTargets,
   calculateMindIndex,
@@ -28,6 +39,7 @@ import {
 
 const FIXED_STEP = 1 / 30;
 const STORAGE_KEY = "cubic-ordeal-campaign-v1";
+const CHECKPOINT_KEY = "cubic-ordeal-stage-checkpoint-v1";
 const HIGH_SCORE_KEY = "cubic-ordeal-highscore-v1";
 const SAVE_VERSION = 4;
 
@@ -48,6 +60,8 @@ export type CubicCommand =
   | { type: "quick-load" }
   | { type: "step-roll" }
   | { type: "continue" }
+  | { type: "campaign-continue" }
+  | { type: "campaign-new" }
   | { type: "touch-move"; x: number; z: number }
   | { type: "touch-fast"; active: boolean }
   | { type: "touch-press"; action: "mark" | "area" | "pause" }
@@ -77,6 +91,7 @@ export class GameWorld {
   private readonly input = new InputManager();
   private readonly history: GameSnapshot[] = [];
   private quickSave: GameSnapshot | null = null;
+  private lastPublishedSnapshot: GameSnapshot | null = null;
   private readonly onPublish: (snapshot: GameSnapshot) => void;
   private readonly onSignal: (signal: string) => void;
   private readonly onCommand = (event: Event) =>
@@ -119,6 +134,7 @@ export class GameWorld {
   private cubes: CubeState[] = [];
   private marker: GridPosition | null = null;
   private areas: AreaMark[] = [];
+  private customPuzzle: PuzzleDescriptor | null = null;
   private stats: RunStats = initialStats(4);
   private banner = "CUBIC ORDEAL";
   private hint = "進路を読み、MARKを置け。";
@@ -345,23 +361,25 @@ export class GameWorld {
         const protectsVoid = this.cubes.some(
           cube =>
             cube.type === "void" &&
-            cube.x === this.marker?.x &&
-            cube.z === this.marker?.z
+            markerCanCapture(
+              this.marker,
+              cube,
+              this.rollProgress,
+              this.isRolling
+            )
         );
         this.tutorialStep = Math.max(this.tutorialStep, protectsVoid ? 3 : 1);
       }
       return;
     }
 
-    const target = this.cubes.find(cube => markerCanCapture(this.marker, cube));
+    const target = this.cubes.find(cube =>
+      markerCanCapture(this.marker, cube, this.rollProgress, this.isRolling)
+    );
     if (!target) {
       this.marker = null;
       this.banner = "MARK CLEARED";
       this.onSignal("mark");
-      return;
-    }
-    if (this.isRolling) {
-      this.banner = "WAIT FOR LANDING";
       return;
     }
     this.captureCube(target, "manual");
@@ -432,7 +450,13 @@ export class GameWorld {
     const activeAreas = this.areas.map(area => ({ ...area }));
     this.areas = [];
     this.stats.areaMarks = 0;
-    const targets = areaTargets(this.cubes, activeAreas, this.marker);
+    const targets = areaTargets(
+      this.cubes,
+      activeAreas,
+      this.marker,
+      this.rollProgress,
+      this.isRolling
+    );
     if (!targets.length) {
       this.banner = "AREA DISCHARGED";
       this.onSignal("area");
@@ -562,7 +586,25 @@ export class GameWorld {
       return;
     }
 
+    if (this.mode !== "CAMPAIGN") {
+      this.phase = "MENU";
+      this.phaseTimer = 0;
+      this.banner =
+        this.mode === "TUTORIAL" ? "TRAINING COMPLETE" : "ORDEAL COMPLETE";
+      this.input.clear();
+      return;
+    }
+
     const next = this.puzzles[this.puzzleIndex + 1];
+    const stageBoundary = shouldAwardStageCompletion(
+      this.mode,
+      this.phase,
+      this.currentPuzzle,
+      next
+    );
+    if (stageBoundary) {
+      this.stats.score += stageCompletionBonus(this.stats.platformRows);
+    }
     if (!next) {
       this.stats.score += this.stats.platformRows * 1000;
       this.saveHighScore();
@@ -579,7 +621,6 @@ export class GameWorld {
     const waveChanged = next.wave !== this.currentPuzzle.wave;
     this.puzzleIndex += 1;
     this.loadPuzzle(next, false);
-    this.saveCampaign();
     this.phase = stageChanged
       ? "STAGE_RESULT"
       : waveChanged
@@ -587,6 +628,8 @@ export class GameWorld {
         : "PLAYING";
     this.phaseTimer = stageChanged ? 1.5 : waveChanged ? 1.1 : 0;
     if (!stageChanged && !waveChanged) this.banner = "NEXT ORDEAL";
+    this.saveCampaign();
+    if (stageBoundary && this.mode === "CAMPAIGN") this.saveStageCheckpoint();
   }
 
   private advanceDuel(): void {
@@ -618,7 +661,23 @@ export class GameWorld {
   }
 
   private loadPuzzle(puzzle: PuzzleDescriptor, resetPlatform: boolean): void {
+    const previousPuzzle = this.currentPuzzle;
+    const carriedState = shouldCarryRunState(
+      previousPuzzle,
+      puzzle,
+      resetPlatform
+    )
+      ? retainRunState(this.stats.misses, this.areas)
+      : null;
+    const previousStage = previousPuzzle?.stage;
+    const resetRows = shouldResetPlatformAtLoad(
+      this.mode,
+      previousStage,
+      puzzle.stage,
+      resetPlatform
+    );
     this.currentPuzzle = puzzle;
+    this.lastPublishedSnapshot = null;
     this.cubes = puzzle.layout.map((cube, index) => ({
       id: `${puzzle.id}-${index}`,
       type: cube.type,
@@ -627,9 +686,9 @@ export class GameWorld {
       previousZ: cube.z,
     }));
     this.marker = null;
-    this.areas = [];
-    const platformRows = resetPlatform
-      ? Math.max(12, (puzzle.spawnRow ?? 0) + puzzle.depth)
+    this.areas = carriedState?.areas ?? [];
+    const platformRows = resetRows
+      ? platformRowsForStage(puzzle.stage, puzzle.depth)
       : this.stats.platformRows;
     const retainedScore = resetPlatform ? 0 : this.stats.score;
     this.stats = {
@@ -638,6 +697,16 @@ export class GameWorld {
       score: retainedScore,
       requiredRolls: puzzle.requiredRolls,
     };
+    if (carriedState) {
+      this.stats.misses = Math.min(carriedState.misses, this.stats.missLimit);
+      this.stats.areaMarks = this.areas.length;
+      this.stats.perfect = this.stats.misses === 0;
+    }
+    this.cubes = projectPuzzleCubesToPlatform(
+      puzzle,
+      this.cubes,
+      this.stats.platformRows
+    );
     this.player = {
       x: Math.min(puzzle.width - 0.5, Math.max(0.5, puzzle.width / 2)),
       z: 0.7,
@@ -663,6 +732,7 @@ export class GameWorld {
     wave = 1,
     ordinal = 1
   ): void {
+    this.customPuzzle = null;
     if (mode === "CAMPAIGN" && stage === 1 && wave === 1 && ordinal === 1) {
       const restored = this.readCampaign();
       if (restored) {
@@ -746,6 +816,43 @@ export class GameWorld {
     if (!command) return;
     if (command.type !== "touch-move" && command.type !== "touch-fast")
       this.emitUserGesture();
+    if (command.type === "campaign-new") {
+      this.clearCampaignStorage();
+      this.start("CAMPAIGN", this.difficulty, 1, 1, 1);
+      if (this.mode === "CAMPAIGN" && this.phase === "STAGE_INTRO") {
+        this.saveStageCheckpoint();
+        this.saveCampaign();
+      }
+      return;
+    }
+    if (command.type === "campaign-continue") {
+      if (this.mode !== "CAMPAIGN" || this.phase !== "GAME_OVER") return;
+      const checkpoint = this.readStageCheckpoint();
+      if (
+        checkpoint &&
+        checkpoint.mode === "CAMPAIGN" &&
+        checkpoint.stage === this.currentPuzzle.stage &&
+        this.puzzles.some(puzzle => puzzle.id === checkpoint.puzzleId)
+      ) {
+        this.restore(makeStageCheckpoint(checkpoint));
+      } else {
+        const stageStartIndex = this.puzzles.findIndex(
+          puzzle => puzzle.stage === this.currentPuzzle.stage
+        );
+        const stageStart = this.puzzles[stageStartIndex];
+        if (!stageStart) return;
+        const retainedScore = this.stats.score;
+        this.puzzleIndex = stageStartIndex;
+        this.loadPuzzle(stageStart, true);
+        this.stats.score = retainedScore;
+        this.phase = "STAGE_INTRO";
+        this.phaseTimer = 0;
+        this.banner = `STAGE ${stageStart.stage} // CONTINUE`;
+        this.saveStageCheckpoint();
+      }
+      this.saveCampaign();
+      return;
+    }
     if (command.type === "start") {
       this.start(
         command.mode,
@@ -754,6 +861,14 @@ export class GameWorld {
         command.wave,
         command.ordinal
       );
+      if (
+        command.mode === "CAMPAIGN" &&
+        this.mode === "CAMPAIGN" &&
+        this.phase === "STAGE_INTRO"
+      ) {
+        this.saveStageCheckpoint();
+        this.saveCampaign();
+      }
       return;
     }
     if (command.type === "menu") {
@@ -782,7 +897,7 @@ export class GameWorld {
       return;
     }
     if (command.type === "quick-save" && this.mode === "PRACTICE") {
-      this.quickSave = this.snapshot();
+      this.quickSave = this.lastPublishedSnapshot ?? this.snapshot();
       this.banner = "QUICK SAVE STORED";
       return;
     }
@@ -827,8 +942,8 @@ export class GameWorld {
         return;
       }
       this.mode = "CREATE";
-      this.puzzles.unshift(command.puzzle);
-      this.puzzleIndex = 0;
+      this.customPuzzle = command.puzzle;
+      this.puzzleIndex = -1;
       this.loadPuzzle(command.puzzle, true);
       this.phase = "STAGE_INTRO";
       this.banner = "CUSTOM ORDEAL";
@@ -906,6 +1021,7 @@ export class GameWorld {
   }
 
   private restore(snapshot: GameSnapshot): void {
+    this.lastPublishedSnapshot = null;
     this.phase = snapshot.phase;
     this.mode = snapshot.mode;
     this.difficulty = snapshot.difficulty;
@@ -917,9 +1033,13 @@ export class GameWorld {
     const restoredIndex = snapshot.puzzleId
       ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
       : snapshot.puzzleIndex;
+    const customPuzzle = this.customPuzzle;
     if (restoredIndex >= 0 && this.puzzles[restoredIndex]) {
       this.puzzleIndex = restoredIndex;
       this.currentPuzzle = this.puzzles[restoredIndex];
+    } else if (customPuzzle && customPuzzle.id === snapshot.puzzleId) {
+      this.puzzleIndex = -1;
+      this.currentPuzzle = customPuzzle;
     }
     this.banner = snapshot.banner;
     this.hint = snapshot.hint;
@@ -947,6 +1067,36 @@ export class GameWorld {
         : null);
     this.completionAwardedForPuzzle =
       snapshot.completionAwardedForPuzzle ?? null;
+  }
+
+  private saveStageCheckpoint(): void {
+    if (this.mode !== "CAMPAIGN") return;
+    try {
+      localStorage.setItem(
+        CHECKPOINT_KEY,
+        JSON.stringify(makeStageCheckpoint(this.snapshot()))
+      );
+    } catch {
+      // Storage can be unavailable in strict privacy contexts.
+    }
+  }
+
+  private readStageCheckpoint(): GameSnapshot | null {
+    try {
+      const raw = localStorage.getItem(CHECKPOINT_KEY);
+      return raw ? (JSON.parse(raw) as GameSnapshot) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private clearCampaignStorage(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(CHECKPOINT_KEY);
+    } catch {
+      // Storage can be unavailable in strict privacy contexts.
+    }
   }
 
   private saveCampaign(): void {
@@ -1056,7 +1206,9 @@ export class GameWorld {
   }
 
   private publish(): void {
-    this.onPublish(this.snapshot());
+    const snapshot = this.snapshot();
+    this.lastPublishedSnapshot = snapshot;
+    this.onPublish(snapshot);
   }
 
   get rollProgress(): number {

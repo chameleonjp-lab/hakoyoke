@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { GameWorld } from "./GameWorld";
 import {
+  DIFFICULTIES,
   initialStats,
   type CubeState,
   type GameMode,
   type GamePhase,
+  type GameSnapshot,
   type PuzzleDescriptor,
   type RunStats,
 } from "./types";
@@ -43,6 +45,10 @@ class TestStorage {
     this.values.set(key, value);
   }
 
+  removeItem(key: string): void {
+    this.values.delete(key);
+  }
+
   clear(): void {
     this.values.clear();
   }
@@ -54,13 +60,24 @@ type WorldInternals = {
   pausedFromPhase: GamePhase | null;
   currentPuzzle: PuzzleDescriptor;
   puzzleIndex: number;
+  player: { x: number; z: number; heading: number };
   cubes: CubeState[];
+  quickSave: GameSnapshot | null;
+  marker: { x: number; z: number } | null;
+  areas: Array<{ id: string; x: number; z: number; armed: boolean }>;
   stats: RunStats;
+  isRolling: boolean;
+  rollElapsed: number;
+  markOrCapture: () => void;
+  activateAreas: () => void;
+  publish: () => void;
   finishRotation: () => void;
   advanceAfterResult: () => void;
 };
 
-const puzzle = (): PuzzleDescriptor => ({
+const puzzle = (
+  overrides: Partial<PuzzleDescriptor> = {}
+): PuzzleDescriptor => ({
   id: "TEST-PUZZLE",
   stage: 1,
   wave: 1,
@@ -81,6 +98,7 @@ const puzzle = (): PuzzleDescriptor => ({
     travelBudget: 4,
   },
   featured: false,
+  ...overrides,
 });
 
 const windowStub = new TestEventTarget();
@@ -256,6 +274,198 @@ describe("GameWorld state invariants", () => {
     expect((world as unknown as { banner: string }).banner).toBe(
       "CUSTOM ORDEAL"
     );
+    world.dispose();
+  });
+
+  it("keeps custom puzzles out of the campaign archive and returns CREATE to menu", () => {
+    const archive = [puzzle()];
+    const world = new GameWorld(
+      archive,
+      () => undefined,
+      () => undefined
+    );
+    const custom = puzzle({
+      id: "CUSTOM-ISOLATED",
+      difficultyTag: "custom",
+      solution: [
+        { rotation: 0, action: "mark" as const, x: 1, z: 0, sequence: 0 },
+        {
+          rotation: 0,
+          action: "capture" as const,
+          x: 1,
+          z: 0,
+          sequence: 1,
+        },
+      ],
+    });
+
+    command({ type: "load-custom", puzzle: custom });
+    const state = internals(world);
+    state.phase = "PUZZLE_RESULT";
+    state.advanceAfterResult();
+
+    expect(archive).toHaveLength(1);
+    expect(state.currentPuzzle.id).toBe("CUSTOM-ISOLATED");
+    expect(state.puzzleIndex).toBe(-1);
+    expect(state.phase).toBe("MENU");
+    world.dispose();
+  });
+
+  it("uses the GameWorld rolling occupancy for direct MARK capture", () => {
+    const world = new GameWorld(
+      [
+        puzzle({
+          layout: [
+            { x: 2, z: 4, type: "normal" },
+            { x: 1, z: 6, type: "normal" },
+          ],
+          validation: {
+            valid: true,
+            normal: 2,
+            veil: 0,
+            void: 0,
+            travelBudget: 8,
+          },
+        }),
+      ],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.player = { x: 2, z: 3, heading: 0 };
+    state.marker = { x: 2, z: 3 };
+    state.isRolling = true;
+    state.rollElapsed = DIFFICULTIES.NORMAL.rollSeconds * 0.65;
+    state.cubes = [
+      {
+        id: "rolling-target",
+        type: "normal",
+        x: 2,
+        z: 4,
+        previousZ: 4,
+      },
+      {
+        id: "unresolved",
+        type: "normal",
+        x: 1,
+        z: 6,
+        previousZ: 6,
+      },
+    ];
+
+    state.markOrCapture();
+
+    expect(state.cubes[0]?.captured).toBe(true);
+    expect(state.marker).toBeNull();
+    expect(state.phase).toBe("CAPTURE_PAUSE");
+    world.dispose();
+  });
+
+  it("takes a practice quick-save from the last published frame", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.cubes = [
+      { id: "visible", type: "normal", x: 1, z: 10, previousZ: 10 },
+    ];
+    state.publish();
+    state.cubes[0]!.z = 7;
+
+    command({ type: "quick-save" });
+
+    expect(state.quickSave?.cubes[0]?.z).toBe(10);
+    world.dispose();
+  });
+
+  it("carries same-wave state and projects the next puzzle from current rows", () => {
+    const first = puzzle({ id: "S1-W1-P1" });
+    const second = puzzle({
+      id: "S1-W1-P2",
+      ordinal: 2,
+      layout: [{ x: 2, z: 1, type: "normal" }],
+    });
+    const world = new GameWorld(
+      [first, second],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "CAMPAIGN";
+    state.currentPuzzle = first;
+    state.puzzleIndex = 0;
+    state.phase = "PUZZLE_RESULT";
+    state.stats = {
+      ...initialStats(4),
+      score: 123,
+      misses: 1,
+      platformRows: 13,
+      perfect: false,
+    };
+    state.areas = [{ id: "carry", x: 2, z: 2, armed: true }];
+
+    state.advanceAfterResult();
+
+    expect(state.currentPuzzle.id).toBe("S1-W1-P2");
+    expect(state.phase).toBe("PLAYING");
+    expect(state.stats.platformRows).toBe(13);
+    expect(state.stats.misses).toBe(1);
+    expect(state.stats.areaMarks).toBe(1);
+    expect(state.areas).toEqual([{ id: "carry", x: 2, z: 2, armed: true }]);
+    expect(state.cubes[0]?.z).toBe(12);
+    world.dispose();
+  });
+
+  it("awards and checkpoints a stage boundary, then supports both campaign exits", () => {
+    const first = puzzle({ id: "S1-W1-P1" });
+    const second = puzzle({ id: "S2-W1-P1", stage: 2 });
+    const world = new GameWorld(
+      [first, second],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "CAMPAIGN";
+    state.currentPuzzle = first;
+    state.puzzleIndex = 0;
+    state.phase = "PUZZLE_RESULT";
+    state.stats = {
+      ...initialStats(4),
+      score: 100,
+      platformRows: 13,
+    };
+
+    state.advanceAfterResult();
+
+    expect(state.currentPuzzle.id).toBe("S2-W1-P1");
+    expect(state.phase).toBe("STAGE_RESULT");
+    expect(state.stats.score).toBe(13100);
+    expect(state.stats.platformRows).toBe(12);
+    const checkpoint = JSON.parse(
+      storage.getItem("cubic-ordeal-stage-checkpoint-v1") ?? "{}"
+    );
+    expect(checkpoint.phase).toBe("STAGE_INTRO");
+    expect(checkpoint.stage).toBe(2);
+
+    state.phase = "GAME_OVER";
+    command({ type: "campaign-continue" });
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.currentPuzzle.id).toBe("S2-W1-P1");
+
+    state.phase = "GAME_OVER";
+    command({ type: "campaign-new" });
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.currentPuzzle.id).toBe("S1-W1-P1");
+    expect(state.stats.score).toBe(0);
+    const freshSave = JSON.parse(
+      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}"
+    );
+    expect(freshSave.snapshot.phase).toBe("STAGE_INTRO");
     world.dispose();
   });
 
