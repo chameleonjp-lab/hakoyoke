@@ -362,6 +362,49 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
+  it("uses the incoming cube when rolling MARK targets overlap", () => {
+    const world = new GameWorld(
+      [
+        puzzle({
+          layout: [
+            { x: 2, z: 3, type: "normal" },
+            { x: 2, z: 4, type: "normal" },
+          ],
+          validation: {
+            valid: true,
+            normal: 2,
+            veil: 0,
+            void: 0,
+            travelBudget: 8,
+          },
+        }),
+      ],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.player = { x: 2, z: 3, heading: 0 };
+    state.marker = { x: 2, z: 3 };
+    state.isRolling = true;
+    state.rollElapsed = DIFFICULTIES.NORMAL.rollSeconds * 0.65;
+    state.cubes = [
+      { id: "leading", type: "normal", x: 2, z: 3, previousZ: 3 },
+      { id: "incoming", type: "normal", x: 2, z: 4, previousZ: 4 },
+    ];
+
+    state.markOrCapture();
+
+    expect(state.cubes.find(cube => cube.id === "incoming")?.captured).toBe(
+      true
+    );
+    expect(state.cubes.find(cube => cube.id === "leading")?.captured).toBe(
+      undefined
+    );
+    world.dispose();
+  });
+
   it("takes a practice quick-save from the current authoritative state", () => {
     const world = new GameWorld(
       [puzzle()],

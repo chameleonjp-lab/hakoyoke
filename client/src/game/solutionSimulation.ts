@@ -8,7 +8,7 @@ import {
   advanceOneCell,
   areaTargets,
   isPositionOnPlatform,
-  markerCanCapture,
+  markerTarget,
 } from "./rules";
 import {
   DIFFICULTIES,
@@ -131,7 +131,7 @@ export function simulatePuzzleSolution(
       lastActionWasCapture = false;
     } else if (step.action === "capture") {
       if (!marker) return failure("capture without marker");
-      const target = cubes.find(cube => markerCanCapture(marker, cube));
+      const target = markerTarget(cubes, marker);
       if (!target) return failure("marker has no landed cube");
       target.captured = true;
       if (target.type === "void") voidCaptured += 1;
