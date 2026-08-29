@@ -890,6 +890,7 @@ export class GameWorld {
     if (command.type === "quick-save" && this.mode === "PRACTICE") {
       this.quickSave = this.snapshot();
       this.banner = "QUICK SAVE STORED";
+      this.publish();
       return;
     }
     if (
@@ -899,6 +900,7 @@ export class GameWorld {
     ) {
       this.restore(this.quickSave);
       this.banner = "QUICK SAVE RESTORED";
+      this.publish();
       return;
     }
     if (
@@ -909,6 +911,7 @@ export class GameWorld {
       this.rollElapsed = DIFFICULTIES[this.difficulty].rollSeconds;
       this.finishRotation();
       this.isRolling = false;
+      this.publish();
       return;
     }
     if (command.type === "touch-move") {

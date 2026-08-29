@@ -425,6 +425,30 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
+  it("publishes the exact state restored by a practice quick-load", () => {
+    const published: GameSnapshot[] = [];
+    const world = new GameWorld(
+      [puzzle()],
+      snapshot => published.push(snapshot),
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.cubes = [
+      { id: "visible", type: "normal", x: 1, z: 10, previousZ: 10 },
+    ];
+
+    command({ type: "quick-save" });
+    state.cubes[0]!.z = 7;
+    command({ type: "quick-load" });
+
+    expect(published.at(-1)?.cubes[0]?.z).toBe(10);
+    expect(published.at(-1)?.banner).toBe("QUICK SAVE RESTORED");
+    expect(state.cubes[0]?.z).toBe(10);
+    world.dispose();
+  });
+
   it("carries same-wave state and projects the next puzzle from current rows", () => {
     const first = puzzle({ id: "S1-W1-P1" });
     const second = puzzle({
