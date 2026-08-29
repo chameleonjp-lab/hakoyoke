@@ -74,6 +74,72 @@ describe("custom puzzle descriptor boundary", () => {
         validation: undefined,
       },
     ],
+    [
+      "missing spawn row",
+      Object.fromEntries(
+        Object.entries(customDescriptor()).filter(([key]) => key !== "spawnRow")
+      ),
+    ],
+    [
+      "capture without a position",
+      {
+        ...customDescriptor(),
+        solution: [{ rotation: 0, action: "capture" as const }],
+      },
+    ],
+    [
+      "unknown solution timing",
+      {
+        ...customDescriptor(),
+        solution: [
+          {
+            rotation: 0,
+            action: "mark" as const,
+            x: 1,
+            z: 0,
+            timing: "during-crash" as never,
+          },
+        ],
+      },
+    ],
+    [
+      "rolling step without progress",
+      {
+        ...customDescriptor(),
+        solution: [
+          {
+            rotation: 0,
+            action: "mark" as const,
+            x: 1,
+            z: 0,
+            timing: "rolling" as const,
+          },
+        ],
+      },
+    ],
+    [
+      "abnormally large rotation",
+      {
+        ...customDescriptor(),
+        solution: [{ rotation: 99999, action: "mark" as const, x: 1, z: 0 }],
+      },
+    ],
+    [
+      "duplicate sequence in one rotation",
+      {
+        ...customDescriptor(),
+        solution: [
+          { rotation: 0, action: "mark" as const, x: 1, z: 0, sequence: 0 },
+          {
+            rotation: 0,
+            action: "capture" as const,
+            x: 1,
+            z: 0,
+            sequence: 0,
+          },
+        ],
+      },
+    ],
   ])("rejects %s", (_reason, descriptor) => {
     expect(parsePuzzleDescriptor(descriptor).valid).toBe(false);
   });

@@ -43,6 +43,8 @@ export interface SolutionStep {
   action: "mark" | "capture" | "area";
   x?: number;
   z?: number;
+  timing?: "settled" | "rolling";
+  progress?: number;
   /** Explicit order for multiple actions sharing one rotation. */
   sequence?: number;
 }

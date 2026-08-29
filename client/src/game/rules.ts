@@ -1,5 +1,5 @@
 /** Obsidian Observatory: renderer-free rules shared by runtime, replay, and tests. */
-import { rollingCubeBounds } from "./rollPhysics";
+import { rollingCubeBounds, rollingCubeSweepBounds } from "./rollPhysics";
 import type { AreaMark, CubeState, GridPosition, RunStats } from "./types";
 
 const CELL_HALF = 0.49;
@@ -52,6 +52,22 @@ export function markerCanCapture(
   return Boolean(
     marker && cubeOccupiesCell(cube, marker, rollProgress, isRolling)
   );
+}
+
+export function markerProtectsRollSweep(
+  marker: GridPosition | null,
+  cube: CubeState,
+  fromProgress: number,
+  toProgress: number,
+  isRolling = false
+): boolean {
+  if (!marker || cube.captured || cube.falling || cube.x !== marker.x)
+    return false;
+  if (!isRolling) return cube.z === marker.z;
+  const bounds = rollingCubeSweepBounds(cube, fromProgress, toProgress);
+  const cellMinZ = marker.z - CELL_HALF;
+  const cellMaxZ = marker.z + CELL_HALF;
+  return bounds.z.max >= cellMinZ && bounds.z.min <= cellMaxZ;
 }
 
 /**

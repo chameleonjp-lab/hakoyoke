@@ -26,6 +26,11 @@ export interface PuzzleDescriptorParseResult {
 }
 
 const CUBE_TYPES = new Set(["normal", "veil", "void"]);
+const SOLUTION_TIMINGS = new Set(["settled", "rolling"]);
+const MAX_GRID_SIZE = 64;
+const MAX_SOLUTION_STEPS = 4096;
+const MAX_SOLUTION_ROTATION = 4096;
+const MAX_PLAYER_TARGET_Z = 64;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -54,10 +59,10 @@ export function parsePuzzleDescriptor(
 
   const width = value.width;
   const depth = value.depth;
-  const spawnRow = value.spawnRow ?? 0;
+  const spawnRow = value.spawnRow;
   if (
     typeof value.id !== "string" ||
-    value.id.length === 0 ||
+    value.id.trim().length === 0 ||
     value.id.length > 120 ||
     !isInteger(value.stage) ||
     value.stage < 1 ||
@@ -67,14 +72,18 @@ export function parsePuzzleDescriptor(
     value.ordinal < 1 ||
     !isInteger(width) ||
     width < 1 ||
+    width > MAX_GRID_SIZE ||
     !isInteger(depth) ||
     depth < 1 ||
+    depth > MAX_GRID_SIZE ||
     !isInteger(spawnRow) ||
     spawnRow < 0 ||
+    spawnRow > MAX_SOLUTION_ROTATION ||
     !isNonNegativeInteger(value.requiredRolls) ||
+    value.requiredRolls > MAX_SOLUTION_ROTATION ||
     typeof value.difficultyTag !== "string" ||
     value.difficultyTag.length === 0 ||
-    !isFiniteNumber(value.seed) ||
+    !isInteger(value.seed) ||
     typeof value.featured !== "boolean"
   )
     return parseFailure("descriptor metadata is invalid");
@@ -102,32 +111,69 @@ export function parsePuzzleDescriptor(
     positions.add(key);
   }
 
-  if (!Array.isArray(value.solution))
+  if (
+    !Array.isArray(value.solution) ||
+    value.solution.length > MAX_SOLUTION_STEPS
+  )
     return parseFailure("solution is invalid");
+  const sequencesByRotation = new Map<number, Set<number>>();
   for (const step of value.solution) {
+    const action = step && isRecord(step) ? step.action : undefined;
     if (
       !isRecord(step) ||
       !isNonNegativeInteger(step.rotation) ||
-      !["mark", "capture", "area"].includes(String(step.action))
+      step.rotation > MAX_SOLUTION_ROTATION ||
+      (action !== "mark" && action !== "capture" && action !== "area")
     )
       return parseFailure("solution step is invalid");
     if (
-      step.action === "mark" &&
-      (!isInteger(step.x) ||
+      step.timing !== undefined &&
+      (typeof step.timing !== "string" || !SOLUTION_TIMINGS.has(step.timing))
+    )
+      return parseFailure("solution timing is invalid");
+    if (step.progress !== undefined) {
+      if (
+        !isFiniteNumber(step.progress) ||
+        step.progress < 0 ||
+        step.progress > 1 ||
+        step.timing !== "rolling"
+      )
+        return parseFailure("solution progress is invalid");
+    }
+    if (step.timing === "rolling" && step.progress === undefined)
+      return parseFailure("rolling solution step has no progress");
+    const hasX = step.x !== undefined;
+    const hasZ = step.z !== undefined;
+    if (hasX !== hasZ) return parseFailure("solution position is incomplete");
+    if (
+      (step.action === "mark" || step.action === "capture") &&
+      (!hasX ||
+        !hasZ ||
+        !isInteger(step.x) ||
         !isInteger(step.z) ||
         step.x < 0 ||
-        step.x >= width)
+        step.x >= width ||
+        step.z < 0 ||
+        step.z > MAX_PLAYER_TARGET_Z)
     )
-      return parseFailure("MARK solution step has no valid position");
-    if (
-      step.x !== undefined &&
-      (!isInteger(step.x) || step.x < 0 || step.x >= width)
-    )
+      return parseFailure("solution step has no valid position");
+    if (hasX && (!isInteger(step.x) || step.x < 0 || step.x >= width))
       return parseFailure("solution x position is invalid");
-    if (step.z !== undefined && !isInteger(step.z))
+    if (
+      hasZ &&
+      (!isInteger(step.z) || step.z < 0 || step.z > MAX_PLAYER_TARGET_Z)
+    )
       return parseFailure("solution z position is invalid");
     if (step.sequence !== undefined && !isNonNegativeInteger(step.sequence))
       return parseFailure("solution sequence is invalid");
+    if (step.sequence !== undefined) {
+      const sequenceSet =
+        sequencesByRotation.get(step.rotation) ?? new Set<number>();
+      if (sequenceSet.has(step.sequence))
+        return parseFailure("solution sequence is duplicated");
+      sequenceSet.add(step.sequence);
+      sequencesByRotation.set(step.rotation, sequenceSet);
+    }
   }
 
   if (!isRecord(value.validation))
@@ -291,7 +337,8 @@ function gameplayFingerprint(puzzle: PuzzleDescriptor): string {
       step.action,
       step.x ?? null,
       step.z ?? null,
-      step.sequence ?? null,
+      step.timing ?? "settled",
+      step.progress ?? 0,
     ]);
 
   return JSON.stringify({
