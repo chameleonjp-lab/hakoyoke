@@ -86,6 +86,18 @@ describe("projected runtime solution replay", () => {
       }).valid
     ).toBe(false));
 
+  it("rejects a replay that lets a required cube fall", () =>
+    expect(
+      simulatePuzzleSolution({
+        ...puzzle([{ x: 1, z: 1, type: "normal" }]),
+        solution: [],
+        requiredRolls: 0,
+      })
+    ).toMatchObject({
+      valid: false,
+      reason: "solution lets a required cube fall",
+    }));
+
   it.each([11, 12, 13])(
     "translates authored rotations for every puzzle at %s platform rows",
     platformRows => {

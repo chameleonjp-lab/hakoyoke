@@ -11,6 +11,7 @@ import {
   cloneDeterministic,
   isPositionOnPlatform,
   markerCanCapture,
+  markerProtectsRollSweep,
   normalCaptureScore,
   perfectBonus,
   unresolvedCubeCount,
@@ -43,6 +44,36 @@ describe("CUBIC ORDEAL deterministic rules", () => {
     const mark = { x: 2, z: 4 };
     expect(markerCanCapture(mark, cube("a", "normal", 2, 4))).toBe(true);
     expect(markerCanCapture(mark, cube("b", "normal", 2, 3))).toBe(false);
+  });
+
+  it("protects the MARK lane across the full rolling sweep", () => {
+    expect(
+      markerProtectsRollSweep(
+        { x: 2, z: 2 },
+        cube("incoming", "void", 2, 3),
+        0,
+        1,
+        true
+      )
+    ).toBe(true);
+    expect(
+      markerProtectsRollSweep(
+        { x: 2, z: 2 },
+        cube("neighbor", "void", 1, 3),
+        0,
+        1,
+        true
+      )
+    ).toBe(false);
+    expect(
+      markerProtectsRollSweep(
+        { x: 2, z: 2 },
+        cube("far", "void", 2, 5),
+        0,
+        1,
+        true
+      )
+    ).toBe(false);
   });
 
   it("selects the exact 3 by 3 AREA neighborhood", () => {

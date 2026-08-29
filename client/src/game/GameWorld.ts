@@ -20,6 +20,7 @@ import {
   calculateMindIndex,
   isPositionOnPlatform,
   markerCanCapture,
+  markerProtectsRollSweep,
   markerTarget,
   unresolvedCubeCount,
 } from "./rules";
@@ -308,6 +309,16 @@ export class GameWorld {
       cube =>
         !cube.captured &&
         !cube.falling &&
+        !(
+          this.marker &&
+          markerProtectsRollSweep(
+            this.marker,
+            cube,
+            previousProgress,
+            progress,
+            this.isRolling
+          )
+        ) &&
         playerIntersectsRollSweep(cube, this.player, previousProgress, progress)
     );
     if (crushing) this.crush();

@@ -70,6 +70,7 @@ type WorldInternals = {
   rollElapsed: number;
   markOrCapture: () => void;
   activateAreas: () => void;
+  checkRollCollision: (previousProgress: number, progress: number) => void;
   finishRotation: () => void;
   advanceAfterResult: () => void;
 };
@@ -402,6 +403,34 @@ describe("GameWorld state invariants", () => {
     expect(state.cubes.find(cube => cube.id === "leading")?.captured).toBe(
       undefined
     );
+    world.dispose();
+  });
+
+  it("does not crush the player while MARK protects a rolling VOID lane", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.phase = "PLAYING";
+    state.isRolling = true;
+    state.player = { x: 2, z: 2, heading: 0 };
+    state.marker = { x: 2, z: 2 };
+    state.cubes = [
+      { id: "protected-void", type: "void", x: 2, z: 3, previousZ: 3 },
+    ];
+
+    state.checkRollCollision(0, 1);
+
+    expect(state.phase).toBe("PLAYING");
+    expect(state.cubes[0]?.falling).toBeUndefined();
+
+    state.marker = null;
+    state.checkRollCollision(0, 1);
+
+    expect(state.phase).toBe("CRUSHED");
+    expect(state.cubes[0]?.falling).toBe(true);
     world.dispose();
   });
 
