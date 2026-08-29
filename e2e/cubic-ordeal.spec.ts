@@ -112,18 +112,25 @@ test("PRACTICE開始後のSAVE、LOAD、STEP、REWINDはCampaign記録と独立�
       )
     )
     .toBeGreaterThan(0);
-  const savedFirstCubeZ = await page.evaluate(
-    () =>
-      (
-        window as Window & {
-          practiceSnapshot?: { cubes: Array<{ z: number }> };
-        }
-      ).practiceSnapshot?.cubes[0]?.z
-  );
-  if (savedFirstCubeZ === undefined) {
-    throw new Error("PRACTICE snapshot has no active cubes.");
-  }
-  await page.getByRole("button", { name: /SAVE/ }).click();
+  const savedFirstCubeZ = await page.evaluate(() => {
+    const snapshot = (
+      window as Window & {
+        practiceSnapshot?: { cubes: Array<{ z: number }> };
+      }
+    ).practiceSnapshot;
+    const savedZ = snapshot?.cubes[0]?.z;
+    if (savedZ === undefined) {
+      throw new Error("PRACTICE snapshot has no active cubes.");
+    }
+    const saveButton = Array.from(
+      document.querySelectorAll(".practice-tools button")
+    ).find(button => button.textContent?.trim() === "SAVE");
+    if (!(saveButton instanceof HTMLButtonElement)) {
+      throw new Error("PRACTICE SAVE button is unavailable.");
+    }
+    saveButton.click();
+    return savedZ;
+  });
   await expect(
     page.getByText("QUICK SAVE STORED", { exact: true })
   ).toBeVisible();

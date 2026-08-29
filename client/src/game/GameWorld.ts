@@ -91,7 +91,6 @@ export class GameWorld {
   private readonly input = new InputManager();
   private readonly history: GameSnapshot[] = [];
   private quickSave: GameSnapshot | null = null;
-  private lastPublishedSnapshot: GameSnapshot | null = null;
   private readonly onPublish: (snapshot: GameSnapshot) => void;
   private readonly onSignal: (signal: string) => void;
   private readonly onCommand = (event: Event) =>
@@ -677,7 +676,6 @@ export class GameWorld {
       resetPlatform
     );
     this.currentPuzzle = puzzle;
-    this.lastPublishedSnapshot = null;
     this.cubes = puzzle.layout.map((cube, index) => ({
       id: `${puzzle.id}-${index}`,
       type: cube.type,
@@ -897,7 +895,7 @@ export class GameWorld {
       return;
     }
     if (command.type === "quick-save" && this.mode === "PRACTICE") {
-      this.quickSave = this.lastPublishedSnapshot ?? this.snapshot();
+      this.quickSave = this.snapshot();
       this.banner = "QUICK SAVE STORED";
       return;
     }
@@ -1021,7 +1019,6 @@ export class GameWorld {
   }
 
   private restore(snapshot: GameSnapshot): void {
-    this.lastPublishedSnapshot = null;
     this.phase = snapshot.phase;
     this.mode = snapshot.mode;
     this.difficulty = snapshot.difficulty;
@@ -1206,9 +1203,7 @@ export class GameWorld {
   }
 
   private publish(): void {
-    const snapshot = this.snapshot();
-    this.lastPublishedSnapshot = snapshot;
-    this.onPublish(snapshot);
+    this.onPublish(this.snapshot());
   }
 
   get rollProgress(): number {
