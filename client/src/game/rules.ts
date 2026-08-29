@@ -54,6 +54,22 @@ export function markerCanCapture(
   );
 }
 
+/**
+ * Select the deterministic MARK target when rolling geometry overlaps more
+ * than one cube. The cube farther from the player is the incoming cube and
+ * must win regardless of the layout array order.
+ */
+export function markerTarget(
+  cubes: CubeState[],
+  marker: GridPosition | null,
+  rollProgress = 0,
+  isRolling = false
+): CubeState | undefined {
+  return cubes
+    .filter(cube => markerCanCapture(marker, cube, rollProgress, isRolling))
+    .sort((a, b) => b.z - a.z || a.id.localeCompare(b.id))[0];
+}
+
 export function isProtectedByMarker(
   marker: GridPosition | null,
   cube: CubeState,

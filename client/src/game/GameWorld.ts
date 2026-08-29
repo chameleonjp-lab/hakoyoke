@@ -20,6 +20,7 @@ import {
   calculateMindIndex,
   isPositionOnPlatform,
   markerCanCapture,
+  markerTarget,
   unresolvedCubeCount,
 } from "./rules";
 import { playerIntersectsRollSweep } from "./rollPhysics";
@@ -372,8 +373,11 @@ export class GameWorld {
       return;
     }
 
-    const target = this.cubes.find(cube =>
-      markerCanCapture(this.marker, cube, this.rollProgress, this.isRolling)
+    const target = markerTarget(
+      this.cubes,
+      this.marker,
+      this.rollProgress,
+      this.isRolling
     );
     if (!target) {
       this.marker = null;

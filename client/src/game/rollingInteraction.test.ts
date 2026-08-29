@@ -4,6 +4,7 @@ import {
   cubeOccupiesCell,
   isProtectedByMarker,
   markerCanCapture,
+  markerTarget,
 } from "./rules";
 import type { AreaMark, CubeState } from "./types";
 
@@ -32,6 +33,19 @@ describe("rolling MARK and AREA interactions", () => {
     const canCapture = markerCanCapture({ x: 2, z: 3 }, target, 0.65, true);
     expect(occupiesDestination).toBe(true);
     expect(canCapture).toBe(true);
+  });
+
+  it("chooses the incoming cube consistently when rolling cubes overlap", () => {
+    const marker = { x: 2, z: 3 };
+    const leading = cube("leading", "normal", 2, 3);
+    const incoming = cube("incoming", "normal", 2, 4);
+
+    expect(markerTarget([leading, incoming], marker, 0.65, true)?.id).toBe(
+      "incoming"
+    );
+    expect(markerTarget([incoming, leading], marker, 0.65, true)?.id).toBe(
+      "incoming"
+    );
   });
 
   it("protects every cube type on MARK from AREA, not only VOID", () => {
