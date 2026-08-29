@@ -70,7 +70,6 @@ type WorldInternals = {
   rollElapsed: number;
   markOrCapture: () => void;
   activateAreas: () => void;
-  publish: () => void;
   finishRotation: () => void;
   advanceAfterResult: () => void;
 };
@@ -363,7 +362,7 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
-  it("takes a practice quick-save from the last published frame", () => {
+  it("takes a practice quick-save from the current authoritative state", () => {
     const world = new GameWorld(
       [puzzle()],
       () => undefined,
@@ -374,10 +373,10 @@ describe("GameWorld state invariants", () => {
     state.cubes = [
       { id: "visible", type: "normal", x: 1, z: 10, previousZ: 10 },
     ];
-    state.publish();
-    state.cubes[0]!.z = 7;
 
     command({ type: "quick-save" });
+
+    state.cubes[0]!.z = 7;
 
     expect(state.quickSave?.cubes[0]?.z).toBe(10);
     world.dispose();
