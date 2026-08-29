@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { generatePuzzles } from "./puzzles";
 import {
   deriveDirectSolution,
   simulatePuzzleSolution,
@@ -35,7 +36,7 @@ function puzzle(
   };
 }
 
-describe("headless registered solution replay", () => {
+describe("projected runtime solution replay", () => {
   it("proves a direct solution captures every required cube at NORMAL movement speed", () =>
     expect(
       simulatePuzzleSolution(
@@ -43,8 +44,8 @@ describe("headless registered solution replay", () => {
           { x: 1, z: 1, type: "normal" },
           { x: 3, z: 3, type: "normal" },
         ])
-      ).valid
-    ).toBe(true));
+      )
+    ).toMatchObject({ valid: true, requiredCaptured: 2 }));
 
   it("keeps authored mark/capture order for multiple cubes in one row", () =>
     expect(
@@ -84,4 +85,16 @@ describe("headless registered solution replay", () => {
         requiredRolls: 0,
       }).valid
     ).toBe(false));
+
+  it.each([11, 12, 13])(
+    "translates authored rotations for every puzzle at %s platform rows",
+    platformRows => {
+      const results = generatePuzzles().map(puzzle =>
+        simulatePuzzleSolution(puzzle, { platformRows })
+      );
+
+      expect(results).toHaveLength(88);
+      expect(results.every(result => result.valid)).toBe(true);
+    }
+  );
 });

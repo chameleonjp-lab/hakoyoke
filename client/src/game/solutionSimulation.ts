@@ -1,9 +1,20 @@
-/** Deterministic headless replay using the same one-shot AREA and MARK protection rules as GameWorld. */
-import { areaTargets } from "./rules";
+/** Deterministic replay of the same projected grid state used by GameWorld. */
+import {
+  createRuntimePuzzleCubes,
+  platformRowsForStage,
+  puzzleSourceStart,
+} from "./platformProgression";
+import {
+  advanceOneCell,
+  areaTargets,
+  isPositionOnPlatform,
+  markerCanCapture,
+} from "./rules";
 import {
   DIFFICULTIES,
   type AreaMark,
   type CubeState,
+  type Difficulty,
   type PuzzleDescriptor,
   type SolutionStep,
 } from "./types";
@@ -20,6 +31,12 @@ export interface SolutionSimulationResult {
   regeneratedAreaAnchors: number;
 }
 
+export interface SolutionSimulationOptions {
+  /** Override the current platform length when testing row gain or loss. */
+  platformRows?: number;
+  difficulty?: Difficulty;
+}
+
 const ACTION_PRIORITY: Record<SolutionStep["action"], number> = {
   capture: 0,
   mark: 1,
@@ -27,112 +44,130 @@ const ACTION_PRIORITY: Record<SolutionStep["action"], number> = {
 };
 
 export function simulatePuzzleSolution(
-  puzzle: PuzzleDescriptor
+  puzzle: PuzzleDescriptor,
+  options: SolutionSimulationOptions = {}
 ): SolutionSimulationResult {
-  const cubes: CubeState[] = puzzle.layout.map((cube, index) => ({
-    ...cube,
-    id: `${puzzle.id}-${index}`,
-    previousZ: cube.z,
-    captured: false,
-    falling: false,
-  }));
+  const platformRows =
+    options.platformRows ?? platformRowsForStage(puzzle.stage, puzzle.depth);
+  const sourceStart = puzzleSourceStart(puzzle);
+  const runtimeStart = platformRows - puzzle.depth;
+  const rotationOffset = runtimeStart - sourceStart;
+  let cubes: CubeState[] = createRuntimePuzzleCubes(puzzle, platformRows).map(
+    cube => ({ ...cube, captured: false, falling: false })
+  );
   let areas: AreaMark[] = [];
   const steps = [...puzzle.solution].sort(compareSteps);
   let marker: { x: number; z: number } | null = null;
   let player = { x: Math.max(0.5, puzzle.width / 2), z: 0.7 };
   let previousRotation = 0;
+  let lastActionTime = 0;
+  let lastActionWasCapture = false;
   let voidCaptured = 0;
+  let requiredCaptured = 0;
+  let requiredFallen = 0;
   let playerReachable = true;
+  let misses = 0;
+  let currentPlatformRows = platformRows;
   let areaUses = 0;
   let consumedAreaAnchors = 0;
   let regeneratedAreaAnchors = 0;
   const captureRotations: number[] = [];
-  const config = DIFFICULTIES.NORMAL;
+  const config = DIFFICULTIES[options.difficulty ?? "NORMAL"];
   const cycleSeconds = config.rollSeconds + config.settleSeconds;
+  const missLimit = Math.max(1, puzzle.width - 1);
 
   for (const step of steps) {
-    if (!Number.isInteger(step.rotation) || step.rotation < previousRotation)
+    if (!Number.isInteger(step.rotation) || step.rotation < 0)
       return failure("invalid rotation order");
-    const elapsedRotations = step.rotation - previousRotation;
-    for (const cube of cubes) {
-      if (cube.captured || cube.falling) continue;
-      cube.previousZ = cube.z;
-      cube.z -= elapsedRotations;
-      if (cube.z < 0) cube.falling = true;
+    const runtimeRotation = step.rotation + rotationOffset;
+    if (
+      !Number.isInteger(runtimeRotation) ||
+      runtimeRotation < previousRotation
+    )
+      return failure("invalid rotation order");
+    const elapsedRotations = runtimeRotation - previousRotation;
+    for (let rotation = 0; rotation < elapsedRotations; rotation += 1) {
+      for (const cube of cubes) {
+        if (cube.captured || cube.falling) continue;
+        Object.assign(cube, advanceOneCell(cube));
+        if (cube.z < 0) {
+          cube.falling = true;
+          if (cube.type === "void") continue;
+          requiredFallen += 1;
+          misses += 1;
+          if (misses > missLimit) {
+            misses = 0;
+            currentPlatformRows -= 1;
+          }
+        }
+      }
+      cubes = cubes.filter(cube => !cube.falling && !cube.captured);
+      if (currentPlatformRows < puzzle.depth + 2)
+        return failure("platform is too short", 0, true, voidCaptured);
     }
+    const actionTime = runtimeRotation * cycleSeconds;
+    previousRotation = runtimeRotation;
 
     if (step.action === "mark") {
       if (step.x === undefined || step.z === undefined)
         return failure("mark without position");
+      if (
+        !isPositionOnPlatform(
+          { x: step.x, z: step.z },
+          puzzle.width,
+          currentPlatformRows
+        )
+      )
+        return failure("MARK is outside the platform");
       const distance = Math.hypot(step.x - player.x, step.z - player.z);
-      // A mark scheduled at the same rotation as a capture is placed during capture pause + settle.
-      const available =
-        elapsedRotations * cycleSeconds +
-        config.captureSeconds +
-        config.settleSeconds;
-      if (distance > available * config.playerSpeed + 0.35)
-        playerReachable = false;
+      const movementSeconds =
+        Math.max(0, actionTime - lastActionTime) +
+        config.settleSeconds +
+        (lastActionWasCapture ? config.captureSeconds : 0);
+      const availableDistance = movementSeconds * config.playerSpeed + 0.35;
+      if (distance > availableDistance) playerReachable = false;
       player = { x: step.x, z: step.z };
       marker = { x: step.x, z: step.z };
-      previousRotation = step.rotation;
-      continue;
-    }
-
-    if (step.action === "capture") {
+      lastActionWasCapture = false;
+    } else if (step.action === "capture") {
       if (!marker) return failure("capture without marker");
-      const target = cubes.find(
-        cube =>
-          !cube.captured &&
-          !cube.falling &&
-          cube.x === marker?.x &&
-          cube.z === marker?.z
-      );
+      const target = cubes.find(cube => markerCanCapture(marker, cube));
       if (!target) return failure("marker has no landed cube");
       target.captured = true;
       if (target.type === "void") voidCaptured += 1;
-      else captureRotations.push(step.rotation);
-      if (target.type === "veil") {
-        const next: AreaMark = {
-          id: `area-${target.id}`,
-          x: target.x,
-          z: target.z,
-          armed: true,
-        };
-        if (!areas.some(area => area.x === next.x && area.z === next.z)) {
-          areas.push(next);
-          regeneratedAreaAnchors += 1;
-        }
+      else {
+        requiredCaptured += 1;
+        captureRotations.push(step.rotation);
       }
+      if (target.type === "veil")
+        regeneratedAreaAnchors += addAreaAnchor(areas, target);
       marker = null;
-      previousRotation = step.rotation;
-      continue;
+      lastActionWasCapture = true;
+    } else if (step.action === "area") {
+      if (!areas.length) return failure("area without veil anchor");
+      areaUses += 1;
+      const activeAreas = areas;
+      consumedAreaAnchors += activeAreas.length;
+      areas = [];
+      const targets = areaTargets(cubes, activeAreas, marker);
+      if (!targets.length) return failure("area has no targets");
+      for (const target of targets) {
+        target.captured = true;
+        if (target.type === "void") voidCaptured += 1;
+        else {
+          requiredCaptured += 1;
+          captureRotations.push(step.rotation);
+        }
+        if (target.type === "veil")
+          regeneratedAreaAnchors += addAreaAnchor(areas, target);
+      }
+      lastActionWasCapture = true;
+    } else {
+      return failure("unknown solution action");
     }
 
-    if (!areas.length) return failure("area without veil anchor");
-    areaUses += 1;
-    const activeAreas = areas;
-    consumedAreaAnchors += activeAreas.length;
-    areas = [];
-    const targets = areaTargets(cubes, activeAreas, marker);
-    if (!targets.length) return failure("area has no targets");
-    for (const target of targets) {
-      target.captured = true;
-      if (target.type === "void") voidCaptured += 1;
-      else captureRotations.push(step.rotation);
-      if (target.type === "veil") {
-        const next: AreaMark = {
-          id: `area-${target.id}`,
-          x: target.x,
-          z: target.z,
-          armed: true,
-        };
-        if (!areas.some(area => area.x === next.x && area.z === next.z)) {
-          areas.push(next);
-          regeneratedAreaAnchors += 1;
-        }
-      }
-    }
-    previousRotation = step.rotation;
+    lastActionTime = actionTime;
+    cubes = cubes.filter(cube => !cube.captured && !cube.falling);
   }
 
   const remaining = cubes.filter(
@@ -147,6 +182,16 @@ export function simulatePuzzleSolution(
       "player cannot reach a scheduled MARK",
       measuredRolls,
       false,
+      voidCaptured,
+      areaUses,
+      consumedAreaAnchors,
+      regeneratedAreaAnchors
+    );
+  if (requiredFallen)
+    return failure(
+      "solution lets a required cube fall",
+      measuredRolls,
+      true,
       voidCaptured,
       areaUses,
       consumedAreaAnchors,
@@ -185,9 +230,7 @@ export function simulatePuzzleSolution(
   return {
     valid: true,
     reason: "ok",
-    requiredCaptured: cubes.filter(
-      cube => cube.type !== "void" && cube.captured
-    ).length,
+    requiredCaptured,
     voidCaptured,
     measuredRolls,
     playerReachable,
@@ -195,6 +238,18 @@ export function simulatePuzzleSolution(
     consumedAreaAnchors,
     regeneratedAreaAnchors,
   };
+}
+
+function addAreaAnchor(areas: AreaMark[], cube: CubeState): number {
+  const next: AreaMark = {
+    id: `area-${cube.id}`,
+    x: cube.x,
+    z: cube.z,
+    armed: true,
+  };
+  if (areas.some(area => area.x === next.x && area.z === next.z)) return 0;
+  areas.push(next);
+  return 1;
 }
 
 export function deriveDirectSolution(

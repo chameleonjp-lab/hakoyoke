@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  createRuntimePuzzleCubes,
   platformRowsForStage,
+  puzzleSourceStart,
   projectPuzzleCubesToPlatform,
   shouldResetPlatformAtLoad,
 } from "./platformProgression";
@@ -40,6 +42,18 @@ const runtimeCubes = (source: PuzzleDescriptor): CubeState[] =>
   }));
 
 describe("platform progression", () => {
+  it("uses one runtime cube factory for GameWorld and replay", () => {
+    const source = puzzle();
+
+    expect(puzzleSourceStart(source)).toBe(5);
+    expect(createRuntimePuzzleCubes(source, 12)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "PLATFORM-PROGRESSION-0", z: 10 }),
+        expect.objectContaining({ id: "PLATFORM-PROGRESSION-1", z: 11 }),
+      ])
+    );
+  });
+
   it("projects a formation against the far edge of the current platform", () => {
     const source = puzzle();
     const projected = projectPuzzleCubesToPlatform(

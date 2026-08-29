@@ -15,8 +15,7 @@ export function projectPuzzleCubesToPlatform(
   cubes: CubeState[],
   platformRows: number
 ): CubeState[] {
-  const sourceStart =
-    puzzle.spawnRow ?? Math.min(...puzzle.layout.map(cube => cube.z));
+  const sourceStart = puzzleSourceStart(puzzle);
   const runtimeStart = platformRows - puzzle.depth;
 
   return cubes.map((cube, index) => {
@@ -26,6 +25,30 @@ export function projectPuzzleCubesToPlatform(
     const z = runtimeStart + offset;
     return { ...cube, z, previousZ: z };
   });
+}
+
+/** Build the same projected runtime state that GameWorld presents to the player. */
+export function createRuntimePuzzleCubes(
+  puzzle: PuzzleDescriptor,
+  platformRows: number
+): CubeState[] {
+  const sourceCubes = puzzle.layout.map((cube, index) => ({
+    id: `${puzzle.id}-${index}`,
+    type: cube.type,
+    x: cube.x,
+    z: cube.z,
+    previousZ: cube.z,
+  }));
+  return projectPuzzleCubesToPlatform(puzzle, sourceCubes, platformRows);
+}
+
+export function puzzleSourceStart(puzzle: PuzzleDescriptor): number {
+  return (
+    puzzle.spawnRow ??
+    (puzzle.layout.length > 0
+      ? Math.min(...puzzle.layout.map(cube => cube.z))
+      : 0)
+  );
 }
 
 export function shouldResetPlatformAtLoad(

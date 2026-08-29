@@ -9,8 +9,8 @@ import {
   stageCompletionBonus,
 } from "./campaignLifecycle";
 import {
+  createRuntimePuzzleCubes,
   platformRowsForStage,
-  projectPuzzleCubesToPlatform,
   shouldResetPlatformAtLoad,
 } from "./platformProgression";
 import { retainRunState, shouldCarryRunState } from "./runStateProgression";
@@ -676,13 +676,6 @@ export class GameWorld {
       resetPlatform
     );
     this.currentPuzzle = puzzle;
-    this.cubes = puzzle.layout.map((cube, index) => ({
-      id: `${puzzle.id}-${index}`,
-      type: cube.type,
-      x: cube.x,
-      z: cube.z,
-      previousZ: cube.z,
-    }));
     this.marker = null;
     this.areas = carriedState?.areas ?? [];
     const platformRows = resetRows
@@ -700,11 +693,7 @@ export class GameWorld {
       this.stats.areaMarks = this.areas.length;
       this.stats.perfect = this.stats.misses === 0;
     }
-    this.cubes = projectPuzzleCubesToPlatform(
-      puzzle,
-      this.cubes,
-      this.stats.platformRows
-    );
+    this.cubes = createRuntimePuzzleCubes(puzzle, this.stats.platformRows);
     this.player = {
       x: Math.min(puzzle.width - 0.5, Math.max(0.5, puzzle.width / 2)),
       z: 0.7,
