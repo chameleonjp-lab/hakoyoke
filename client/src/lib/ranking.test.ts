@@ -35,6 +35,38 @@ function memoryStorage() {
     removeItem(key: string) {
       values.delete(key);
     },
+    key(index: number) {
+      return Array.from(values.keys())[index] ?? null;
+    },
+    get length() {
+      return values.size;
+    },
+  };
+}
+
+function partitionedStorage(shared: Map<string, string>) {
+  const local = new Map<string, string>();
+  const isShared = (key: string): boolean =>
+    key === RANKING_STORAGE_KEYS.completed ||
+    key.startsWith(`${RANKING_STORAGE_KEYS.completed}:`);
+  const keys = (): string[] =>
+    Array.from(new Set([...local.keys(), ...shared.keys()]));
+  return {
+    getItem(key: string) {
+      return (isShared(key) ? shared : local).get(key) ?? null;
+    },
+    setItem(key: string, value: string) {
+      (isShared(key) ? shared : local).set(key, value);
+    },
+    removeItem(key: string) {
+      (isShared(key) ? shared : local).delete(key);
+    },
+    key(index: number) {
+      return keys()[index] ?? null;
+    },
+    get length() {
+      return keys().length;
+    },
   };
 }
 
@@ -778,6 +810,135 @@ describe("ranking integration contract", () => {
       state: "submitted",
     });
     expect(storage.getItem(RANKING_STORAGE_KEYS.pending)).toBe("[]");
+  });
+
+  it("preserves completion receipts when two hydrated tabs finish different results", async () => {
+    const sharedReceipts = new Map<string, string>();
+    const firstStorage = partitionedStorage(sharedReceipts);
+    const secondStorage = partitionedStorage(sharedReceipts);
+    firstStorage.setItem(
+      RANKING_STORAGE_KEYS.session,
+      JSON.stringify({
+        version: 1,
+        startId: START_ID,
+        playId: PLAY_ID,
+        displayName: "山田 太郎",
+        gameSlug: RANKING_CONFIG.gameSlug,
+        clientVersion: RANKING_CONFIG.clientVersion,
+        status: "active",
+        createdAt: new Date().toISOString(),
+      })
+    );
+    secondStorage.setItem(
+      RANKING_STORAGE_KEYS.session,
+      JSON.stringify({
+        version: 1,
+        startId: SECOND_START_ID,
+        playId: SECOND_PLAY_ID,
+        displayName: "山田 太郎",
+        gameSlug: RANKING_CONFIG.gameSlug,
+        clientVersion: RANKING_CONFIG.clientVersion,
+        status: "active",
+        createdAt: new Date().toISOString(),
+      })
+    );
+    let failedFinishes = 2;
+    let scoreCalls = 0;
+    const fetchImpl = async (input: RequestInfo | URL, init?: RequestInit) => {
+      const rpc = String(input).split("/").at(-1);
+      const payload = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      if (rpc === RANKING_CONFIG.finishRpc && failedFinishes > 0) {
+        failedFinishes -= 1;
+        return response({ code: "PT500", message: "temporary" }, 503);
+      }
+      if (rpc === RANKING_CONFIG.finishRpc) {
+        return response({
+          accepted: true,
+          duplicate: false,
+          play_id: payload.p_play_id,
+          game_slug: RANKING_CONFIG.gameSlug,
+          result_type: payload.p_result_type,
+          reached_wave: payload.p_reached_wave,
+          score: payload.p_score,
+        });
+      }
+      scoreCalls += 1;
+      return response([
+        {
+          accepted: true,
+          result_submission_id: payload.p_submission_id,
+          result_play_id: payload.p_play_id,
+          result_normalized_name: "山田 太郎",
+          result_display_name: "山田 太郎",
+          result_first_score: payload.p_score,
+          result_best_score: payload.p_score,
+          result_play_count: 1,
+          is_first_play: true,
+          is_new_best: true,
+          was_duplicate: false,
+        },
+      ]);
+    };
+    const firstTab = createRankingClient({
+      storage: firstStorage,
+      makeUuid: () => SUBMISSION_ID,
+      fetchImpl,
+    });
+    const secondTab = createRankingClient({
+      storage: secondStorage,
+      makeUuid: () => SECOND_SUBMISSION_ID,
+      fetchImpl,
+    });
+
+    await expect(
+      firstTab.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 3,
+        score: 4200,
+      })
+    ).resolves.toMatchObject({ state: "retryable_failed" });
+    await expect(
+      secondTab.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 4,
+        score: 4300,
+      })
+    ).resolves.toMatchObject({ state: "retryable_failed" });
+
+    await expect(firstTab.retryPendingCampaignResult()).resolves.toMatchObject({
+      state: "submitted",
+    });
+    await expect(
+      secondTab.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 4,
+        score: 4300,
+      })
+    ).resolves.toMatchObject({ state: "submitted" });
+    expect(scoreCalls).toBe(2);
+    expect(
+      JSON.parse(firstStorage.getItem(RANKING_STORAGE_KEYS.completed) ?? "[]")
+    ).toHaveLength(2);
+
+    const reloadedTab = createRankingClient({
+      storage: firstStorage,
+      makeUuid: () => {
+        throw new Error("completed receipt must prevent a new submission");
+      },
+      fetchImpl,
+    });
+    await expect(
+      reloadedTab.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 3,
+        score: 4200,
+      })
+    ).resolves.toMatchObject({ state: "submitted" });
+    expect(scoreCalls).toBe(2);
   });
 
   it("uses a permanent Supabase code even when its HTTP status is retryable", async () => {

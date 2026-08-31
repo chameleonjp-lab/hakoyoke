@@ -11,7 +11,7 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 15ファイル                                            | PASS — 102件            |
+| 単体・問題検査 | `pnpm test`                | 15ファイル                                            | PASS — 103件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
 | ブラウザ操作   | `pnpm test:e2e`            | Chromium 22件、WebKit 22件                            | 最新CIを正とする — 44件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
@@ -27,8 +27,8 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 | ---------------- | ----------: | --------: |
 | `index.html`     |   368.11 kB | 105.84 kB |
 | 初期CSS          |    34.69 kB |   8.23 kB |
-| 初期JS           |   276.13 kB |  84.37 kB |
-| 遅延`GameCanvas` | 1,256.26 kB | 309.58 kB |
+| 初期JS           |   277.05 kB |  84.55 kB |
+| 遅延`GameCanvas` | 1,256.26 kB | 309.59 kB |
 
 `client/public/data/puzzles.json`はJSへ重複同梱せず、ゲーム開始時に読む静的データです。
 

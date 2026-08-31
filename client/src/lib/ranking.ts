@@ -30,6 +30,7 @@ const SESSION_STORAGE_KEY = "chameleonjp_hakoyoke_ranking_session_v1";
 const PENDING_STORAGE_KEY = "chameleonjp_hakoyoke_pending_score_v1";
 const PENDING_ENTRY_PREFIX = `${PENDING_STORAGE_KEY}:`;
 const COMPLETED_STORAGE_KEY = "chameleonjp_hakoyoke_completed_score_v1";
+const COMPLETED_ENTRY_PREFIX = `${COMPLETED_STORAGE_KEY}:`;
 
 export const RANKING_STORAGE_KEYS = Object.freeze({
   session: SESSION_STORAGE_KEY,
@@ -486,7 +487,17 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   const saveCompletedEntries = (entries: CompletedSubmission[]): boolean => {
     if (!storage) return true;
     try {
+      entries.forEach(entry => {
+        storage.setItem(
+          `${COMPLETED_ENTRY_PREFIX}${entry.submissionId}`,
+          JSON.stringify(entry)
+        );
+      });
       storage.setItem(COMPLETED_STORAGE_KEY, JSON.stringify(entries));
+      // Keep auxiliary receipt keys instead of deleting keys not in this tab's
+      // bounded aggregate. Another tab may have read its receipt set already
+      // and be about to write; pruning here would reintroduce a lost update.
+      // Hydration and fresh merges retain only the newest 50 receipts logically.
       return true;
     } catch {
       reportFailure(
@@ -494,7 +505,7 @@ export function createRankingClient(options: RankingClientOptions = {}) {
           "completed-storage",
           "completed result receipt could not be persisted",
           0,
-          "pending-save-failed",
+          "completed-save-failed",
           true
         ),
         {}
@@ -548,6 +559,35 @@ export function createRankingClient(options: RankingClientOptions = {}) {
     return Array.from(byId.values());
   };
 
+  const readStoredCompletedEntries = (): CompletedSubmission[] => {
+    if (!storage) return [];
+    const rawEntries: unknown[] = [];
+    try {
+      const stored = parseJson(storage.getItem(COMPLETED_STORAGE_KEY) ?? null);
+      if (Array.isArray(stored)) rawEntries.push(...stored);
+      else if (stored) rawEntries.push(stored);
+      if (
+        typeof storage.length === "number" &&
+        typeof storage.key === "function"
+      ) {
+        for (let index = 0; index < storage.length; index += 1) {
+          const key = storage.key(index);
+          if (!key?.startsWith(COMPLETED_ENTRY_PREFIX)) continue;
+          rawEntries.push(parseJson(storage.getItem(key)));
+        }
+      }
+    } catch {
+      // Fall through to the in-memory copy.
+    }
+    const byId = new Map<string, CompletedSubmission>();
+    rawEntries.forEach(value => {
+      if (isCompleted(value)) byId.set(value.submissionId, value);
+    });
+    return Array.from(byId.values()).sort((left, right) =>
+      left.completedAt.localeCompare(right.completedAt)
+    );
+  };
+
   const readPendingEntries = (): PendingSubmission[] => {
     if (pendingHydrated) return volatilePending;
     pendingHydrated = true;
@@ -579,13 +619,7 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   const readCompletedEntries = (): CompletedSubmission[] => {
     if (completedHydrated) return volatileCompleted;
     completedHydrated = true;
-    try {
-      const stored = parseJson(storage?.getItem(COMPLETED_STORAGE_KEY) ?? null);
-      if (Array.isArray(stored)) volatileCompleted = stored.filter(isCompleted);
-      else if (isCompleted(stored)) volatileCompleted = [stored];
-    } catch {
-      // Fall through to the in-memory copy.
-    }
+    volatileCompleted = readStoredCompletedEntries().slice(-50);
     return volatileCompleted;
   };
 
@@ -600,9 +634,17 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   };
 
   const writeCompleted = (pending: PendingSubmission): boolean => {
-    const entries = readCompletedEntries().filter(
-      entry => entry.submissionId !== pending.submissionId
+    // Merge a fresh storage read with this tab's cached receipts before writing.
+    const merged = new Map<string, CompletedSubmission>();
+    readStoredCompletedEntries().forEach(entry =>
+      merged.set(entry.submissionId, entry)
     );
+    readCompletedEntries().forEach(entry =>
+      merged.set(entry.submissionId, entry)
+    );
+    const entries = Array.from(merged.values())
+      .filter(entry => entry.submissionId !== pending.submissionId)
+      .sort((left, right) => left.completedAt.localeCompare(right.completedAt));
     const receipt: CompletedSubmission = {
       version: 1,
       submissionId: pending.submissionId,
@@ -616,8 +658,12 @@ export function createRankingClient(options: RankingClientOptions = {}) {
       completedAt: now().toISOString(),
     };
     // Keep receipts bounded; they only prevent duplicate submissions after reload.
-    volatileCompleted = [...entries, receipt].slice(-50);
-    return saveCompletedEntries(volatileCompleted);
+    const next = [...entries, receipt]
+      .sort((left, right) => left.completedAt.localeCompare(right.completedAt))
+      .slice(-50);
+    const saved = saveCompletedEntries(next);
+    if (saved) volatileCompleted = next;
+    return saved;
   };
 
   const removePending = (submissionId: string): boolean => {

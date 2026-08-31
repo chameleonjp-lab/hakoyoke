@@ -47,7 +47,7 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 
 ランキング対象はCAMPAIGNの`clear`と`game_over`だけです。TUTORIAL、PRACTICE、CREATE、DUELおよび途中結果は送信しません。
 
-1プレイにつきブラウザ生成の`start_id`を1つ保存し、`start_game_play_v1`が返す`play_id`を終了まで使います。結果確定時は通信前に`submission_id`と確定結果を保存し、`finish_game_play_v1`、`submit_score_idempotent_v1`の順に自動送信します。通信断・時間切れ・HTTP 408/425/429/5xxは同じ内容で再送でき、恒久エラーでは再送ボタンを出しません。成功応答の内容を検査した後だけpendingを削除し、別保存の完了receiptで再読込時の二重送信を防ぎます。複数の未送信結果は同じ導線で順番に再送し、送信中断の`submitting`は再読込時に再送可能へ復元します。ランキング通信の失敗は結果、共有、再戦、メニュー導線を塞ぎません。
+1プレイにつきブラウザ生成の`start_id`を1つ保存し、`start_game_play_v1`が返す`play_id`を終了まで使います。結果確定時は通信前に`submission_id`と確定結果を保存し、`finish_game_play_v1`、`submit_score_idempotent_v1`の順に自動送信します。通信断・時間切れ・HTTP 408/425/429/5xxは同じ内容で再送でき、恒久エラーでは再送ボタンを出しません。成功応答の内容を検査した後だけpendingを削除し、submission_id別の完了receipt（集約表示は最新50件）で再読込時の二重送信を防ぎます。複数タブのreceipt更新はfresh mergeし、別保存の完了情報を上書きしません。複数の未送信結果は同じ導線で順番に再送し、送信中断の`submitting`は再読込時に再送可能へ復元します。ランキング通信の失敗は結果、共有、再戦、メニュー導線を塞ぎません。
 
 正式URL、公開版、ゲーム識別子、名前保存キー、RPC名、8秒の時間切れは`ranking-manifest.json`と`client/src/lib/ranking.ts`で一致させます。公開SupabaseキーはブラウザRPC呼出しに限って使用し、secret/service-roleキーは含めません。
 
@@ -85,7 +85,7 @@ PRを更新するたび、次を同じCIで通します。
 
 ローカル検証だけでは完了扱いにせず、PR更新後は常に最新CIを正とします。現行の件数と検査対象は`TEST_REPORT.md`を参照してください。
 
-2026-08-31の候補ビルドの主要出力は、初期HTML 368.11 kB（gzip 105.84 kB）、CSS 34.69 kB（gzip 8.23 kB）、初期JS 276.13 kB（gzip 84.37 kB）、遅延`GameCanvas` 1,256.26 kB（gzip 309.58 kB）です。88問JSONは静的データとして別に配信します。
+2026-08-31の候補ビルドの主要出力は、初期HTML 368.11 kB（gzip 105.84 kB）、CSS 34.69 kB（gzip 8.23 kB）、初期JS 277.05 kB（gzip 84.55 kB）、遅延`GameCanvas` 1,256.26 kB（gzip 309.59 kB）です。88問JSONは静的データとして別に配信します。
 
 ## 本番E2Eの環境差
 
