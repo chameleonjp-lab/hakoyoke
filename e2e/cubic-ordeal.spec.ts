@@ -171,13 +171,15 @@ test("プレイヤーが足場外へ出ると即座にゲームオーバーに�
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
-  await page.waitForTimeout(4200);
+  await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
   await page.keyboard.down("a");
-  await page.waitForTimeout(1100);
-  await page.keyboard.up("a");
-  await expect(
-    page.getByRole("heading", { name: "FALL INTO VOID" })
-  ).toBeVisible();
+  try {
+    await expect(
+      page.getByRole("heading", { name: "FALL INTO VOID" })
+    ).toBeVisible();
+  } finally {
+    await page.keyboard.up("a");
+  }
 });
 
 test("スマートフォン縦画面でタップ地点に移動キーが出現し、画面上方向へ前進できる", async ({
