@@ -10,6 +10,7 @@ import {
 import GameShell from "@/components/GameShell";
 import RuntimeBoundary from "@/components/RuntimeBoundary";
 import type { CubicCommand } from "@/game/GameWorld";
+import { hasRecoverableTerminalCampaign } from "@/game/campaignStorage";
 import {
   markFirstFrame,
   markRuntimeReady,
@@ -26,7 +27,9 @@ export default function App() {
   const pendingCommand = useRef<CubicCommand | null>(null);
   const runtimeReady = useRef(false);
   const runtimeRequested = useRef(false);
-  const [loadRuntime, setLoadRuntime] = useState(() => search.has("demo"));
+  const [loadRuntime, setLoadRuntime] = useState(
+    () => search.has("demo") || hasRecoverableTerminalCampaign()
+  );
 
   useEffect(() => (rumEnabled ? startRum() : undefined), [rumEnabled]);
   useEffect(() => {

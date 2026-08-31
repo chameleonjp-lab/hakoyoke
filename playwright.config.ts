@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   use: { baseURL: "http://127.0.0.1:3000", headless: true },
   webServer: {
-    command: "pnpm exec vite --host 127.0.0.1 --port 3000",
+    command: "node_modules/.bin/vite --host 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000",
     timeout: 120_000,
     reuseExistingServer: false,
@@ -18,7 +18,9 @@ export default defineConfig({
       name: "chromium",
       use: {
         browserName: "chromium",
-        launchOptions: { args: ["--no-sandbox", "--disable-dev-shm-usage"] },
+        launchOptions: {
+          args: ["--no-sandbox", "--disable-dev-shm-usage"],
+        },
       },
     },
     {

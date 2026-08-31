@@ -2,18 +2,33 @@
 
 過去の完了チェックリストはGit履歴に残っています。このファイルは未完了事項だけを管理し、完了済みフェーズを追記し続けません。
 
-## PR #1
+## ランキング連携 PR #25
 
-- [x] production E2EをForge資格情報の有無に対応させる。
-- [x] 大量削除の内訳を監査し、ゲーム中核が維持されていることを確認する。
-- [x] 問題生成器、JSON、検証スクリプトを1つの正本へ統合する。
-- [x] JSON・検証レポートのずれをCIで失敗させる。
-- [x] README、検査報告、性能記録、履歴監査の優先順位を整理する。
-- [x] ローカル環境設定と旧scaffold snapshotを追跡対象から外し、再混入検査を追加する。
-- [x] 整理後のGitHub Actionsを全件成功させる。
-- [x] 最新CI結果と最終差分をPR本文へ反映する。
+- [x] 名前を勝手に切り詰めず、空名・21文字以上・制御文字を開始前に拒否する。
+- [x] 正式URL、公開版、ランキング値をmanifestと単一設定へ固定する。
+- [x] `start_id`、Supabase発行`play_id`、`submission_id`を保存して冪等送信する（複数pending、完了receipt、再読込復元を含む）。
+- [x] 通信断・時間切れを同じ結果で再送し、恒久エラーと分ける。
+- [x] GAME OVERの二重overlayを統合し、共有・順位・再戦を同じ画面へ残す。
+- [x] RPCをモックしたunit/E2Eと、PR向けChromium gateを追加する。
+- [ ] 最新のPR CIを全件成功させる。
+- [ ] 正式URLをiPhone Safariで確認し、候補SHAと公開版を受入記録へ残す。
+- [ ] Supabase登録値とmanifestの差分を解消し、実データを汚さない受入試験を行う。
+- [ ] GitHub Pagesの`/hakoyoke/`配下でVite asset参照を確認し、必要なら公開方式を確定する。
 
-## 対象外
+## セキュリティ（最優先の後続）
+
+- [ ] 公開Git履歴に露出したForge/JWT等を失効・ローテーションし、利用ログを確認する。
+- [ ] Viteとpnpmを修正版へ更新し、依存監査をCIへ追加する。
+- [ ] Manus runtimeを許可された開発・プレビューだけに限定する。
+- [ ] `/manus-storage/*`を公開資産allowlistへ限定し、timeout・rate limit・redirect先検査を追加する。
+- [ ] main保護、必須CI、secret scanning、Actionsのcommit SHA固定を設定する。
+
+## ゲーム内容の次段階
+
+- [ ] Stage 1を「MARKのみ → 単発AREA → AREA連鎖 → MARK保護」の12問へ再設計する。
+- [ ] Stage 2以降を小分けに再設計し、各段階で30Hz実GameWorld再生を通す。
+
+## このPRの対象外
 
 - PRのマージ
 - `main`への直接反映

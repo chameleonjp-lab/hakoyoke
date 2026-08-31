@@ -9,6 +9,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "preview": "vite preview --host",
     "repo:check": "node scripts/check-repository-hygiene.mjs",
+    "ranking:check": "node scripts/validate-ranking-manifest.mjs",
     "puzzles:write": "node scripts/generate-puzzles.mjs",
     "puzzles:check": "node scripts/validate-levels.mjs",
     "check": "tsc --noEmit",
@@ -16,7 +17,7 @@
     "test:e2e": "playwright test",
     "test:e2e:production": "playwright test --config=playwright.production.config.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check \"client/index.html\" \"client/src/**/*.{ts,tsx,css}\" \"server/**/*.ts\" \"e2e/**/*.ts\" \"scripts/**/*.mjs\" \"*.{json,ts}\" \".github/workflows/*.yml\""
+    "format:check": "prettier --check \"client/index.html\" \"client/src/**/*.{ts,tsx,css}\" \"server/**/*.ts\" \"e2e/**/*.ts\" \"scripts/**/*.{mjs,json}\" \"*.{json,ts}\" \".github/workflows/*.yml\""
   },
   "dependencies": {
     "@babylonjs/core": "^9.22.1",

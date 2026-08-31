@@ -1,30 +1,34 @@
 # TEST REPORT
 
-検査項目の正本です。結果はPR #1の整理実装head `e9afbaad`に対するGitHub Actions `CI` run #13（2026-08-23 JST）です。以後は最新runを優先します。
+検査項目の正本です。件数は2026-08-31のランキング連携候補を基準にし、合否は常に対象コミットの最新GitHub Actions runを優先します。
 
 ## 自動検査
 
-| 区分 | コマンド | 検査範囲 | 直前の成功実績 |
-| --- | --- | --- | --- |
-| リポジトリ衛生 | `pnpm repo:check` | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | PASS |
-| 問題生成物 | `pnpm puzzles:check` | TS正本とJSON・レポートの完全一致、全88問の再生検証 | PASS — 88問 |
-| 書式 | `pnpm format:check` | client、server、E2E、script、主要設定 | PASS |
-| 型検査 | `pnpm check` | client、server、test、設定 | PASS |
-| 単体・問題検査 | `pnpm test` | 4ファイル | PASS — 23件 |
-| 本番ビルド | `pnpm build` | Vite静的出力、Express bundle | PASS |
-| ブラウザ操作 | `pnpm test:e2e` | Chromium 13件、WebKit 13件 | PASS — 26件 |
-| 本番経路 | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy | PASS — 1件 |
+| 区分           | コマンド                   | 検査範囲                                              | 直前の成功実績          |
+| -------------- | -------------------------- | ----------------------------------------------------- | ----------------------- |
+| リポジトリ衛生 | `pnpm repo:check`          | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | PASS                    |
+| 問題生成物     | `pnpm puzzles:check`       | TS正本とJSON・レポートの完全一致、全88問の再生検証    | PASS — 88問             |
+| ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
+| 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
+| 型検査         | `pnpm check`               | client、server                                        | PASS                    |
+| 単体・問題検査 | `pnpm test`                | 15ファイル                                            | PASS — 103件            |
+| 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
+| ブラウザ操作   | `pnpm test:e2e`            | Chromium 22件、WebKit 22件                            | 最新CIを正とする — 44件 |
+| 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
+| 公開受入       | iPhone Safari + Pages URL  | `/hakoyoke/` asset、manifest、Supabase登録値の突合    | BLOCKED — 外部受入待ち  |
 
-CIは上記を毎回同じ順序で実行します。ローカルの個別成功だけではPRを成功扱いにしません。
+PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPRではChromium、`main`更新時はChromium＋WebKit＋productionへ分岐します。ローカルの個別成功だけではPRを成功扱いにしません。
+
+公開受入のBLOCKEDはコード検査の失敗ではなく、現行の`public.games`登録値・GitHub Pages設定・正式URL配下のasset経路を管理者が確認するまでの保留です。このPRでは本番データや公開設定を変更していません。
 
 ## ビルド出力
 
-| 出力 | raw | gzip |
-| --- | ---: | ---: |
-| `index.html` | 367.96 kB | 105.77 kB |
-| 初期CSS | 29.36 kB | 7.46 kB |
-| 初期JS | 238.31 kB | 73.26 kB |
-| 遅延`GameCanvas` | 1,251.73 kB | 308.55 kB |
+| 出力             |         raw |      gzip |
+| ---------------- | ----------: | --------: |
+| `index.html`     |   368.11 kB | 105.84 kB |
+| 初期CSS          |    34.69 kB |   8.23 kB |
+| 初期JS           |   277.05 kB |  84.55 kB |
+| 遅延`GameCanvas` | 1,256.26 kB | 309.59 kB |
 
 `client/public/data/puzzles.json`はJSへ重複同梱せず、ゲーム開始時に読む静的データです。
 
@@ -55,6 +59,10 @@ CIは上記を毎回同じ順序で実行します。ローカルの個別成功
 - PERFECTの3得点帯、通常捕獲、AREA捕獲、MIND INDEX
 - Stage Plan、PRACTICEの問題番号、DUELの同問再試行
 - 88問すべての登録解法、移動可能性、全回収、VOID非捕獲
+- 表示名の前後空白・Unicode文字数・制御文字・20文字上限
+- 同じ`start_id`の開始再送、開始ボタン連打の単一化
+- 同じ`submission_id`による通信断・再読込後の冪等再送
+- RPC応答値の一致検査と、サーバー`rank_no`による同率順位
 
 ## ブラウザ検査の対象
 
@@ -67,6 +75,13 @@ CIは上記を毎回同じ順序で実行します。ローカルの個別成功
 - フローティング移動キー、MARK/CAPTURE、AREA、FAST
 - `pointerdown`、`pointerup`、`pointercancel`
 - RUM表示、ページ例外なし
+- 空名での開始拒否と、開始RPC受付までキャンペーンを起動しないこと
+- GAME OVER結果画面の自動送信、再送、同率順位、再戦導線
+- FINAL RESULTから新しい開始記録を作る新規キャンペーン導線
+- メニューへ戻った後も未送信結果を再送できる導線
+- CREATEの1280×720、870×400、320×480で最終操作までスクロールできること
+
+Supabase RPCはE2E内でモックし、本番のプレイ数・スコアを自動試験で増やしません。ランキングフロー5件のうち3件ではBabylonランタイムを小さなcanvas境界へ差し替え、通信・画面状態を決定的に検査します。実3Dランタイムの既存検査は従来どおり別の16件で維持します。
 
 ## 本番経路の環境差
 

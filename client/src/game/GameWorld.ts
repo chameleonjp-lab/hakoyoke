@@ -8,6 +8,7 @@ import {
   shouldAwardStageCompletion,
   stageCompletionBonus,
 } from "./campaignLifecycle";
+import { CAMPAIGN_SAVE_VERSION, CAMPAIGN_STORAGE_KEY } from "./campaignStorage";
 import {
   createRuntimePuzzleCubes,
   platformRowsForStage,
@@ -40,10 +41,8 @@ import {
 } from "./types";
 
 const FIXED_STEP = 1 / 30;
-const STORAGE_KEY = "cubic-ordeal-campaign-v1";
 const CHECKPOINT_KEY = "cubic-ordeal-stage-checkpoint-v1";
 const HIGH_SCORE_KEY = "cubic-ordeal-highscore-v1";
-const SAVE_VERSION = 4;
 
 export type CubicCommand =
   | {
@@ -53,6 +52,7 @@ export type CubicCommand =
       stage?: number;
       wave?: number;
       ordinal?: number;
+      resumeCampaign?: boolean;
     }
   | { type: "menu" }
   | { type: "pause" }
@@ -155,7 +155,19 @@ export class GameWorld {
     this.loadPuzzle(this.currentPuzzle, true);
     window.addEventListener("cubic:command", this.onCommand);
     document.addEventListener("visibilitychange", this.onVisibility);
-    if (this.demo) this.start("PRACTICE", "BEGINNER", 1, 1, 1);
+    if (this.demo) {
+      this.start("PRACTICE", "BEGINNER", 1, 1, 1);
+    } else {
+      const restored = this.readCampaign();
+      if (restored && TERMINAL_PHASES.has(restored.phase)) {
+        this.restore(restored);
+        this.mode = "CAMPAIGN";
+        this.banner =
+          this.phase === "FINAL_RESULT"
+            ? "CAMPAIGN COMPLETE"
+            : "CAMPAIGN RESTORED // GAME OVER";
+      }
+    }
     this.publish();
   }
 
@@ -354,10 +366,18 @@ export class GameWorld {
 
   private fallFromPlatform(): void {
     this.stats.perfect = false;
-    this.phase = "GAME_OVER";
-    this.banner = "FALL INTO VOID";
-    this.input.clear();
+    this.enterGameOver("FALL INTO VOID");
     this.onSignal("collapse");
+  }
+
+  private enterGameOver(banner: string): void {
+    this.phase = "GAME_OVER";
+    this.banner = banner;
+    this.input.clear();
+    // GAME_OVER is a terminal campaign state. Save it synchronously so a
+    // reload immediately after the loss can still restore the result screen
+    // and its immutable ranking payload.
+    this.saveCampaign();
   }
 
   private markOrCapture(): void {
@@ -549,9 +569,7 @@ export class GameWorld {
       this.player.z >= this.stats.platformRows ||
       this.stats.platformRows < this.currentPuzzle.depth + 2
     ) {
-      this.phase = "GAME_OVER";
-      this.banner = "OBSERVATORY LOST";
-      this.input.clear();
+      this.enterGameOver("OBSERVATORY LOST");
       return true;
     }
     return false;
@@ -732,27 +750,28 @@ export class GameWorld {
     difficulty: Difficulty,
     stage = 1,
     wave = 1,
-    ordinal = 1
+    ordinal = 1,
+    resumeCampaign = true
   ): void {
     this.customPuzzle = null;
     if (mode === "CAMPAIGN" && stage === 1 && wave === 1 && ordinal === 1) {
       const restored = this.readCampaign();
-      if (restored) {
+      if (resumeCampaign && restored && !TERMINAL_PHASES.has(restored.phase)) {
         this.restore(restored);
         this.mode = "CAMPAIGN";
         if (isPausablePhase(this.phase)) {
           this.pausedFromPhase = this.phase;
           this.phase = "PAUSED";
           this.banner = "CAMPAIGN RESTORED";
-        } else if (this.phase === "FINAL_RESULT") {
-          this.banner = "CAMPAIGN COMPLETE";
-        } else if (this.phase === "GAME_OVER") {
-          this.banner = "CAMPAIGN RESTORED // GAME OVER";
         } else {
           this.banner = "CAMPAIGN RESTORED";
         }
         return;
       }
+      // A terminal result belongs to the play_id that produced it. Selecting
+      // CAMPAIGN from the menu starts a fresh run instead of attaching that
+      // old result to a newly accepted ranking play.
+      if (restored) this.clearCampaignStorage();
     }
 
     this.mode = mode;
@@ -861,7 +880,8 @@ export class GameWorld {
         command.difficulty,
         command.stage,
         command.wave,
-        command.ordinal
+        command.ordinal,
+        command.resumeCampaign
       );
       if (
         command.mode === "CAMPAIGN" &&
@@ -874,7 +894,10 @@ export class GameWorld {
       return;
     }
     if (command.type === "menu") {
-      if (this.mode === "CAMPAIGN") this.saveCampaign();
+      if (this.mode === "CAMPAIGN") {
+        if (TERMINAL_PHASES.has(this.phase)) this.clearCampaignStorage();
+        else this.saveCampaign();
+      }
       this.phase = "MENU";
       this.banner = "MODE SELECT";
       return;
@@ -1096,7 +1119,7 @@ export class GameWorld {
 
   private clearCampaignStorage(): void {
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(CAMPAIGN_STORAGE_KEY);
       localStorage.removeItem(CHECKPOINT_KEY);
     } catch {
       // Storage can be unavailable in strict privacy contexts.
@@ -1107,8 +1130,11 @@ export class GameWorld {
     if (this.mode !== "CAMPAIGN") return;
     try {
       localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ version: SAVE_VERSION, snapshot: this.snapshot() })
+        CAMPAIGN_STORAGE_KEY,
+        JSON.stringify({
+          version: CAMPAIGN_SAVE_VERSION,
+          snapshot: this.snapshot(),
+        })
       );
     } catch {
       // localStorage can be unavailable in strict privacy contexts.
@@ -1117,12 +1143,12 @@ export class GameWorld {
 
   private readCampaign(): GameSnapshot | null {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(CAMPAIGN_STORAGE_KEY);
       const saved = raw
         ? (JSON.parse(raw) as { version?: number; snapshot?: GameSnapshot })
         : null;
       const snapshot = saved?.snapshot;
-      if (saved?.version !== SAVE_VERSION || !snapshot) return null;
+      if (saved?.version !== CAMPAIGN_SAVE_VERSION || !snapshot) return null;
       const index = snapshot.puzzleId
         ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
         : snapshot.puzzleIndex;

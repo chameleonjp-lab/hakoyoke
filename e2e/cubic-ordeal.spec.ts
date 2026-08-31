@@ -1,8 +1,244 @@
 import { expect, test } from "@playwright/test";
+import {
+  BLANK_NAME_SESSION_KEY,
+  PLAYER_NAME_STORAGE_KEY,
+  installGameCanvasStub,
+  installRankingMock,
+} from "./ranking-mock";
 
 test.beforeEach(async ({ page }) => {
+  await installRankingMock(page);
   await page.goto("/");
   await page.evaluate(() => localStorage.clear());
+});
+
+test("名前が空のままではゲームを開始できない", async ({ page }) => {
+  await page.evaluate(
+    ({ blankKey, nameKey }) => {
+      sessionStorage.setItem(blankKey, "1");
+      localStorage.removeItem(nameKey);
+    },
+    {
+      blankKey: BLANK_NAME_SESSION_KEY,
+      nameKey: PLAYER_NAME_STORAGE_KEY,
+    }
+  );
+  await page.reload();
+  await expect(page.getByLabel("公開表示名（同名可・必須）")).toHaveValue("");
+  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await expect(
+    page.getByText("プレイヤー名を入力してください。")
+  ).toBeVisible();
+  await expect(page.locator("canvas")).toHaveCount(0);
+});
+
+test("開始RPCの受付前にはキャンペーン本体を開始しない", async ({ page }) => {
+  await installGameCanvasStub(page);
+  let releaseRequest: (() => void) | undefined;
+  const requestGate = new Promise<void>(resolve => {
+    releaseRequest = resolve;
+  });
+  await page.route("**/rest/v1/rpc/start_game_play_v1", async route => {
+    await requestGate;
+    await route.fallback();
+  });
+
+  await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+  await page.getByRole("button", { name: /CAMPAIGN STAGE 1 TO FINAL/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await page.getByRole("button", { name: /BEGIN ORDEAL/ }).click();
+  await expect(
+    page.getByText("ランキング対象プレイの開始を確認中…")
+  ).toBeVisible();
+  await expect(page.locator("canvas")).toHaveCount(0);
+
+  releaseRequest?.();
+  await expect(page.locator("canvas")).toBeVisible();
+});
+
+test("GAME OVERで冪等再送、同率順位、再戦導線を同じ結果画面に保つ", async ({
+  page,
+}) => {
+  await installGameCanvasStub(page);
+  await page.addInitScript(() => {
+    window.addEventListener(
+      "cubic:snapshot",
+      event => {
+        const detail = (event as CustomEvent<{ e2eResult?: boolean }>).detail;
+        if (!detail?.e2eResult) event.stopImmediatePropagation();
+      },
+      true
+    );
+  });
+  let scoreAttempts = 0;
+  await page.route("**/rest/v1/rpc/submit_score_idempotent_v1", async route => {
+    scoreAttempts += 1;
+    if (scoreAttempts === 1) {
+      await route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ code: "PT500", message: "temporary" }),
+      });
+      return;
+    }
+    await route.fallback();
+  });
+  await page.reload();
+  await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+  await page.getByRole("button", { name: /CAMPAIGN STAGE 1 TO FINAL/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await page.getByRole("button", { name: /BEGIN ORDEAL/ }).click();
+  await expect(page.locator("canvas")).toBeVisible();
+
+  await page.evaluate(() => {
+    (window as Window & { e2eCommand?: string }).e2eCommand = undefined;
+    window.addEventListener("cubic:command", event => {
+      (window as Window & { e2eCommand?: string }).e2eCommand = (
+        event as CustomEvent<{ type?: string }>
+      ).detail?.type;
+    });
+    window.dispatchEvent(
+      new CustomEvent("cubic:snapshot", {
+        detail: {
+          e2eResult: true,
+          phase: "GAME_OVER",
+          mode: "CAMPAIGN",
+          banner: "CONTACT LOST",
+          stage: 3,
+          stats: {
+            score: 4200,
+            platformRows: 7,
+            misses: 2,
+          },
+        },
+      })
+    );
+  });
+
+  await expect(
+    page.getByRole("heading", { name: "CONTACT LOST" })
+  ).toBeVisible();
+  const rankingItems = page.locator(".ranking-list li");
+  await expect(rankingItems).toHaveCount(3);
+  await expect(rankingItems.nth(0)).toContainText("1.ALPHA");
+  await expect(rankingItems.nth(1)).toContainText("1.BETA");
+  const retry = page.getByRole("button", { name: /RETRY SCORE/ });
+  await expect(retry).toBeVisible();
+  await retry.click();
+  await expect(retry).toHaveCount(0);
+  await expect(
+    page.getByText("ランキングへの登録を確認しました。")
+  ).toBeVisible();
+
+  await page
+    .getByRole("button", { name: /CONTINUE RESTART CURRENT STAGE/ })
+    .click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { e2eCommand?: string }).e2eCommand
+      )
+    )
+    .toBe("campaign-continue");
+});
+
+test("FINAL RESULTから新しいplay_idで新規キャンペーンを開始できる", async ({
+  page,
+}) => {
+  await installGameCanvasStub(page);
+  await page.addInitScript(() => {
+    window.addEventListener(
+      "cubic:snapshot",
+      event => {
+        const detail = (event as CustomEvent<{ e2eResult?: boolean }>).detail;
+        if (!detail?.e2eResult) event.stopImmediatePropagation();
+      },
+      true
+    );
+  });
+  await page.reload();
+  await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+  await page.getByRole("button", { name: /CAMPAIGN STAGE 1 TO FINAL/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await page.getByRole("button", { name: /BEGIN ORDEAL/ }).click();
+  await expect(page.locator("canvas")).toBeVisible();
+
+  await page.evaluate(() => {
+    (window as Window & { e2eCommand?: string }).e2eCommand = undefined;
+    window.addEventListener("cubic:command", event => {
+      (window as Window & { e2eCommand?: string }).e2eCommand = (
+        event as CustomEvent<{ type?: string }>
+      ).detail?.type;
+    });
+    window.dispatchEvent(
+      new CustomEvent("cubic:snapshot", {
+        detail: {
+          e2eResult: true,
+          phase: "FINAL_RESULT",
+          mode: "CAMPAIGN",
+          banner: "OBSERVATION COMPLETE",
+          stage: 9,
+          stats: {
+            score: 12000,
+            platformRows: 8,
+            misses: 0,
+          },
+        },
+      })
+    );
+  });
+
+  await expect(
+    page.getByRole("heading", { name: "OBSERVATION COMPLETE" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /CONTINUE RESTART CURRENT STAGE/ })
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: /NEW CAMPAIGN/ }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { e2eCommand?: string }).e2eCommand
+      )
+    )
+    .toBe("campaign-new");
+});
+
+test("メニューから前回の未送信結果を同じsubmission_idで再送できる", async ({
+  page,
+}) => {
+  await page.evaluate(
+    ({ pendingKey }) => {
+      localStorage.setItem(
+        pendingKey,
+        JSON.stringify([
+          {
+            version: 1,
+            submissionId: "33333333-3333-4333-8333-333333333333",
+            playId: "22222222-2222-4222-8222-222222222222",
+            displayName: "E2E PLAYER",
+            gameSlug: "hakoyoke",
+            clientVersion: "hakoyoke-20260831-01",
+            resultType: "game_over",
+            reachedStage: 3,
+            score: 4200,
+            createdAt: new Date().toISOString(),
+            attemptCount: 1,
+            state: "retryable_failed",
+          },
+        ])
+      );
+    },
+    { pendingKey: "chameleonjp_hakoyoke_pending_score_v1" }
+  );
+  await page.reload();
+  const retry = page.getByRole("button", { name: /RETRY UNSENT SCORE/ });
+  await expect(retry).toBeVisible();
+  await retry.click();
+  await expect(retry).toHaveCount(0);
+  await expect(
+    page.getByText("ランキングへの登録を確認しました。")
+  ).toBeVisible();
 });
 
 test("タイトルからキャンペーンを開始し、HUDと一時停止へ到達できる", async ({
@@ -259,6 +495,13 @@ test("縦画面の上半分スワイプはカメラだけを動かし、下半�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await page.waitForTimeout(3_900);
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        document.elementFromPoint(180, 170)?.tagName.toLowerCase()
+      )
+    )
+    .toBe("canvas");
   await page.locator("canvas").dispatchEvent("pointerdown", {
     pointerId: 31,
     pointerType: "touch",

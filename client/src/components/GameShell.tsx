@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type KeyboardEvent,
   type PointerEvent,
 } from "react";
@@ -14,6 +15,17 @@ import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { calculateMindIndex, cubeOccupiesCell } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
 import type { CubicCommand } from "@/game/GameWorld";
+import {
+  RANKING_CONFIG,
+  formatRankingScore,
+  rankingClient,
+  readStoredPlayerName,
+  saveStoredPlayerName,
+  startErrorMessage,
+  validatePlayerName,
+  type RankingRow,
+  type RankingSubmissionState,
+} from "@/lib/ranking";
 import type {
   Difficulty,
   GameMode,
@@ -49,6 +61,41 @@ function setting(key: "quality" | "audio", value: string): void {
   );
 }
 
+function homeShareMessage(): string {
+  return `${RANKING_CONFIG.shareText}\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
+}
+
+async function shareOrCopy(
+  text: string,
+  setStatus: (message: string) => void
+): Promise<void> {
+  setStatus("");
+  if (navigator.share) {
+    try {
+      const nativeText = text
+        .replace(`\n${RANKING_CONFIG.canonicalUrl}`, "")
+        .trim();
+      await navigator.share({
+        title: "CUBIC ORDEAL",
+        text: nativeText,
+        url: RANKING_CONFIG.canonicalUrl,
+      });
+      setStatus("共有しました。");
+      return;
+    } catch (error: unknown) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+    }
+  }
+  try {
+    if (!navigator.clipboard?.writeText)
+      throw new Error("clipboard unavailable");
+    await navigator.clipboard.writeText(text);
+    setStatus("シェア文をコピーしました。");
+  } catch {
+    setStatus("シェア文をコピーできませんでした。もう一度お試しください。");
+  }
+}
+
 export default function GameShell({
   onLaunch,
 }: {
@@ -60,6 +107,9 @@ export default function GameShell({
   const [chosenMode, setChosenMode] = useState<GameMode>("CAMPAIGN");
   const [difficulty, setDifficulty] = useState<Difficulty>("NORMAL");
   const [practice, setPractice] = useState({ stage: 1, wave: 1, ordinal: 1 });
+  const [playerName, setPlayerName] = useState(readStoredPlayerName);
+  const [nameMessage, setNameMessage] = useState("");
+  const [startingPlay, setStartingPlay] = useState(false);
   const rumEnabled =
     new URLSearchParams(window.location.search).get("rum") === "1";
 
@@ -102,13 +152,45 @@ export default function GameShell({
     setLaunching(true);
     onLaunch(detail);
   };
-  const execute = (
+  const execute = async (
     mode = chosenMode,
     stage = practice.stage,
     wave = practice.wave,
     ordinal = practice.ordinal
   ) => {
-    launch({ type: "start", mode, difficulty, stage, wave, ordinal });
+    if (startingPlay) return;
+    const validation = saveStoredPlayerName(playerName);
+    if (!validation.ok) {
+      setNameMessage(validation.message);
+      setPanel("title");
+      return;
+    }
+    setPlayerName(validation.name);
+    let resumeCampaign: boolean | undefined;
+    if (mode === "CAMPAIGN") {
+      setStartingPlay(true);
+      setNameMessage("ランキング対象プレイの開始を確認中…");
+      try {
+        const started = await rankingClient.startCampaignPlay(validation.name);
+        resumeCampaign = started.resumed;
+      } catch (error) {
+        setNameMessage(startErrorMessage(error));
+        setPanel("title");
+        setStartingPlay(false);
+        return;
+      }
+      setStartingPlay(false);
+    }
+    setNameMessage("");
+    launch({
+      type: "start",
+      mode,
+      difficulty,
+      stage,
+      wave,
+      ordinal,
+      resumeCampaign,
+    });
     setPanel(null);
   };
 
@@ -155,10 +237,23 @@ export default function GameShell({
           setChosenMode={setChosenMode}
           difficulty={difficulty}
           setDifficulty={setDifficulty}
+          playerName={playerName}
+          setPlayerName={value => {
+            setPlayerName(value);
+            setNameMessage("");
+          }}
+          nameMessage={nameMessage}
           execute={execute}
           practice={practice}
           setPractice={setPractice}
           onTest={puzzle => {
+            const validation = saveStoredPlayerName(playerName);
+            if (!validation.ok) {
+              setNameMessage(validation.message);
+              setPanel("title");
+              return;
+            }
+            setPlayerName(validation.name);
             launch({ type: "load-custom", puzzle });
             setPanel(null);
           }}
@@ -177,6 +272,7 @@ export default function GameShell({
       {result && snapshot && (
         <ResultOverlay
           snapshot={snapshot}
+          playerName={playerName}
           onContinue={() => {
             command({ type: "menu" });
             setPanel("mode");
@@ -195,6 +291,9 @@ function MenuPanel({
   setChosenMode,
   difficulty,
   setDifficulty,
+  playerName,
+  setPlayerName,
+  nameMessage,
   execute,
   practice,
   setPractice,
@@ -206,6 +305,9 @@ function MenuPanel({
   setChosenMode: (mode: GameMode) => void;
   difficulty: Difficulty;
   setDifficulty: (difficulty: Difficulty) => void;
+  playerName: string;
+  setPlayerName: (value: string) => void;
+  nameMessage: string;
   execute: (
     mode?: GameMode,
     stage?: number,
@@ -232,6 +334,12 @@ function MenuPanel({
             </h1>
           </div>
         </div>
+        <PlayerNameGate
+          playerName={playerName}
+          onChange={setPlayerName}
+          message={nameMessage}
+        />
+        <PendingRankingNotice />
         {panel === "title" && (
           <TitleActions
             onMode={() => setPanel("mode")}
@@ -297,6 +405,49 @@ function MenuPanel({
   );
 }
 
+function PendingRankingNotice() {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const hasRetryable = useSyncExternalStore(
+    rankingClient.subscribePending,
+    rankingClient.hasRetryablePendingCampaignResult,
+    rankingClient.hasRetryablePendingCampaignResult
+  );
+  if (!hasRetryable && !message) return null;
+
+  const retry = async () => {
+    if (busy) return;
+    setBusy(true);
+    setMessage("未送信結果を再送中です。");
+    const outcome = await rankingClient.retryPendingCampaignResult();
+    setMessage(outcome.message);
+    setBusy(false);
+  };
+
+  return (
+    <aside className="pending-ranking-notice">
+      <span className="eyebrow">RANKING // UNSENT RESULT</span>
+      <p>前回のランキング送信が完了していません。</p>
+      {hasRetryable && (
+        <button
+          className="platform-action ranking-retry"
+          type="button"
+          onClick={() => void retry()}
+          disabled={busy}
+        >
+          <span>RETRY UNSENT SCORE</span>
+          <small>同じ結果を再送</small>
+        </button>
+      )}
+      {message && (
+        <p className="platform-status" role="status" aria-live="polite">
+          {message}
+        </p>
+      )}
+    </aside>
+  );
+}
+
 function TitleActions({
   onMode,
   onTutorial,
@@ -306,6 +457,7 @@ function TitleActions({
   onTutorial(): void;
   onSettings(): void;
 }) {
+  const [shareStatus, setShareStatus] = useState("");
   return (
     <div className="menu-actions">
       <p className="menu-lead">
@@ -329,7 +481,68 @@ function TitleActions({
         note="AUDIO // QUALITY // ACCESS"
         onClick={onSettings}
       />
+      <button
+        className="platform-action"
+        type="button"
+        onClick={() => void shareOrCopy(homeShareMessage(), setShareStatus)}
+      >
+        <span>SHARE GAME</span>
+        <small>INVITE A PLAYER</small>
+      </button>
+      <p className="platform-status" role="status" aria-live="polite">
+        {shareStatus}
+      </p>
+      <a
+        className="platform-link"
+        href={RANKING_CONFIG.labUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        カメレオンJPの実験場
+      </a>
     </div>
+  );
+}
+
+function PlayerNameGate({
+  playerName,
+  onChange,
+  message,
+}: {
+  playerName: string;
+  onChange(value: string): void;
+  message: string;
+}) {
+  const validation = validatePlayerName(playerName);
+  return (
+    <section className="player-name-gate" aria-labelledby="player-name-title">
+      <span className="eyebrow" id="player-name-title">
+        PLAYER DISPLAY NAME
+      </span>
+      <label htmlFor="cubic-player-name">公開表示名（同名可・必須）</label>
+      <input
+        id="cubic-player-name"
+        type="text"
+        value={playerName}
+        autoComplete="nickname"
+        placeholder="20文字以内で入力"
+        onChange={event => onChange(event.target.value)}
+        aria-invalid={!validation.ok}
+        aria-describedby="cubic-player-name-status"
+        required
+      />
+      <small
+        className="platform-status"
+        id="cubic-player-name-status"
+        role="status"
+        aria-live="polite"
+      >
+        {message ||
+          (validation.ok
+            ? `${validation.name}さんの名前で記録します。`
+            : validation.message)}
+      </small>
+    </section>
   );
 }
 
@@ -1029,9 +1242,14 @@ function PauseOverlay({
   onQuit(): void;
 }) {
   return (
-    <div className="overlay-panel">
+    <div
+      className="overlay-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cubic-pause-title"
+    >
       <span className="eyebrow">ORDEAL SUSPENDED</span>
-      <h2>PAUSED</h2>
+      <h2 id="cubic-pause-title">PAUSED</h2>
       <p>キューブ回転、判定、経過時間は停止しています。</p>
       <Action label="RESUME" note="ESC" onClick={onResume} primary />
       <Action label="QUIT TO MENU" note="ABORT RUN" onClick={onQuit} />
@@ -1041,14 +1259,121 @@ function PauseOverlay({
 function ResultOverlay({
   snapshot,
   onContinue,
+  playerName,
 }: {
   snapshot: GameSnapshot;
   onContinue(): void;
+  playerName: string;
 }) {
   const final = snapshot.phase === "FINAL_RESULT";
   const gameOver = snapshot.phase === "GAME_OVER";
+  const ranked = snapshot.mode === "CAMPAIGN" && (final || gameOver);
+  const [shareStatus, setShareStatus] = useState("");
+  const [submissionState, setSubmissionState] =
+    useState<RankingSubmissionState>(ranked ? "submitting" : "idle");
+  const [submissionMessage, setSubmissionMessage] = useState(
+    ranked ? "ランキングへ送信中です。" : ""
+  );
+  const [rankingStatus, setRankingStatus] = useState(
+    ranked ? "ランキングを読み込み中…" : ""
+  );
+  const [ranking, setRanking] = useState<RankingRow[]>([]);
+  const [replayMessage, setReplayMessage] = useState("");
+  const [startingReplay, setStartingReplay] = useState(false);
+  const mindIndex = calculateMindIndex(
+    snapshot.stats.score,
+    snapshot.stage,
+    snapshot.stats.platformRows,
+    snapshot.stats.misses
+  );
+  const validatedName = validatePlayerName(playerName);
+  const displayName = validatedName.ok ? validatedName.name : "ななし";
+  const shareText = `${displayName}さんのCUBIC ORDEAL結果：${formatRankingScore(snapshot.stats.score)}、ステージ${snapshot.stage}、足場${snapshot.stats.platformRows}列、MIND INDEX ${mindIndex}。\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
+
+  useEffect(() => {
+    if (!ranked) return;
+    let active = true;
+    setSubmissionState("submitting");
+    setSubmissionMessage("ランキングへ送信中です。");
+    setRankingStatus("ランキングを読み込み中…");
+    setRanking([]);
+    void (async () => {
+      const outcome = await rankingClient.finishAndSubmitCampaignResult({
+        displayName,
+        resultType: final ? "clear" : "game_over",
+        reachedStage: snapshot.stage,
+        score: snapshot.stats.score,
+      });
+      if (active) {
+        setSubmissionState(outcome.state);
+        setSubmissionMessage(outcome.message);
+      }
+      try {
+        const rows = await rankingClient.loadBestRanking();
+        if (!active) return;
+        setRanking(rows);
+        setRankingStatus(
+          rows.length
+            ? "上位10名を表示しています。"
+            : "まだランキングがありません。"
+        );
+      } catch {
+        if (!active) return;
+        setRankingStatus("ランキングを読み込めませんでした。");
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [displayName, final, ranked, snapshot.stage, snapshot.stats.score]);
+
+  const retrySubmission = async () => {
+    setSubmissionState("submitting");
+    setSubmissionMessage("同じ結果を再送中です。");
+    const outcome = await rankingClient.retryPendingCampaignResult();
+    setSubmissionState(outcome.state);
+    setSubmissionMessage(outcome.message);
+    if (outcome.state === "submitted") {
+      try {
+        const rows = await rankingClient.loadBestRanking();
+        setRanking(rows);
+        setRankingStatus(
+          rows.length
+            ? "上位10名を表示しています。"
+            : "まだランキングがありません。"
+        );
+      } catch {
+        setRankingStatus("ランキングを読み込めませんでした。");
+      }
+    }
+  };
+
+  const startAnotherCampaign = async (
+    type: "campaign-continue" | "campaign-new"
+  ) => {
+    if (startingReplay || !validatedName.ok) return;
+    setStartingReplay(true);
+    setReplayMessage("次のプレイ開始を確認中…");
+    try {
+      await rankingClient.startCampaignPlay(validatedName.name, {
+        forceNew: true,
+      });
+      command({ type });
+      setReplayMessage("");
+    } catch (error) {
+      setReplayMessage(startErrorMessage(error));
+    } finally {
+      setStartingReplay(false);
+    }
+  };
+
   return (
-    <div className="overlay-panel result">
+    <div
+      className="overlay-panel result"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cubic-result-title"
+    >
       <span className="eyebrow">
         {gameOver
           ? "CONTACT LOST"
@@ -1056,11 +1381,11 @@ function ResultOverlay({
             ? "OBSERVATION COMPLETE"
             : "ORDEAL ANALYSIS"}
       </span>
-      <h2>{snapshot.banner}</h2>
+      <h2 id="cubic-result-title">{snapshot.banner}</h2>
       <div className="result-grid">
         <Metric
           label="SCORE"
-          value={String(snapshot.stats.score).padStart(6, "0")}
+          value={formatRankingScore(snapshot.stats.score)}
         />
         <Metric
           label="MIND INDEX"
@@ -1082,14 +1407,127 @@ function ResultOverlay({
             ? "すべての観測対象を通過しました。"
             : "次の解析結果を待機しています。"}
       </p>
-      <Action
-        label={final || gameOver ? "RETURN TO MENU" : "CONTINUE"}
-        note="ENTER"
-        onClick={
-          final || gameOver ? onContinue : () => command({ type: "continue" })
-        }
-        primary
-      />
+      {ranked && (
+        <>
+          <section
+            className="result-sharing"
+            aria-labelledby="cubic-result-share-title"
+          >
+            <span className="eyebrow" id="cubic-result-share-title">
+              RESULT SIGNAL
+            </span>
+            <p className="platform-status">{displayName}さんの結果</p>
+            <textarea
+              value={shareText}
+              readOnly
+              rows={4}
+              aria-label="結果のシェア文"
+            />
+            <button
+              className="platform-action"
+              type="button"
+              onClick={() => void shareOrCopy(shareText, setShareStatus)}
+            >
+              <span>SHARE RESULT</span>
+              <small>共有またはコピー</small>
+            </button>
+            <p className="platform-status" role="status" aria-live="polite">
+              {shareStatus}
+            </p>
+          </section>
+          <section
+            className="online-ranking"
+            aria-labelledby="cubic-ranking-title"
+          >
+            <span className="eyebrow" id="cubic-ranking-title">
+              TOP 10 OBSERVATIONS
+            </span>
+            <ol className="ranking-list">
+              {ranking.length ? (
+                ranking.map(item => (
+                  <li key={`${item.rankNo}-${item.name}`}>
+                    <span>{item.rankNo}.</span>
+                    <span className="ranking-name">{item.name}</span>
+                    <b>{formatRankingScore(item.score)}</b>
+                  </li>
+                ))
+              ) : (
+                <li>表示できる記録はまだありません。</li>
+              )}
+            </ol>
+            <p className="platform-status" role="status" aria-live="polite">
+              {rankingStatus}
+            </p>
+            <p
+              className="platform-status ranking-submission-status"
+              data-state={submissionState}
+              role="status"
+              aria-live="polite"
+            >
+              {submissionMessage}
+            </p>
+            {submissionState === "retryable_failed" && (
+              <button
+                className="platform-action ranking-retry"
+                type="button"
+                onClick={() => void retrySubmission()}
+              >
+                <span>RETRY SCORE</span>
+                <small>同じ結果を再送</small>
+              </button>
+            )}
+          </section>
+          <div className="result-platform-links">
+            <a
+              className="platform-link result-platform-link"
+              href={RANKING_CONFIG.rankingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              詳細ランキング
+            </a>
+            <a
+              className="platform-link result-platform-link"
+              href={RANKING_CONFIG.labUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              カメレオンJPの実験場
+            </a>
+          </div>
+        </>
+      )}
+      {ranked ? (
+        <div className="result-actions">
+          <p className="platform-status" role="status" aria-live="polite">
+            {replayMessage}
+          </p>
+          {gameOver && (
+            <Action
+              label="CONTINUE"
+              note="RESTART CURRENT STAGE"
+              onClick={() => void startAnotherCampaign("campaign-continue")}
+              disabled={startingReplay}
+              primary
+            />
+          )}
+          <Action
+            label="NEW CAMPAIGN"
+            note="CLEAR SAVE // STAGE 1"
+            onClick={() => void startAnotherCampaign("campaign-new")}
+            disabled={startingReplay}
+            primary={final}
+          />
+          <Action label="RETURN TO MENU" note="HOME" onClick={onContinue} />
+        </div>
+      ) : (
+        <Action
+          label={final ? "RETURN TO MENU" : "CONTINUE"}
+          note="ENTER"
+          onClick={final ? onContinue : () => command({ type: "continue" })}
+          primary
+        />
+      )}
     </div>
   );
 }
