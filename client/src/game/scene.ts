@@ -33,6 +33,8 @@ interface RenderCube {
   type: CubeState["type"];
 }
 
+const PLAYER_RENDER_SCALE = 0.62;
+
 export async function createGameScene(
   engine: Engine,
   canvas: HTMLCanvasElement
@@ -462,6 +464,7 @@ function createPlayer(scene: Scene, material: StandardMaterial): TransformNode {
   [torso, head, legLeft, legRight, forward].forEach(part => {
     part.material = material;
   });
+  root.scaling.setAll(PLAYER_RENDER_SCALE);
   return root;
 }
 

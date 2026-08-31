@@ -1536,13 +1536,16 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
   const activePointer = useRef<number | null>(null);
   const activeFastPointer = useRef<number | null>(null);
-  const resetInput = useCallback(() => {
+  const clearMovement = useCallback(() => {
     activePointer.current = null;
-    activeFastPointer.current = null;
     setStick(null);
     command({ type: "touch-move", x: 0, z: 0 });
-    command({ type: "touch-fast", active: false });
   }, []);
+  const resetInput = useCallback(() => {
+    clearMovement();
+    activeFastPointer.current = null;
+    command({ type: "touch-fast", active: false });
+  }, [clearMovement]);
   const previousPhase = useRef(snapshot.phase);
   useEffect(() => {
     if (previousPhase.current !== snapshot.phase) resetInput();
@@ -1558,6 +1561,29 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
       document.removeEventListener("visibilitychange", resetOnFocusLoss);
     };
   }, [resetInput]);
+  useEffect(() => {
+    const releaseMovementOnWindow = (event: globalThis.PointerEvent) => {
+      if (activePointer.current !== event.pointerId) return;
+      clearMovement();
+    };
+    const releaseMovementOnTouchEnd = () => {
+      if (activePointer.current !== null) clearMovement();
+    };
+    window.addEventListener("pointerup", releaseMovementOnWindow);
+    window.addEventListener("pointercancel", releaseMovementOnWindow);
+    window.addEventListener("touchend", releaseMovementOnTouchEnd, {
+      passive: true,
+    });
+    window.addEventListener("touchcancel", releaseMovementOnTouchEnd, {
+      passive: true,
+    });
+    return () => {
+      window.removeEventListener("pointerup", releaseMovementOnWindow);
+      window.removeEventListener("pointercancel", releaseMovementOnWindow);
+      window.removeEventListener("touchend", releaseMovementOnTouchEnd);
+      window.removeEventListener("touchcancel", releaseMovementOnTouchEnd);
+    };
+  }, [clearMovement]);
   const markHasTarget = Boolean(
     snapshot.marker &&
       snapshot.cubes.some(cube =>
@@ -1614,7 +1640,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const release = (event: PointerEvent<HTMLDivElement>) => {
     if (activePointer.current !== event.pointerId) return;
-    resetInput();
+    clearMovement();
   };
   const pressAction = (
     event: PointerEvent<HTMLButtonElement>,
