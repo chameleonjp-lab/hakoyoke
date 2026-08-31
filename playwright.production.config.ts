@@ -3,7 +3,7 @@ import { defineConfig } from "@playwright/test";
 const productionServerCommand =
   process.env.GITHUB_ACTIONS === "true"
     ? "PORT=4175 pnpm start"
-    : "pnpm build && PORT=4175 pnpm start";
+    : "npm run build && PORT=4175 npm start";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -17,5 +17,15 @@ export default defineConfig({
     timeout: 120_000,
     reuseExistingServer: false,
   },
-  projects: [{ name: "chromium-production", use: { browserName: "chromium" } }],
+  projects: [
+    {
+      name: "chromium-production",
+      use: {
+        browserName: "chromium",
+        launchOptions: {
+          args: ["--no-sandbox", "--disable-dev-shm-usage"],
+        },
+      },
+    },
+  ],
 });

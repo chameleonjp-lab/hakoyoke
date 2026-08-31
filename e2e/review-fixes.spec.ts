@@ -1,4 +1,38 @@
 import { expect, test } from "@playwright/test";
+import { installRankingMock } from "./ranking-mock";
+
+test.beforeEach(async ({ page }) => {
+  await installRankingMock(page);
+});
+
+test("CREATEは一般的な画面サイズで最終操作までスクロールできる", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1280, height: 720 },
+    { width: 870, height: 400 },
+    { width: 320, height: 480 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+    await page
+      .getByRole("button", { name: /CREATE BUILD A CUSTOM ORDEAL/ })
+      .click();
+    await page.getByRole("button", { name: /CONFIGURE/ }).click();
+    const testButton = page.getByRole("button", { name: /TEST ORDEAL/ });
+    await testButton.scrollIntoViewIfNeeded();
+    await expect(testButton).toBeVisible();
+    const bounds = await testButton.boundingBox();
+    expect(bounds).not.toBeNull();
+    if (bounds) {
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
+      expect(bounds.y).toBeGreaterThanOrEqual(0);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
+    }
+  }
+});
 
 test("PRACTICEは各Waveに存在する問題番号だけを表示する", async ({ page }) => {
   await page.goto("/");

@@ -1,7 +1,6 @@
 /** Obsidian Observatory: lazy Babylon canvas with a lifecycle-safe, retryable engine boundary beneath the instant React HUD. */
 import { useEffect, useRef, useState } from "react";
 import { Engine } from "@babylonjs/core/Engines/engine";
-import CampaignGameOverOverlay from "@/components/CampaignGameOverOverlay";
 import { createGameScene, type GameHandle } from "@/game/scene";
 
 export default function GameCanvas({
@@ -65,9 +64,8 @@ export default function GameCanvas({
         ref={canvasRef}
         className="game-canvas"
         aria-hidden="true"
-        style={{ touchAction: "none", pointerEvents: "none" }}
+        style={{ touchAction: "none", pointerEvents: "auto" }}
       />
-      <CampaignGameOverOverlay />
       {error && (
         <section className="engine-failure" role="alert" aria-live="assertive">
           <span>RENDERER // INITIALIZATION FAILED</span>

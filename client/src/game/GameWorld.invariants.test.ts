@@ -72,6 +72,8 @@ type WorldInternals = {
   activateAreas: () => void;
   checkRollCollision: (previousProgress: number, progress: number) => void;
   finishRotation: () => void;
+  fallFromPlatform: () => void;
+  losePlatformRow: (reason: string, preserveMisses?: boolean) => boolean;
   advanceAfterResult: () => void;
 };
 
@@ -219,6 +221,36 @@ describe("GameWorld state invariants", () => {
     state.finishRotation();
 
     expect(state.phase).toBe("GAME_OVER");
+    world.dispose();
+  });
+
+  it("persists GAME_OVER immediately for both loss paths", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "CAMPAIGN";
+    state.phase = "PLAYING";
+
+    state.fallFromPlatform();
+
+    const fallSave = JSON.parse(
+      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}"
+    );
+    expect(fallSave.snapshot.phase).toBe("GAME_OVER");
+    expect(fallSave.snapshot.banner).toBe("FALL INTO VOID");
+
+    state.phase = "PLAYING";
+    state.stats.platformRows = state.currentPuzzle.depth + 2;
+    state.losePlatformRow("LOSS LIMIT");
+
+    const rowSave = JSON.parse(
+      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}"
+    );
+    expect(rowSave.snapshot.phase).toBe("GAME_OVER");
+    expect(rowSave.snapshot.banner).toBe("OBSERVATORY LOST");
     world.dispose();
   });
 
@@ -552,6 +584,19 @@ describe("GameWorld state invariants", () => {
     expect(state.phase).toBe("STAGE_INTRO");
     expect(state.currentPuzzle.id).toBe("S2-W1-P1");
 
+    command({
+      type: "start",
+      mode: "CAMPAIGN",
+      difficulty: "NORMAL",
+      stage: 1,
+      wave: 1,
+      ordinal: 1,
+      resumeCampaign: false,
+    });
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.currentPuzzle.id).toBe("S1-W1-P1");
+    expect(state.stats.score).toBe(0);
+
     state.phase = "GAME_OVER";
     command({ type: "campaign-new" });
     expect(state.phase).toBe("STAGE_INTRO");
@@ -589,7 +634,7 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
-  it("persists FINAL_RESULT after the final bonus and makes it idempotent", () => {
+  it("persists FINAL_RESULT once but starts fresh after leaving its result screen", () => {
     const world = new GameWorld(
       [puzzle()],
       () => undefined,
@@ -626,6 +671,12 @@ describe("GameWorld state invariants", () => {
       () => undefined
     );
     const restoredState = internals(restoredWorld);
+    expect(restoredState.phase).toBe("FINAL_RESULT");
+
+    command({ type: "menu" });
+    expect(restoredState.phase).toBe("MENU");
+    expect(storage.getItem("cubic-ordeal-campaign-v1")).toBeNull();
+
     command({
       type: "start",
       mode: "CAMPAIGN",
@@ -634,7 +685,12 @@ describe("GameWorld state invariants", () => {
       wave: 1,
       ordinal: 1,
     });
-    expect(restoredState.phase).toBe("FINAL_RESULT");
+    expect(restoredState.phase).toBe("STAGE_INTRO");
+    expect(restoredState.stats.score).toBe(0);
+    const freshSave = JSON.parse(
+      storage.getItem("cubic-ordeal-campaign-v1") ?? "{}"
+    );
+    expect(freshSave.snapshot.phase).toBe("STAGE_INTRO");
     restoredWorld.dispose();
   });
 });

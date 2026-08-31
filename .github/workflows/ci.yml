@@ -19,6 +19,7 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - "playwright*.config.ts"
+      - "ranking-manifest.json"
       - "scripts/**"
       - "server/**"
       - "shared/**"
@@ -38,6 +39,7 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - "playwright*.config.ts"
+      - "ranking-manifest.json"
       - "scripts/**"
       - "server/**"
       - "shared/**"
@@ -78,6 +80,9 @@ jobs:
       - name: Puzzle archive consistency
         run: pnpm puzzles:check
 
+      - name: Ranking manifest consistency
+        run: pnpm ranking:check
+
       - name: Source formatting
         run: pnpm format:check
 
@@ -93,6 +98,14 @@ jobs:
       - name: Install browser runtimes
         if: github.event_name != 'pull_request'
         run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Install pull request browser runtime
+        if: github.event_name == 'pull_request'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Pull request browser interaction tests
+        if: github.event_name == 'pull_request'
+        run: pnpm exec playwright test --project=chromium
 
       - name: Browser interaction tests
         if: github.event_name != 'pull_request'

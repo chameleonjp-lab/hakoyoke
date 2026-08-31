@@ -1,17 +1,18 @@
 # CUBIC ORDEAL — CURRENT STATE
 
-この文書を、PR #1に含まれる現行実装の正本とします。過去の監査報告や性能記録は判断経緯として残しますが、現在の達成状況はこの文書とCI結果を優先してください。
+この文書を現行実装の正本とします。過去の監査報告や性能記録は判断経緯として残しますが、現在の達成状況はこの文書と最新のGitHub Actions結果を優先してください。
 
 ## 正本と生成物
 
-| 対象 | 正本 | 派生物・検査 |
-| --- | --- | --- |
-| ゲーム規則・状態遷移 | `client/src/game/` | VitestとPlaywright |
-| Stage/Wave/問題数 | `client/src/game/stagePlan.ts` | 9 Stage、88問を自動集計 |
-| 問題生成規則 | `client/src/game/puzzles.ts` | `pnpm puzzles:write` |
-| 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止 |
-| 問題検証結果 | `LEVEL_VALIDATION_REPORT.md` | 上記生成器・再生検証から作る。手編集禁止 |
-| 現行の検査結果 | GitHub Actionsの`CI` | `TEST_REPORT.md`に検査範囲を記録 |
+| 対象                   | 正本                              | 派生物・検査                                                        |
+| ---------------------- | --------------------------------- | ------------------------------------------------------------------- |
+| ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                  |
+| Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                             |
+| 問題生成規則           | `client/src/game/puzzles.ts`      | `pnpm puzzles:write`                                                |
+| 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                      |
+| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証から作る。手編集禁止                            |
+| ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査 |
+| 現行の検査結果         | GitHub Actionsの`CI`              | `TEST_REPORT.md`に検査範囲を記録                                    |
 
 問題データの流れは次の1本だけです。
 
@@ -36,10 +37,23 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 - Campaignのversioned snapshot保存・復帰
 - キーボード、ゲームパッド、縦横モバイル操作
 - 初期UIとBabylon.jsランタイムの遅延境界
-- 匿名RUMのローカル保存と、明示設定時だけの送信
+- 匿名RUMのローカル計測・保存・表示（外部送信なし）
 - CREATEの検査、保存、JSON入出力、左右反転
+- 表示名必須化、正式URL固定のゲーム・結果共有
+- CAMPAIGNの開始・終了記録、冪等スコア送信、再読込後も同じIDを使う手動再送
+- サーバーの`rank_no`を使うベストスコア上位10件表示
 
-## PR #1の削除監査
+## ランキング連携
+
+ランキング対象はCAMPAIGNの`clear`と`game_over`だけです。TUTORIAL、PRACTICE、CREATE、DUELおよび途中結果は送信しません。
+
+1プレイにつきブラウザ生成の`start_id`を1つ保存し、`start_game_play_v1`が返す`play_id`を終了まで使います。結果確定時は通信前に`submission_id`と確定結果を保存し、`finish_game_play_v1`、`submit_score_idempotent_v1`の順に自動送信します。通信断・時間切れ・HTTP 408/425/429/5xxは同じ内容で再送でき、恒久エラーでは再送ボタンを出しません。成功応答の内容を検査した後だけpendingを削除し、別保存の完了receiptで再読込時の二重送信を防ぎます。複数の未送信結果は同じ導線で順番に再送し、送信中断の`submitting`は再読込時に再送可能へ復元します。ランキング通信の失敗は結果、共有、再戦、メニュー導線を塞ぎません。
+
+正式URL、公開版、ゲーム識別子、名前保存キー、RPC名、8秒の時間切れは`ranking-manifest.json`と`client/src/lib/ranking.ts`で一致させます。公開SupabaseキーはブラウザRPC呼出しに限って使用し、secret/service-roleキーは含めません。
+
+公開受入には未完了の外部確認があります。現行のSupabase `public.games`登録値とmanifest（説明、シェア文、スコア範囲）の一致、およびGitHub Pagesの`/hakoyoke/`配下でのVite asset参照を確認する必要があります。リポジトリ側ではPages設定・デプロイworkflowをこのPRから変更せず、公開・`is_active`変更は受入担当の明示承認後に行います。
+
+## PR #1で行った削除監査（履歴）
 
 PR全体の削除行が大きく見えた主因は、ゲーム本体の削除ではなく次の3群です。
 
@@ -60,16 +74,18 @@ PRを更新するたび、次を同じCIで通します。
 1. `pnpm install --frozen-lockfile`
 2. `pnpm repo:check`
 3. `pnpm puzzles:check`
-4. `pnpm format:check`
-5. `pnpm check`
-6. `pnpm test`
-7. `pnpm build`
-8. ChromiumとWebKitの`pnpm test:e2e`
-9. 実ビルドをExpressで起動する`pnpm test:e2e:production`
+4. `pnpm ranking:check`
+5. `pnpm format:check`
+6. `pnpm check`
+7. `pnpm test`
+8. `pnpm build`
+9. Pull RequestではChromiumの`pnpm test:e2e`
+10. `main`更新時はChromiumとWebKitの`pnpm test:e2e`
+11. `main`更新時は実ビルドをExpressで起動する`pnpm test:e2e:production`
 
-整理実装head `e9afbaad`に対するGitHub Actions `CI` run #13で、リポジトリ衛生、88問生成物、書式、型、Vitest 23件、Playwright 26件、production E2E 1件がすべて成功しました。PR更新後は常に最新CIを正とします。
+ローカル検証だけでは完了扱いにせず、PR更新後は常に最新CIを正とします。現行の件数と検査対象は`TEST_REPORT.md`を参照してください。
 
-同runの主要ビルド出力は、初期HTML 367.96 kB（gzip 105.77 kB）、CSS 29.36 kB（gzip 7.46 kB）、初期JS 238.31 kB（gzip 73.26 kB）、遅延`GameCanvas` 1,251.73 kB（gzip 308.55 kB）です。88問JSONは静的データとして別に配信します。
+2026-08-31の候補ビルドの主要出力は、初期HTML 368.11 kB（gzip 105.84 kB）、CSS 34.69 kB（gzip 8.23 kB）、初期JS 276.13 kB（gzip 84.37 kB）、遅延`GameCanvas` 1,256.26 kB（gzip 309.58 kB）です。88問JSONは静的データとして別に配信します。
 
 ## 本番E2Eの環境差
 
@@ -83,4 +99,4 @@ PRを更新するたび、次を同じCIで通します。
 - `BUNDLE_OPTIMIZATION.md`、`RUNTIME_PERFORMANCE_PLAN.md`: 方針と過去計測の記録
 - `PLAN.md`、`QUALITY_RECOVERY_REPORT.md`など: 判断経緯の記録
 
-公開、PRのマージ、`main`への直接反映はこの整理の対象外です。
+PRのマージ、`main`への直接反映、公開・デプロイは、明示的な承認と公開前受入確認なしには行いません。

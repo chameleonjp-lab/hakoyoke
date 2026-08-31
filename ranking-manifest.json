@@ -1,0 +1,52 @@
+{
+  "schema_version": "chameleonjp-ranking-manifest-v1",
+  "game_id": "hakoyoke",
+  "title": "CUBIC ORDEAL",
+  "description": "巨大キューブの進路を読み、崩壊する足場で判断を刻む3D空間パズルです。",
+  "share_text": "CUBIC ORDEALで、崩れる足場の進路を読もう！",
+  "canonical_url": "https://chameleonjp-lab.github.io/hakoyoke/",
+  "release_date": "2026-08-31",
+  "client_version": "hakoyoke-20260831-01",
+  "submission_mode": "shared",
+  "lab": {
+    "representative_slug": "hakoyoke"
+  },
+  "player_name": {
+    "required_before_start": true,
+    "min_length": 1,
+    "max_length": 20,
+    "storage_key": "chameleonjp_hakoyoke_player_name"
+  },
+  "play_count": {
+    "count_at": "start",
+    "rpc": "start_game_play_v1",
+    "idempotency": true
+  },
+  "submission": {
+    "finish_rpc": "finish_game_play_v1",
+    "rpc": "submit_score_idempotent_v1",
+    "automatic": true,
+    "idempotency": true,
+    "timeout_ms": 8000
+  },
+  "ranking_entries": [
+    {
+      "mode_id": "campaign",
+      "game_slug": "hakoyoke",
+      "title": "CUBIC ORDEAL",
+      "display_order": 53,
+      "ranking_rpc": "get_best_score_ranking",
+      "top_ranking_type": "best",
+      "score_order": "desc",
+      "score_unit": "点",
+      "score_scale": 1,
+      "score_decimals": 0,
+      "score_label": "スコア",
+      "first_score_label": "初回スコア",
+      "best_score_label": "最高スコア",
+      "score_min": 0,
+      "score_max": 100000000,
+      "ranked_results": ["clear", "game_over"]
+    }
+  ]
+}

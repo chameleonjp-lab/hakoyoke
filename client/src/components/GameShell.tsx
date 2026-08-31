@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type KeyboardEvent,
   type PointerEvent,
 } from "react";
@@ -14,6 +15,17 @@ import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { calculateMindIndex, cubeOccupiesCell } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
 import type { CubicCommand } from "@/game/GameWorld";
+import {
+  RANKING_CONFIG,
+  formatRankingScore,
+  rankingClient,
+  readStoredPlayerName,
+  saveStoredPlayerName,
+  startErrorMessage,
+  validatePlayerName,
+  type RankingRow,
+  type RankingSubmissionState,
+} from "@/lib/ranking";
 import type {
   Difficulty,
   GameMode,
@@ -23,12 +35,6 @@ import type {
 import RumPanel from "./RumPanel";
 
 const PANEL = "/manus-storage/cubic-ordeal-signal-panel_78bc2974.png";
-const SUPABASE_URL = "https://mlpnjgezrnhdxsxolyzj.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_drzcy0v97knU6FgjqSgBHw_0A9XPdFM";
-const GAME_SLUG = "hakoyoke";
-const CLIENT_VERSION = "hakoyoke-2026-08-31-platform";
-const LAB_URL = "https://chameleonjp-lab.github.io/chameleonjp_lab/";
-const PLAYER_NAME_KEY = "cubic-ordeal.player-name";
 const difficulties: Difficulty[] = [
   "BEGINNER",
   "EASY",
@@ -55,42 +61,25 @@ function setting(key: "quality" | "audio", value: string): void {
   );
 }
 
-function cleanPlayerName(value: string): string {
-  return value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 20);
-}
-
-function readPlayerName(): string {
-  try {
-    return cleanPlayerName(localStorage.getItem(PLAYER_NAME_KEY) ?? "");
-  } catch {
-    return "";
-  }
-}
-
-function savePlayerName(value: string): string {
-  const name = cleanPlayerName(value);
-  try {
-    if (name) localStorage.setItem(PLAYER_NAME_KEY, name);
-    else localStorage.removeItem(PLAYER_NAME_KEY);
-  } catch {
-    // The current-session name still works when storage is unavailable.
-  }
-  return name;
-}
-
-function currentGameUrl(): string {
-  return new URL(window.location.href).toString().split("#")[0] ?? window.location.href;
-}
-
 function homeShareMessage(): string {
-  return `CUBIC ORDEALで、崩れる足場の進路を読もう！\n${currentGameUrl()}\n#CUBICORDEAL #ミニゲーム`;
+  return `${RANKING_CONFIG.shareText}\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
 }
 
-async function shareOrCopy(text: string, setStatus: (message: string) => void): Promise<void> {
+async function shareOrCopy(
+  text: string,
+  setStatus: (message: string) => void
+): Promise<void> {
   setStatus("");
   if (navigator.share) {
     try {
-      await navigator.share({ title: "CUBIC ORDEAL", text, url: currentGameUrl() });
+      const nativeText = text
+        .replace(`\n${RANKING_CONFIG.canonicalUrl}`, "")
+        .trim();
+      await navigator.share({
+        title: "CUBIC ORDEAL",
+        text: nativeText,
+        url: RANKING_CONFIG.canonicalUrl,
+      });
       setStatus("共有しました。");
       return;
     } catch (error: unknown) {
@@ -98,33 +87,13 @@ async function shareOrCopy(text: string, setStatus: (message: string) => void): 
     }
   }
   try {
-    if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+    if (!navigator.clipboard?.writeText)
+      throw new Error("clipboard unavailable");
     await navigator.clipboard.writeText(text);
     setStatus("シェア文をコピーしました。");
   } catch {
     setStatus("シェア文をコピーできませんでした。もう一度お試しください。");
   }
-}
-
-async function callRankingRpc(name: string, payload: Record<string, unknown>): Promise<unknown> {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
-    method: "POST",
-    headers: {
-      apikey: SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-  const body = await response.text();
-  let data: unknown = null;
-  try {
-    data = body ? JSON.parse(body) : null;
-  } catch {
-    data = body;
-  }
-  if (!response.ok) throw new Error(`${name}: ${response.status}`);
-  return data;
 }
 
 export default function GameShell({
@@ -138,8 +107,9 @@ export default function GameShell({
   const [chosenMode, setChosenMode] = useState<GameMode>("CAMPAIGN");
   const [difficulty, setDifficulty] = useState<Difficulty>("NORMAL");
   const [practice, setPractice] = useState({ stage: 1, wave: 1, ordinal: 1 });
-  const [playerName, setPlayerName] = useState(readPlayerName);
+  const [playerName, setPlayerName] = useState(readStoredPlayerName);
   const [nameMessage, setNameMessage] = useState("");
+  const [startingPlay, setStartingPlay] = useState(false);
   const rumEnabled =
     new URLSearchParams(window.location.search).get("rum") === "1";
 
@@ -182,18 +152,45 @@ export default function GameShell({
     setLaunching(true);
     onLaunch(detail);
   };
-  const execute = (
+  const execute = async (
     mode = chosenMode,
     stage = practice.stage,
     wave = practice.wave,
     ordinal = practice.ordinal
   ) => {
-    if (!playerName) {
-      setNameMessage("プレイヤー名を入力してから開始してください。");
+    if (startingPlay) return;
+    const validation = saveStoredPlayerName(playerName);
+    if (!validation.ok) {
+      setNameMessage(validation.message);
       setPanel("title");
       return;
     }
-    launch({ type: "start", mode, difficulty, stage, wave, ordinal });
+    setPlayerName(validation.name);
+    let resumeCampaign: boolean | undefined;
+    if (mode === "CAMPAIGN") {
+      setStartingPlay(true);
+      setNameMessage("ランキング対象プレイの開始を確認中…");
+      try {
+        const started = await rankingClient.startCampaignPlay(validation.name);
+        resumeCampaign = started.resumed;
+      } catch (error) {
+        setNameMessage(startErrorMessage(error));
+        setPanel("title");
+        setStartingPlay(false);
+        return;
+      }
+      setStartingPlay(false);
+    }
+    setNameMessage("");
+    launch({
+      type: "start",
+      mode,
+      difficulty,
+      stage,
+      wave,
+      ordinal,
+      resumeCampaign,
+    });
     setPanel(null);
   };
 
@@ -242,20 +239,21 @@ export default function GameShell({
           setDifficulty={setDifficulty}
           playerName={playerName}
           setPlayerName={value => {
-            const next = savePlayerName(value);
-            setPlayerName(next);
-            setNameMessage(next ? "" : "プレイヤー名を入力すると開始できます。");
+            setPlayerName(value);
+            setNameMessage("");
           }}
           nameMessage={nameMessage}
           execute={execute}
           practice={practice}
           setPractice={setPractice}
           onTest={puzzle => {
-            if (!playerName) {
-              setNameMessage("プレイヤー名を入力してから開始してください。");
+            const validation = saveStoredPlayerName(playerName);
+            if (!validation.ok) {
+              setNameMessage(validation.message);
               setPanel("title");
               return;
             }
+            setPlayerName(validation.name);
             launch({ type: "load-custom", puzzle });
             setPanel(null);
           }}
@@ -341,6 +339,7 @@ function MenuPanel({
           onChange={setPlayerName}
           message={nameMessage}
         />
+        <PendingRankingNotice />
         {panel === "title" && (
           <TitleActions
             onMode={() => setPanel("mode")}
@@ -406,6 +405,49 @@ function MenuPanel({
   );
 }
 
+function PendingRankingNotice() {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const hasRetryable = useSyncExternalStore(
+    rankingClient.subscribePending,
+    rankingClient.hasRetryablePendingCampaignResult,
+    rankingClient.hasRetryablePendingCampaignResult
+  );
+  if (!hasRetryable && !message) return null;
+
+  const retry = async () => {
+    if (busy) return;
+    setBusy(true);
+    setMessage("未送信結果を再送中です。");
+    const outcome = await rankingClient.retryPendingCampaignResult();
+    setMessage(outcome.message);
+    setBusy(false);
+  };
+
+  return (
+    <aside className="pending-ranking-notice">
+      <span className="eyebrow">RANKING // UNSENT RESULT</span>
+      <p>前回のランキング送信が完了していません。</p>
+      {hasRetryable && (
+        <button
+          className="platform-action ranking-retry"
+          type="button"
+          onClick={() => void retry()}
+          disabled={busy}
+        >
+          <span>RETRY UNSENT SCORE</span>
+          <small>同じ結果を再送</small>
+        </button>
+      )}
+      {message && (
+        <p className="platform-status" role="status" aria-live="polite">
+          {message}
+        </p>
+      )}
+    </aside>
+  );
+}
+
 function TitleActions({
   onMode,
   onTutorial,
@@ -447,8 +489,15 @@ function TitleActions({
         <span>SHARE GAME</span>
         <small>INVITE A PLAYER</small>
       </button>
-      <p className="platform-status" role="status" aria-live="polite">{shareStatus}</p>
-      <a className="platform-link" href={LAB_URL} target="_blank" rel="noopener noreferrer">
+      <p className="platform-status" role="status" aria-live="polite">
+        {shareStatus}
+      </p>
+      <a
+        className="platform-link"
+        href={RANKING_CONFIG.labUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         カメレオンJPの実験場
       </a>
     </div>
@@ -464,22 +513,34 @@ function PlayerNameGate({
   onChange(value: string): void;
   message: string;
 }) {
+  const validation = validatePlayerName(playerName);
   return (
     <section className="player-name-gate" aria-labelledby="player-name-title">
-      <span className="eyebrow" id="player-name-title">PLAYER IDENTIFICATION</span>
-      <label htmlFor="cubic-player-name">ランキング表示名（必須）</label>
+      <span className="eyebrow" id="player-name-title">
+        PLAYER DISPLAY NAME
+      </span>
+      <label htmlFor="cubic-player-name">公開表示名（同名可・必須）</label>
       <input
         id="cubic-player-name"
         type="text"
         value={playerName}
-        maxLength={20}
-        autoComplete="name"
+        autoComplete="nickname"
         placeholder="20文字以内で入力"
         onChange={event => onChange(event.target.value)}
+        aria-invalid={!validation.ok}
+        aria-describedby="cubic-player-name-status"
         required
       />
-      <small className="platform-status" role="status" aria-live="polite">
-        {message || (playerName ? `${playerName}さんの名前で記録します。` : "名前を入力するとゲームを開始できます。")}
+      <small
+        className="platform-status"
+        id="cubic-player-name-status"
+        role="status"
+        aria-live="polite"
+      >
+        {message ||
+          (validation.ok
+            ? `${validation.name}さんの名前で記録します。`
+            : validation.message)}
       </small>
     </section>
   );
@@ -1181,9 +1242,14 @@ function PauseOverlay({
   onQuit(): void;
 }) {
   return (
-    <div className="overlay-panel">
+    <div
+      className="overlay-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cubic-pause-title"
+    >
       <span className="eyebrow">ORDEAL SUSPENDED</span>
-      <h2>PAUSED</h2>
+      <h2 id="cubic-pause-title">PAUSED</h2>
       <p>キューブ回転、判定、経過時間は停止しています。</p>
       <Action label="RESUME" note="ESC" onClick={onResume} primary />
       <Action label="QUIT TO MENU" note="ABORT RUN" onClick={onQuit} />
@@ -1201,56 +1267,56 @@ function ResultOverlay({
 }) {
   const final = snapshot.phase === "FINAL_RESULT";
   const gameOver = snapshot.phase === "GAME_OVER";
+  const ranked = snapshot.mode === "CAMPAIGN" && (final || gameOver);
   const [shareStatus, setShareStatus] = useState("");
-  const [rankingStatus, setRankingStatus] = useState(
-    final || gameOver ? "ランキングを更新中…" : "最終結果でランキングを表示します。"
+  const [submissionState, setSubmissionState] =
+    useState<RankingSubmissionState>(ranked ? "submitting" : "idle");
+  const [submissionMessage, setSubmissionMessage] = useState(
+    ranked ? "ランキングへ送信中です。" : ""
   );
-  const [ranking, setRanking] = useState<Array<{ name: string; score: number }>>([]);
+  const [rankingStatus, setRankingStatus] = useState(
+    ranked ? "ランキングを読み込み中…" : ""
+  );
+  const [ranking, setRanking] = useState<RankingRow[]>([]);
+  const [replayMessage, setReplayMessage] = useState("");
+  const [startingReplay, setStartingReplay] = useState(false);
   const mindIndex = calculateMindIndex(
     snapshot.stats.score,
     snapshot.stage,
     snapshot.stats.platformRows,
     snapshot.stats.misses
   );
-  const shareText = `${playerName || "ななし"}さんのCUBIC ORDEAL結果：${snapshot.stats.score}点、ステージ${snapshot.stage}、足場${snapshot.stats.platformRows}列、MIND INDEX ${mindIndex}。\n${currentGameUrl()}\n#CUBICORDEAL #ミニゲーム`;
+  const validatedName = validatePlayerName(playerName);
+  const displayName = validatedName.ok ? validatedName.name : "ななし";
+  const shareText = `${displayName}さんのCUBIC ORDEAL結果：${formatRankingScore(snapshot.stats.score)}、ステージ${snapshot.stage}、足場${snapshot.stats.platformRows}列、MIND INDEX ${mindIndex}。\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
 
   useEffect(() => {
-    if (!final && !gameOver) return;
+    if (!ranked) return;
     let active = true;
-    setRankingStatus("ランキングを更新中…");
+    setSubmissionState("submitting");
+    setSubmissionMessage("ランキングへ送信中です。");
+    setRankingStatus("ランキングを読み込み中…");
     setRanking([]);
     void (async () => {
-      try {
-        await callRankingRpc("submit_score", {
-          p_display_name: playerName || "ななし",
-          p_game_slug: GAME_SLUG,
-          p_score: Math.trunc(snapshot.stats.score),
-          p_client_version: CLIENT_VERSION,
-        });
-      } catch {
-        if (active) setRankingStatus("今回のスコアを送信できませんでした。ランキングを表示します。");
+      const outcome = await rankingClient.finishAndSubmitCampaignResult({
+        displayName,
+        resultType: final ? "clear" : "game_over",
+        reachedStage: snapshot.stage,
+        score: snapshot.stats.score,
+      });
+      if (active) {
+        setSubmissionState(outcome.state);
+        setSubmissionMessage(outcome.message);
       }
       try {
-        const data = await callRankingRpc("get_best_score_ranking", {
-          p_game_slug: GAME_SLUG,
-          p_limit: 10,
-        });
-        const rows = Array.isArray(data)
-          ? data.slice(0, 10).flatMap(row => {
-              if (!row || typeof row !== "object") return [];
-              const item = row as Record<string, unknown>;
-              const rawName = item.display_name ?? item.player_name ?? item.name;
-              const rawScore = item.score ?? item.best_score;
-              const score = Number(rawScore);
-              return [{
-                name: typeof rawName === "string" && rawName.trim() ? rawName : "ななし",
-                score: Number.isFinite(score) ? Math.trunc(score) : 0,
-              }];
-            })
-          : [];
+        const rows = await rankingClient.loadBestRanking();
         if (!active) return;
         setRanking(rows);
-        setRankingStatus(rows.length ? "上位10名を表示しています。" : "まだランキングがありません。");
+        setRankingStatus(
+          rows.length
+            ? "上位10名を表示しています。"
+            : "まだランキングがありません。"
+        );
       } catch {
         if (!active) return;
         setRankingStatus("ランキングを読み込めませんでした。");
@@ -1259,10 +1325,55 @@ function ResultOverlay({
     return () => {
       active = false;
     };
-  }, [final, gameOver, playerName, snapshot.stage, snapshot.stats.misses, snapshot.stats.platformRows, snapshot.stats.score]);
+  }, [displayName, final, ranked, snapshot.stage, snapshot.stats.score]);
+
+  const retrySubmission = async () => {
+    setSubmissionState("submitting");
+    setSubmissionMessage("同じ結果を再送中です。");
+    const outcome = await rankingClient.retryPendingCampaignResult();
+    setSubmissionState(outcome.state);
+    setSubmissionMessage(outcome.message);
+    if (outcome.state === "submitted") {
+      try {
+        const rows = await rankingClient.loadBestRanking();
+        setRanking(rows);
+        setRankingStatus(
+          rows.length
+            ? "上位10名を表示しています。"
+            : "まだランキングがありません。"
+        );
+      } catch {
+        setRankingStatus("ランキングを読み込めませんでした。");
+      }
+    }
+  };
+
+  const startAnotherCampaign = async (
+    type: "campaign-continue" | "campaign-new"
+  ) => {
+    if (startingReplay || !validatedName.ok) return;
+    setStartingReplay(true);
+    setReplayMessage("次のプレイ開始を確認中…");
+    try {
+      await rankingClient.startCampaignPlay(validatedName.name, {
+        forceNew: true,
+      });
+      command({ type });
+      setReplayMessage("");
+    } catch (error) {
+      setReplayMessage(startErrorMessage(error));
+    } finally {
+      setStartingReplay(false);
+    }
+  };
 
   return (
-    <div className="overlay-panel result">
+    <div
+      className="overlay-panel result"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cubic-result-title"
+    >
       <span className="eyebrow">
         {gameOver
           ? "CONTACT LOST"
@@ -1270,11 +1381,11 @@ function ResultOverlay({
             ? "OBSERVATION COMPLETE"
             : "ORDEAL ANALYSIS"}
       </span>
-      <h2>{snapshot.banner}</h2>
+      <h2 id="cubic-result-title">{snapshot.banner}</h2>
       <div className="result-grid">
         <Metric
           label="SCORE"
-          value={String(snapshot.stats.score).padStart(6, "0")}
+          value={formatRankingScore(snapshot.stats.score)}
         />
         <Metric
           label="MIND INDEX"
@@ -1296,40 +1407,127 @@ function ResultOverlay({
             ? "すべての観測対象を通過しました。"
             : "次の解析結果を待機しています。"}
       </p>
-      <section className="result-sharing" aria-labelledby="cubic-result-share-title">
-        <span className="eyebrow" id="cubic-result-share-title">RESULT SIGNAL</span>
-        <p className="platform-status">{playerName || "ななし"}さんの結果</p>
-        <textarea value={shareText} readOnly rows={4} aria-label="結果のシェア文" />
-        <button
-          className="platform-action"
-          type="button"
-          onClick={() => void shareOrCopy(shareText, setShareStatus)}
-        >
-          <span>SHARE RESULT</span>
-          <small>共有またはコピー</small>
-        </button>
-        <p className="platform-status" role="status" aria-live="polite">{shareStatus}</p>
-      </section>
-      <section className="online-ranking" aria-labelledby="cubic-ranking-title">
-        <span className="eyebrow" id="cubic-ranking-title">TOP 10 OBSERVATIONS</span>
-        <ol className="ranking-list">
-          {ranking.length ? ranking.map((item, index) => (
-            <li key={`${item.name}-${index}`}><span>{index + 1}.</span> {item.name}<b>{item.score}点</b></li>
-          )) : <li>ランキングを読み込み中…</li>}
-        </ol>
-        <p className="platform-status" role="status" aria-live="polite">{rankingStatus}</p>
-      </section>
-      <a className="platform-link result-platform-link" href={LAB_URL} target="_blank" rel="noopener noreferrer">
-        カメレオンJPの実験場
-      </a>
-      <Action
-        label={final || gameOver ? "RETURN TO MENU" : "CONTINUE"}
-        note="ENTER"
-        onClick={
-          final || gameOver ? onContinue : () => command({ type: "continue" })
-        }
-        primary
-      />
+      {ranked && (
+        <>
+          <section
+            className="result-sharing"
+            aria-labelledby="cubic-result-share-title"
+          >
+            <span className="eyebrow" id="cubic-result-share-title">
+              RESULT SIGNAL
+            </span>
+            <p className="platform-status">{displayName}さんの結果</p>
+            <textarea
+              value={shareText}
+              readOnly
+              rows={4}
+              aria-label="結果のシェア文"
+            />
+            <button
+              className="platform-action"
+              type="button"
+              onClick={() => void shareOrCopy(shareText, setShareStatus)}
+            >
+              <span>SHARE RESULT</span>
+              <small>共有またはコピー</small>
+            </button>
+            <p className="platform-status" role="status" aria-live="polite">
+              {shareStatus}
+            </p>
+          </section>
+          <section
+            className="online-ranking"
+            aria-labelledby="cubic-ranking-title"
+          >
+            <span className="eyebrow" id="cubic-ranking-title">
+              TOP 10 OBSERVATIONS
+            </span>
+            <ol className="ranking-list">
+              {ranking.length ? (
+                ranking.map(item => (
+                  <li key={`${item.rankNo}-${item.name}`}>
+                    <span>{item.rankNo}.</span>
+                    <span className="ranking-name">{item.name}</span>
+                    <b>{formatRankingScore(item.score)}</b>
+                  </li>
+                ))
+              ) : (
+                <li>表示できる記録はまだありません。</li>
+              )}
+            </ol>
+            <p className="platform-status" role="status" aria-live="polite">
+              {rankingStatus}
+            </p>
+            <p
+              className="platform-status ranking-submission-status"
+              data-state={submissionState}
+              role="status"
+              aria-live="polite"
+            >
+              {submissionMessage}
+            </p>
+            {submissionState === "retryable_failed" && (
+              <button
+                className="platform-action ranking-retry"
+                type="button"
+                onClick={() => void retrySubmission()}
+              >
+                <span>RETRY SCORE</span>
+                <small>同じ結果を再送</small>
+              </button>
+            )}
+          </section>
+          <div className="result-platform-links">
+            <a
+              className="platform-link result-platform-link"
+              href={RANKING_CONFIG.rankingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              詳細ランキング
+            </a>
+            <a
+              className="platform-link result-platform-link"
+              href={RANKING_CONFIG.labUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              カメレオンJPの実験場
+            </a>
+          </div>
+        </>
+      )}
+      {ranked ? (
+        <div className="result-actions">
+          <p className="platform-status" role="status" aria-live="polite">
+            {replayMessage}
+          </p>
+          {gameOver && (
+            <Action
+              label="CONTINUE"
+              note="RESTART CURRENT STAGE"
+              onClick={() => void startAnotherCampaign("campaign-continue")}
+              disabled={startingReplay}
+              primary
+            />
+          )}
+          <Action
+            label="NEW CAMPAIGN"
+            note="CLEAR SAVE // STAGE 1"
+            onClick={() => void startAnotherCampaign("campaign-new")}
+            disabled={startingReplay}
+            primary={final}
+          />
+          <Action label="RETURN TO MENU" note="HOME" onClick={onContinue} />
+        </div>
+      ) : (
+        <Action
+          label={final ? "RETURN TO MENU" : "CONTINUE"}
+          note="ENTER"
+          onClick={final ? onContinue : () => command({ type: "continue" })}
+          primary
+        />
+      )}
     </div>
   );
 }
