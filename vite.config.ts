@@ -218,8 +218,15 @@ const plugins = [
   vitePluginStorageProxy(),
 ];
 
+function resolveBasePath(value: string | undefined): string {
+  const configured = value?.trim();
+  if (!configured || configured === "/") return "/";
+  return `/${configured.replace(/^\/+|\/+$/g, "")}/`;
+}
+
 export default defineConfig({
   plugins,
+  base: resolveBasePath(process.env.VITE_BASE_PATH),
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

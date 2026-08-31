@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CUBIC ORDEAL">
+  <rect width="64" height="64" rx="10" fill="#030812" />
+  <path d="m32 8 20 11.5v25L32 56 12 44.5v-25L32 8Z" fill="#0a2637" stroke="#50d8ff" stroke-width="3" />
+  <path d="M32 8v24m20-12.5L32 32 12 19.5M32 32v24" fill="none" stroke="#b9f4ff" stroke-width="2" />
+  <circle cx="32" cy="32" r="4" fill="#28beeb" />
+</svg>

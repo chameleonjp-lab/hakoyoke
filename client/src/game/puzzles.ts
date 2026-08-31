@@ -6,8 +6,10 @@ import {
 import { STAGE_PLAN } from "./stagePlan";
 import type { CubeType, PuzzleDescriptor, SolutionStep } from "./types";
 
+const PUZZLE_ARCHIVE_URL = `${import.meta.env.BASE_URL}data/puzzles.json`;
+
 export async function loadPuzzles(): Promise<PuzzleDescriptor[]> {
-  const response = await fetch("/data/puzzles.json", { cache: "no-cache" });
+  const response = await fetch(PUZZLE_ARCHIVE_URL, { cache: "no-cache" });
   if (!response.ok) throw new Error("Puzzle archive could not be loaded.");
   const payload = (await response.json()) as unknown;
   if (!Array.isArray(payload)) {

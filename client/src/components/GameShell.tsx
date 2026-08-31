@@ -34,7 +34,6 @@ import type {
 } from "@/game/types";
 import RumPanel from "./RumPanel";
 
-const PANEL = "/manus-storage/cubic-ordeal-signal-panel_78bc2974.png";
 const difficulties: Difficulty[] = [
   "BEGINNER",
   "EASY",
@@ -1155,12 +1154,7 @@ function Hud({ snapshot, onMenu }: { snapshot: GameSnapshot; onMenu(): void }) {
         <Metric label="VEIL" value={String(snapshot.stats.areaMarks)} />
       </aside>
       {!compact && (
-        <footer
-          className="hud-bottom"
-          style={{
-            backgroundImage: `linear-gradient(90deg, rgba(2,11,19,.92), rgba(9,24,32,.74)), url(${PANEL})`,
-          }}
-        >
+        <footer className="hud-bottom">
           <span>{snapshot.difficulty}</span>
           <i />
           <span>MIND INDEX {mindIndex}</span>
