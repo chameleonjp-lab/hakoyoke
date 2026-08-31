@@ -879,6 +879,91 @@ h2 {
 .result-grid .hud-stat b {
   color: #5ee0ff;
 }
+.player-name-gate,
+.result-sharing,
+.online-ranking {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  padding: 12px;
+  border: 1px solid rgba(112, 202, 233, 0.24);
+  background: rgba(3, 12, 22, 0.48);
+}
+.player-name-gate label {
+  color: #d8f5fb;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.player-name-gate input,
+.result-sharing textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid rgba(112, 202, 233, 0.45);
+  border-radius: 2px;
+  padding: 10px;
+  color: #eaf4fb;
+  background: rgba(1, 6, 12, 0.82);
+  font: 13px/1.5 "IBM Plex Mono", monospace;
+}
+.player-name-gate input:focus,
+.result-sharing textarea:focus {
+  outline: 2px solid #28beeb;
+  outline-offset: 2px;
+}
+.platform-action {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 157, 233, 0.55);
+  background: rgba(73, 18, 66, 0.62);
+  color: #fff0fc;
+  font: 700 11px/1.2 "IBM Plex Mono", monospace;
+  letter-spacing: 0.1em;
+  text-align: left;
+}
+.platform-action small {
+  color: #c6a6c2;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+.platform-action:hover {
+  border-color: #ff9de9;
+}
+.platform-link {
+  display: block;
+  margin: 12px 0;
+  color: #50d8ff;
+  font: 700 11px/1.4 "IBM Plex Mono", monospace;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+}
+.platform-link:hover {
+  color: #e4fbff;
+}
+.platform-status {
+  min-height: 1.2em;
+  margin: 0;
+  color: #9bb7c4;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.ranking-list {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 22px;
+  color: #d8f5fb;
+  font: 12px/1.5 "IBM Plex Mono", monospace;
+}
+.ranking-list li {
+  padding: 5px 7px;
+  background: rgba(12, 44, 60, 0.52);
+}
+.ranking-list li b {
+  float: right;
+  color: #5ee0ff;
+}
 .debug-panel {
   position: fixed;
   left: 20px;
