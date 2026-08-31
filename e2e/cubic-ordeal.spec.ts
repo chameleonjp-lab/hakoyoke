@@ -93,6 +93,8 @@ test("PRACTICE開始後のSAVE、LOAD、STEP、REWINDはCampaign記録と独立�
   await page.getByRole("button", { name: /CONFIGURE/ }).click();
   await page.getByRole("button", { name: /LOAD ARCHIVE/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /PAUSE/ }).click();
+  await expect(page.getByRole("heading", { name: "PAUSED" })).toBeVisible();
   await page.evaluate(() => {
     const target = window as Window & {
       practiceSnapshot?: { cubes: Array<{ z: number }> };
