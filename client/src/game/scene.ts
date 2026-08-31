@@ -32,7 +32,6 @@ interface RenderCube {
   outline: Mesh;
   type: CubeState["type"];
 }
-const BASALT_TILE = "/manus-storage/cubic-ordeal-basalt-tile_1a919528.png";
 
 export async function createGameScene(
   engine: Engine,
@@ -181,9 +180,8 @@ export async function createGameScene(
     void Promise.all([
       import("@babylonjs/core/Lights/Shadows/shadowGenerator"),
       import("@babylonjs/core/Layers/glowLayer"),
-      import("@babylonjs/core/Materials/Textures/texture"),
     ])
-      .then(([{ ShadowGenerator }, { GlowLayer }, { Texture }]) => {
+      .then(([{ ShadowGenerator }, { GlowLayer }]) => {
         if (disposed) return;
         shadows = new ShadowGenerator(resolution, key);
         shadows.useBlurExponentialShadowMap = quality !== "LOW";
@@ -192,12 +190,6 @@ export async function createGameScene(
         shadows.setDarkness(quality === "LOW" ? 0.18 : 0.32);
         player.getChildMeshes().forEach(mesh => shadows?.addShadowCaster(mesh));
         cubes.forEach(rendered => shadows?.addShadowCaster(rendered.core));
-        const basalt = new Texture(BASALT_TILE, scene, true, false);
-        basalt.uScale = 1.15;
-        basalt.vScale = 1.15;
-        basalt.level = 0.86;
-        basalt.hasAlpha = false;
-        material.tile.diffuseTexture = basalt;
         glow = new GlowLayer("signal-glow", scene, {
           mainTextureFixedSize: quality === "HIGH" ? 1024 : 512,
           blurKernelSize: 32,

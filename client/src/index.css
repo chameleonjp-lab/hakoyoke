@@ -772,6 +772,11 @@ h2 {
   border: 1px solid rgba(128, 207, 232, 0.18);
   padding: 8px 12px;
   background-color: rgba(3, 11, 19, 0.82);
+  background-image: linear-gradient(
+    90deg,
+    rgba(2, 11, 19, 0.92),
+    rgba(9, 24, 32, 0.74)
+  );
   background-size: cover;
   color: #81a3b3;
   font:
