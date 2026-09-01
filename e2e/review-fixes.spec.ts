@@ -112,3 +112,66 @@ test("縦画面の移動領域は下半分に限定され、pause中は入力面
   await page.getByRole("button", { name: /RESUME/ }).click();
   await expect(zone).toBeVisible();
 });
+
+test("移動中の解除イベントが画面側へ届いてもプレイヤーが停止する", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/?demo");
+  await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await page.evaluate(() => {
+    window.addEventListener("cubic:snapshot", event => {
+      (window as Window & { latestSnapshot?: unknown }).latestSnapshot = (
+        event as CustomEvent
+      ).detail;
+    });
+  });
+
+  const zone = page.locator(".touch-zone");
+  await zone.dispatchEvent("pointerdown", {
+    pointerId: 121,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    clientX: 180,
+    clientY: 680,
+  });
+  await zone.dispatchEvent("pointermove", {
+    pointerId: 121,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    clientX: 180,
+    clientY: 620,
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as Window & {
+              latestSnapshot?: { player: { z: number } };
+            }
+          ).latestSnapshot?.player.z ?? 0
+      )
+    )
+    .toBeGreaterThan(0.9);
+
+  await page.evaluate(() => {
+    window.dispatchEvent(
+      new PointerEvent("pointerup", { pointerId: 121, pointerType: "touch" })
+    );
+  });
+  const stoppedAt = await page.evaluate(
+    () =>
+      (window as Window & { latestSnapshot?: { player: { z: number } } })
+        .latestSnapshot?.player.z ?? 0
+  );
+  await page.waitForTimeout(240);
+  const afterRelease = await page.evaluate(
+    () =>
+      (window as Window & { latestSnapshot?: { player: { z: number } } })
+        .latestSnapshot?.player.z ?? 0
+  );
+  expect(Math.abs(afterRelease - stoppedAt)).toBeLessThan(0.08);
+});
