@@ -57,7 +57,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Fresh Ubuntu runners may spend about 20 minutes installing WebKit system dependencies.
+    # Leave time for the cross-browser and production-server checks afterward.
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
