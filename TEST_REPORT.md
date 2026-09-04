@@ -11,7 +11,7 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 15ファイル                                            | PASS — 103件            |
+| 単体・問題検査 | `pnpm test`                | 15ファイル                                            | PASS — 108件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
 | ブラウザ操作   | `pnpm test:e2e`            | Chromium 22件、WebKit 22件                            | 最新CIを正とする — 44件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
@@ -54,7 +54,9 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - キューブの整数グリッド移動と手前下辺支点の90度回転
 - 回転区間の通過体積とプレイヤー衝突
 - MARK一致、AREA 3×3、複数AREA、MARK上VOID保護
-- AREAアンカーの1回消費とVEILによる再生成
+- MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
+- AREAアンカーの対象時だけの1回消費、空撃ち保持、VEILによる再生成
+- FAST中も着地待ち時間を短縮しない回転進行
 - NORMAL/VEIL取り逃し、VOID捕獲、足場増減
 - PERFECTの3得点帯、通常捕獲、AREA捕獲、MIND INDEX
 - Stage Plan、PRACTICEの問題番号、DUELの同問再試行
@@ -72,7 +74,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - CREATEのセル編集、保存、IMPORT、MIRROR
 - 盤外移動から`FALL INTO VOID`への遷移
 - 1280×720、375×812、400×870、870×400の表示と操作
-- フローティング移動キー、MARK/CAPTURE、AREA、FAST
+- フローティング移動キー、MARK/CAPTURE/CLEAR、AREAの待機・VOID警告、FAST
 - `pointerdown`、`pointerup`、`pointercancel`
 - RUM表示、ページ例外なし
 - 空名での開始拒否と、開始RPC受付までキャンペーンを起動しないこと

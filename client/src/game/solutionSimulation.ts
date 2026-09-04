@@ -10,6 +10,7 @@ import {
   isPositionOnPlatform,
   markerTarget,
   markerProtectsRollSweep,
+  nearestGridCell,
 } from "./rules";
 import { playerIntersectsRollSweep } from "./rollPhysics";
 import {
@@ -408,10 +409,11 @@ function handleFalling(state: ReplayState, cube: CubeState): void {
 
 function markOrCapture(state: ReplayState): void {
   if (!state.marker) {
-    state.marker = {
-      x: Math.round(state.player.x),
-      z: Math.round(state.player.z),
-    };
+    state.marker = nearestGridCell(
+      state.player,
+      state.puzzle.width,
+      state.stats.platformRows
+    );
     return;
   }
   const target = markerTarget(
@@ -421,7 +423,6 @@ function markOrCapture(state: ReplayState): void {
     state.isRolling
   );
   if (!target) {
-    state.marker = null;
     return;
   }
   captureCube(state, target, false);
@@ -460,9 +461,6 @@ function captureCube(
 function activateAreas(state: ReplayState): void {
   if (!state.areas.length) return;
   const activeAreas = state.areas.map(area => ({ ...area }));
-  state.areas = [];
-  state.consumedAreaAnchors += activeAreas.length;
-  state.areaUses += 1;
   const targets = areaTargets(
     state.cubes,
     activeAreas,
@@ -471,6 +469,9 @@ function activateAreas(state: ReplayState): void {
     state.isRolling
   );
   if (!targets.length) return;
+  state.areas = [];
+  state.consumedAreaAnchors += activeAreas.length;
+  state.areaUses += 1;
   for (const target of targets) captureCube(state, target, true);
   if (state.phase === "GAME_OVER") return;
   state.phase = "CAPTURE_PAUSE";

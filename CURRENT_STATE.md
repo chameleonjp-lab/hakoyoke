@@ -31,9 +31,12 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 ## 現行機能
 
 - TUTORIAL、CAMPAIGN、PRACTICE、CREATE、DUELの5モード
-- NORMAL、VEIL、VOID、MARK、1回消費型AREA、MARK上VOID保護
+- NORMAL、VEIL、VOID、MARK、対象捕獲時だけ消費するAREA、MARK上VOID保護
 - 9 Stage、4 Wave、合計88問
 - 辺支点の回転、回転中の通過体積判定、盤外落下
+- MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
+- FASTは回転区間だけを加速し、着地待ち・捕獲停止時間は維持
+- プレイ中のカメラ固定と、画面方向に統一したタッチ移動
 - Campaignのversioned snapshot保存・復帰
 - キーボード、ゲームパッド、縦横モバイル操作
 - 初期UIとBabylon.jsランタイムの遅延境界

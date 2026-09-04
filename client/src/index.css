@@ -1296,7 +1296,7 @@ h2 {
     grid-column: 2;
   }
   .touch-actions .mark {
-    grid-column: 1 / span 2;
+    grid-column: 1;
     border-color: #28beeb;
     background: linear-gradient(135deg, #0a5069, #063548);
     font-size: 13px;
@@ -1304,6 +1304,15 @@ h2 {
   .touch-actions .mark span {
     font-size: 8px;
     color: #86dff6;
+  }
+
+  .touch-actions .clear {
+    grid-column: 2;
+    border-color: rgba(255, 139, 232, 0.72);
+    color: #ffe5fa;
+  }
+  .touch-actions .clear span {
+    font-size: 8px;
   }
   .game-canvas {
     height: calc(100dvh - 160px - env(safe-area-inset-bottom));
@@ -1471,9 +1480,18 @@ h2 {
     touch-action: none;
   }
   .touch-actions .mark {
-    grid-column: 1 / span 2;
+    grid-column: 1;
     border-color: #28beeb;
     background: linear-gradient(135deg, #0a5069, #063548);
+  }
+
+  .touch-actions .clear {
+    grid-column: 2;
+    border-color: rgba(255, 139, 232, 0.72);
+    color: #ffe5fa;
+  }
+  .touch-actions .clear span {
+    font-size: 8px;
   }
   .game-canvas {
     height: 100%;
@@ -1601,7 +1619,7 @@ h2 {
       touch-action: none;
     }
     .touch-actions .mark {
-      grid-column: 1 / span 2;
+      grid-column: 1;
       border-color: #51dbff;
       background: linear-gradient(135deg, #137694, #075066);
       font-size: 13px;
@@ -1609,6 +1627,15 @@ h2 {
     .touch-actions .mark span {
       font-size: 8px;
       color: #c2f5ff;
+    }
+
+    .touch-actions .clear {
+      grid-column: 2;
+      border-color: rgba(255, 139, 232, 0.72);
+      color: #ffe5fa;
+    }
+    .touch-actions .clear span {
+      font-size: 8px;
     }
     .touch-actions button:disabled {
       opacity: 0.38;
@@ -1818,7 +1845,7 @@ h2 {
   }
 
   .touch-actions .mark {
-    grid-column: 1 / span 2;
+    grid-column: 1;
     border-color: #51dbff;
     background: linear-gradient(135deg, #137694, #075066);
     font-size: 13px;
@@ -1827,6 +1854,25 @@ h2 {
   .touch-actions .mark span {
     font-size: 8px;
     color: #c2f5ff;
+  }
+
+  .touch-actions .clear {
+    grid-column: 2;
+    border-color: rgba(255, 139, 232, 0.72);
+    color: #ffe5fa;
+  }
+  .touch-actions .clear span {
+    font-size: 8px;
+  }
+
+  .touch-actions .area span {
+    color: #a8e9c9;
+    font-size: 8px;
+  }
+
+  .touch-actions .area[data-warning="yes"] {
+    border-color: #ff8be8;
+    color: #ffe5fa;
   }
 
   .touch-actions button:disabled {

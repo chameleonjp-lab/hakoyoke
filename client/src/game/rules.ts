@@ -2,7 +2,21 @@
 import { rollingCubeBounds, rollingCubeSweepBounds } from "./rollPhysics";
 import type { AreaMark, CubeState, GridPosition, RunStats } from "./types";
 
+export const AREA_CELL_RADIUS = 1;
+export const AREA_MARK_SIZE = AREA_CELL_RADIUS * 2 + 1;
 const CELL_HALF = 0.49;
+
+/** Snap the player's visible position to one valid floor-cell center. */
+export function nearestGridCell(
+  position: { x: number; z: number },
+  width: number,
+  rows: number
+): GridPosition {
+  return {
+    x: clampCell(Math.floor(position.x + 0.5), width),
+    z: clampCell(Math.floor(position.z + 0.5), rows),
+  };
+}
 
 /** z=0 is the player-side front edge; cubes descend from larger z values. */
 export function advanceOneCell(cube: CubeState): CubeState {
@@ -101,16 +115,16 @@ function areaContainsCube(
   rollProgress: number,
   isRolling: boolean
 ): boolean {
-  if (Math.abs(cube.x - area.x) > 1) return false;
-  if (!isRolling) return Math.abs(cube.z - area.z) <= 1;
+  if (Math.abs(cube.x - area.x) > AREA_CELL_RADIUS) return false;
+  if (!isRolling) return Math.abs(cube.z - area.z) <= AREA_CELL_RADIUS;
 
   const bounds = rollingCubeBounds(cube, rollProgress);
-  const areaMinZ = area.z - 1 - CELL_HALF;
-  const areaMaxZ = area.z + 1 + CELL_HALF;
+  const areaMinZ = area.z - AREA_CELL_RADIUS - CELL_HALF;
+  const areaMaxZ = area.z + AREA_CELL_RADIUS + CELL_HALF;
   return bounds.z.max >= areaMinZ && bounds.z.min <= areaMaxZ;
 }
 
-/** AREA anchors are one-shot. Callers must snapshot and clear the anchor list before capturing targets. */
+/** AREA anchors are one-shot after a successful discharge. */
 export function areaTargets(
   cubes: CubeState[],
   activeAreas: AreaMark[],
@@ -175,4 +189,8 @@ export function calculateMindIndex(
 
 export function cloneDeterministic<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function clampCell(value: number, size: number): number {
+  return Math.max(0, Math.min(Math.max(0, size - 1), value));
 }

@@ -112,10 +112,22 @@ describe("InputManager directional invariants", () => {
       moveX: 0,
       moveZ: 0,
       mark: false,
+      clearMarker: false,
       area: false,
       pause: false,
       fast: false,
     });
+
+    manager.dispose();
+  });
+
+  it("exposes CLEAR as a distinct touch action edge", () => {
+    const manager = new InputManager();
+
+    manager.press("clear");
+
+    expect(manager.sample().clearMarker).toBe(true);
+    expect(manager.sample().clearMarker).toBe(false);
 
     manager.dispose();
   });

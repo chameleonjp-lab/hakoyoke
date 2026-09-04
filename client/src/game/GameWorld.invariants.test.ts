@@ -68,8 +68,11 @@ type WorldInternals = {
   stats: RunStats;
   isRolling: boolean;
   rollElapsed: number;
+  settleElapsed: number;
   markOrCapture: () => void;
+  clearMarker: () => void;
   activateAreas: () => void;
+  updateRoll: (dt: number, fast: boolean) => void;
   checkRollCollision: (previousProgress: number, progress: number) => void;
   finishRotation: () => void;
   fallFromPlatform: () => void;
@@ -392,6 +395,77 @@ describe("GameWorld state invariants", () => {
     expect(state.cubes[0]?.captured).toBe(true);
     expect(state.marker).toBeNull();
     expect(state.phase).toBe("CAPTURE_PAUSE");
+    world.dispose();
+  });
+
+  it("does not clear a waiting MARK through the capture input", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.player = { x: 1, z: 0, heading: 0 };
+    state.marker = { x: 1, z: 0 };
+    state.cubes = [{ id: "far", type: "normal", x: 2, z: 4, previousZ: 4 }];
+
+    state.markOrCapture();
+
+    expect(state.marker).toEqual({ x: 1, z: 0 });
+    expect((world as unknown as { banner: string }).banner).toBe(
+      "MARK WAITING"
+    );
+
+    state.clearMarker();
+    expect(state.marker).toBeNull();
+    world.dispose();
+  });
+
+  it("preserves AREA anchors when the current preview has no target", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.areas = [{ id: "waiting", x: 1, z: 0, armed: true }];
+    state.stats.areaMarks = 1;
+    state.cubes = [{ id: "far", type: "normal", x: 3, z: 5, previousZ: 5 }];
+
+    state.activateAreas();
+
+    expect(state.areas).toEqual([{ id: "waiting", x: 1, z: 0, armed: true }]);
+    expect(state.stats.areaMarks).toBe(1);
+    expect((world as unknown as { banner: string }).banner).toBe(
+      "AREA WAITING // NO TARGET"
+    );
+    world.dispose();
+  });
+
+  it("does not accelerate settle while FAST is held", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.settleElapsed = DIFFICULTIES.NORMAL.settleSeconds - 0.01;
+
+    state.updateRoll(0.005, true);
+    expect(state.isRolling).toBe(false);
+    state.updateRoll(0.01, true);
+    expect(state.isRolling).toBe(true);
+    state.rollElapsed = 0;
+    state.updateRoll(DIFFICULTIES.NORMAL.rollSeconds / 1.82 - 0.01, true);
+    expect(state.isRolling).toBe(true);
+    state.updateRoll(0.02, true);
+    expect(state.isRolling).toBe(false);
     world.dispose();
   });
 
