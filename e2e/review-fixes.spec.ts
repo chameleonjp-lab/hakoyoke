@@ -1,6 +1,18 @@
 import { expect, test } from "@playwright/test";
 import { installRankingMock } from "./ranking-mock";
 
+async function completeTutorialMovementGate(
+  page: import("@playwright/test").Page
+) {
+  await expect(page.getByText("TRAINING 1 / 8", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "MARK" })).toBeDisabled();
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(100);
+  await page.keyboard.up("ArrowRight");
+  await expect(page.getByText("TRAINING 2 / 8", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "MARK" })).toBeEnabled();
+}
+
 test.beforeEach(async ({ page }) => {
   await installRankingMock(page);
 });
@@ -53,9 +65,18 @@ test("モバイル操作ボタンはPointer Eventsの一経路でMARKを一度�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await completeTutorialMovementGate(page);
   const mark = page.getByRole("button", { name: "MARK" });
   await mark.dispatchEvent("pointerdown", {
     pointerId: 71,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+  });
+  await expect(page.getByText("TRAINING 3 / 8", { exact: true })).toBeVisible();
+  const activeMark = page.getByRole("button", { name: "MARK" });
+  await activeMark.dispatchEvent("pointerdown", {
+    pointerId: 72,
     pointerType: "touch",
     isPrimary: true,
     button: 0,

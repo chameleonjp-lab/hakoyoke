@@ -11,9 +11,9 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 15ファイル                                            | PASS — 109件            |
+| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 114件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
-| ブラウザ操作   | `pnpm test:e2e`            | Chromium 22件、WebKit 22件                            | 最新CIを正とする — 44件 |
+| ブラウザ操作   | `pnpm test:e2e`            | Chromium 23件、WebKit 23件                            | 最新CIを正とする — 46件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
 | 公開受入       | iPhone Safari + Pages URL  | `/hakoyoke/` asset、manifest、Supabase登録値の突合    | BLOCKED — 外部受入待ち  |
 
@@ -61,6 +61,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - NORMAL/VEIL取り逃し、VOID捕獲、足場増減
 - PERFECTの3得点帯、通常捕獲、AREA捕獲、MIND INDEX
 - Stage Plan、PRACTICEの問題番号、DUELの同問再試行
+- TUTORIALの8ゲート順序、操作ロック、GameWorldでの全ゲート達成
 - 88問すべての登録解法、移動可能性、全回収、VOID非捕獲
 - 表示名の前後空白・Unicode文字数・制御文字・20文字上限
 - 同じ`start_id`の開始再送、開始ボタン連打の単一化

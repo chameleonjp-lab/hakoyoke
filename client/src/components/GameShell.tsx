@@ -14,6 +14,7 @@ import { parsePuzzleDescriptor, validatePuzzle } from "@/game/puzzleValidation";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { areaTargets, calculateMindIndex, markerTarget } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
+import { TUTORIAL_STAGE_COUNT, tutorialActionEnabled } from "@/game/tutorial";
 import type { CubicCommand } from "@/game/GameWorld";
 import {
   RANKING_CONFIG,
@@ -217,7 +218,10 @@ export default function GameShell({
       )}
       {snapshot?.phase === "TUTORIAL" && (
         <aside className="tutorial-callout">
-          <span>TRAINING {Math.min(8, snapshot.tutorialStep + 1)} / 8</span>
+          <span>
+            TRAINING {Math.min(TUTORIAL_STAGE_COUNT, snapshot.tutorialStep + 1)}{" "}
+            / {TUTORIAL_STAGE_COUNT}
+          </span>
           <p>{snapshot.hint}</p>
         </aside>
       )}
@@ -1591,6 +1595,13 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         snapshot.isRolling ?? false
       )
     : undefined;
+  const tutorialMode = snapshot.mode === "TUTORIAL";
+  const markEnabled =
+    !tutorialMode || tutorialActionEnabled(snapshot.tutorialStep, "mark");
+  const clearEnabled =
+    !tutorialMode || tutorialActionEnabled(snapshot.tutorialStep, "clear");
+  const areaEnabled =
+    !tutorialMode || tutorialActionEnabled(snapshot.tutorialStep, "area");
   const markAction = !snapshot.marker
     ? "MARK"
     : markerTargetCube
@@ -1712,7 +1723,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         <button
           className="area"
           aria-label="AREA"
-          disabled={!snapshot.areas.length}
+          disabled={!snapshot.areas.length || !areaEnabled}
           data-ready={areaTargetsReady.length ? "yes" : "no"}
           data-warning={areaWarning ? "yes" : "no"}
           onPointerDown={event => pressAction(event, "area")}
@@ -1742,7 +1753,8 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         <button
           className="mark"
           aria-label={markAction}
-          disabled={markAction === "WAIT"}
+          disabled={!markEnabled || markAction === "WAIT"}
+          data-tutorial-locked={!markEnabled ? "yes" : "no"}
           onPointerDown={event => pressAction(event, "mark")}
           onKeyDown={event => keyAction(event, "mark")}
         >
@@ -1761,7 +1773,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         <button
           className="clear"
           aria-label="CLEAR"
-          disabled={!snapshot.marker}
+          disabled={!snapshot.marker || !clearEnabled}
           onPointerDown={event => pressAction(event, "clear")}
           onKeyDown={event => keyAction(event, "clear")}
         >

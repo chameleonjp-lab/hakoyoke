@@ -68,11 +68,13 @@ round(score / 170 + stage × 18 + remainingRows × 9 − misses × 22)
 
 | モード | 内容 |
 | --- | --- |
-| **TUTORIAL** | 移動、MARK、CAPTURE、VEIL、AREA、VOID保護、PERFECT、足場損失をゲーム内で段階的に学ぶ。 |
+| **TUTORIAL** | 本編アーカイブ外の手設計8ゲートで、移動、MARK、CAPTURE、VEIL、VOID保護、AREA、LOSS、PERFECTを順に学ぶ。 |
 | **CAMPAIGN** | Stage 1からFinalまでの全88問を進める本編。問題完了時にローカル進行を保存する。 |
 | **PRACTICE** | Stage、Wave、Puzzleを選択して練習する。10秒巻き戻し、クイックセーブ／ロード、一手送りを利用できる。 |
 | **CREATE** | 幅4〜7、奥行2〜9の独自盤面を塗り、検査、localStorage保存、JSON書き出し、テスト実行を行う。 |
 | **DUEL** | 同じ問題を交代で解き、先に5点、4対4以降は2点差を付けた方が勝つローカル対戦。 |
+
+TUTORIALは各操作を一つずつ実演する独立した小問です。現在のゲートで不要なMARK／CLEAR／AREA入力は受け付けず、ゲート達成後に次の小問へ進みます。最後のPERFECTだけは取り逃しなしの再試行が必要です。
 
 ## ステージと問題数
 

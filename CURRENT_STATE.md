@@ -7,6 +7,7 @@
 | 対象                   | 正本                              | 派生物・検査                                                        |
 | ---------------------- | --------------------------------- | ------------------------------------------------------------------- |
 | ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                  |
+| チュートリアルゲート   | `client/src/game/tutorial.ts`     | 8段階の手設計小問と操作ロックをGameWorld／HUDで共有                  |
 | Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                             |
 | 問題生成規則           | `client/src/game/puzzles.ts`      | Stage 1序盤6問は手設計、残りは決定的生成。`pnpm puzzles:write`         |
 | 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                      |
@@ -28,6 +29,8 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 
 Stage 1のWave 1はAREAを使わず、VOIDを捕獲せずに通す読みと列移動を学ぶ3問です。Wave 2は先頭のVEILからAREAを作り、3×3範囲の外側だけを手動捕獲する3問です。この序盤6問は`puzzles.ts`内の`HAND_AUTHORED_DESIGNS`を正本とし、Wave 3以降は既存の制約付き決定的生成を使います。保護・連鎖・持ち越しAREAは後続Waveで段階的に扱います。
 
+TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とする8ゲートです。移動、MARK、通常捕獲、VEIL、VOID保護、AREA、LOSS、PERFECTを各1段階で実演し、現段階で不要な操作はGameWorldとタッチHUDの双方でロックします。ゲート間は短い結果表示を挟んで次の専用小問へ進み、最後のPERFECTは取り逃し時に同じゲートを再試行します。
+
 旧`generate-puzzles.mjs`が独自のStage Planと別解法を持つ状態は廃止しました。互換用の3スクリプトはすべて同じ生成・検証モジュールを呼び出します。
 
 ## 現行機能
@@ -36,6 +39,7 @@ Stage 1のWave 1はAREAを使わず、VOIDを捕獲せずに通す読みと列�
 - NORMAL、VEIL、VOID、MARK、対象捕獲時だけ消費するAREA、MARK上VOID保護
 - 9 Stage、4 Wave、合計88問
 - Stage 1序盤6問の手設計導入（Wave 1: AREAなし、Wave 2: AREA導入）
+- TUTORIALの8段階手設計ゲート（操作ごとの入力ロック、LOSS実演、失敗時のゲート再試行）
 - 辺支点の回転、回転中の通過体積判定、盤外落下
 - MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
 - FASTは回転区間だけを加速し、着地待ち・捕獲停止時間は維持
