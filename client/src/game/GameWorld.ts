@@ -20,12 +20,17 @@ import {
   areaTargets,
   calculateMindIndex,
   isPositionOnPlatform,
-  markerCanCapture,
   markerProtectsRollSweep,
   markerTarget,
   nearestGridCell,
   unresolvedCubeCount,
 } from "./rules";
+import {
+  getTutorialPuzzle,
+  TUTORIAL_STAGE_COUNT,
+  tutorialActionEnabled,
+  tutorialHint,
+} from "./tutorial";
 import { playerIntersectsRollSweep } from "./rollPhysics";
 import {
   DIFFICULTIES,
@@ -128,6 +133,7 @@ export class GameWorld {
   private hasScoringStarted = false;
   private demoElapsed = 0;
   private tutorialStep = 0;
+  private tutorialProtectionObserved = false;
   private duelTurn = 0;
   private duelScore: [number, number] = [0, 0];
   private currentPuzzle: PuzzleDescriptor;
@@ -253,7 +259,13 @@ export class GameWorld {
     }
 
     if (this.phase === "PUZZLE_RESULT") {
-      if (this.demo) {
+      if (
+        this.mode === "TUTORIAL" &&
+        this.tutorialStep < TUTORIAL_STAGE_COUNT
+      ) {
+        this.phaseTimer -= dt;
+        if (this.phaseTimer <= 0) this.advanceAfterResult();
+      } else if (this.demo) {
         this.phaseTimer -= dt;
         if (this.phaseTimer <= 0) this.advanceAfterResult();
       }
@@ -262,9 +274,24 @@ export class GameWorld {
 
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
     if (!this.movePlayer(input.moveX, input.moveZ, dt)) return;
-    if (input.clearMarker) this.clearMarker();
-    if (input.mark) this.markOrCapture();
-    if (input.area) this.activateAreas();
+    if (
+      input.clearMarker &&
+      (this.mode !== "TUTORIAL" ||
+        tutorialActionEnabled(this.tutorialStep, "clear"))
+    )
+      this.clearMarker();
+    if (
+      input.mark &&
+      (this.mode !== "TUTORIAL" ||
+        tutorialActionEnabled(this.tutorialStep, "mark"))
+    )
+      this.markOrCapture();
+    if (
+      input.area &&
+      (this.mode !== "TUTORIAL" ||
+        tutorialActionEnabled(this.tutorialStep, "area"))
+    )
+      this.activateAreas();
     this.updateTutorial(input.moveX, input.moveZ);
     if (this.phase === "PLAYING" || this.phase === "TUTORIAL")
       this.updateRoll(dt, input.fast);
@@ -325,12 +352,9 @@ export class GameWorld {
   }
 
   private checkRollCollision(previousProgress: number, progress: number): void {
-    const crushing = this.cubes.some(
-      cube =>
-        !cube.captured &&
-        !cube.falling &&
-        !(
-          this.marker &&
+    const crushing = this.cubes.some(cube => {
+      const protectedByMarker = Boolean(
+        this.marker &&
           markerProtectsRollSweep(
             this.marker,
             cube,
@@ -338,9 +362,21 @@ export class GameWorld {
             progress,
             this.isRolling
           )
-        ) &&
+      );
+      if (
+        protectedByMarker &&
+        this.mode === "TUTORIAL" &&
+        this.tutorialStep === 4 &&
+        cube.type === "void"
+      )
+        this.tutorialProtectionObserved = true;
+      return (
+        !cube.captured &&
+        !cube.falling &&
+        !protectedByMarker &&
         playerIntersectsRollSweep(cube, this.player, previousProgress, progress)
-    );
+      );
+    });
     if (crushing) this.crush();
   }
 
@@ -355,14 +391,20 @@ export class GameWorld {
     }
     this.cubes = this.cubes.filter(cube => !cube.falling && !cube.captured);
     if (this.phase === "GAME_OVER") return;
+    if (
+      this.mode === "TUTORIAL" &&
+      this.tutorialStep === 4 &&
+      this.tutorialProtectionObserved
+    )
+      this.completeTutorialGate();
     this.resolveIfEmpty();
   }
 
   private handleFalling(cube: CubeState): void {
     cube.falling = true;
     if (cube.type === "void") {
-      if (this.mode === "TUTORIAL")
-        this.tutorialStep = Math.max(this.tutorialStep, 5);
+      if (this.mode === "TUTORIAL" && this.tutorialStep === 6)
+        this.completeTutorialGate();
       return;
     }
     this.stats.misses += 1;
@@ -370,6 +412,8 @@ export class GameWorld {
     this.banner = "SIGNAL LOST";
     if (this.stats.misses > this.stats.missLimit)
       this.losePlatformRow("LOSS LIMIT");
+    if (this.mode === "TUTORIAL" && this.tutorialStep === 6)
+      this.completeTutorialGate("LOSS RECORDED");
   }
 
   private fallFromPlatform(): void {
@@ -389,6 +433,11 @@ export class GameWorld {
   }
 
   private markOrCapture(): void {
+    if (
+      this.mode === "TUTORIAL" &&
+      !tutorialActionEnabled(this.tutorialStep, "mark")
+    )
+      return;
     if (!this.marker) {
       this.marker = nearestGridCell(
         this.player,
@@ -397,19 +446,8 @@ export class GameWorld {
       );
       this.banner = "MARK SET";
       this.onSignal("mark");
-      if (this.mode === "TUTORIAL") {
-        const protectsVoid = this.cubes.some(
-          cube =>
-            cube.type === "void" &&
-            markerCanCapture(
-              this.marker,
-              cube,
-              this.rollProgress,
-              this.isRolling
-            )
-        );
-        this.tutorialStep = Math.max(this.tutorialStep, protectsVoid ? 3 : 1);
-      }
+      if (this.mode === "TUTORIAL" && this.tutorialStep === 1)
+        this.completeTutorialGate("MARK SET");
       return;
     }
 
@@ -429,6 +467,11 @@ export class GameWorld {
   }
 
   private clearMarker(): void {
+    if (
+      this.mode === "TUTORIAL" &&
+      !tutorialActionEnabled(this.tutorialStep, "clear")
+    )
+      return;
     if (!this.marker) return;
     this.marker = null;
     this.banner = "MARK CLEARED";
@@ -483,12 +526,23 @@ export class GameWorld {
     this.phaseTimer = DIFFICULTIES[this.difficulty].captureSeconds;
     this.banner = cube.type === "veil" ? "VEIL ANCHOR SET" : "CAPTURED";
     this.onSignal("capture");
-    if (this.mode === "TUTORIAL")
-      this.tutorialStep = Math.max(this.tutorialStep, 2);
+    if (
+      this.mode === "TUTORIAL" &&
+      ((this.tutorialStep === 2 && cube.type === "normal") ||
+        (this.tutorialStep === 3 && cube.type === "veil"))
+    )
+      this.completeTutorialGate(
+        cube.type === "veil" ? "VEIL ANCHOR SET" : "CAPTURED"
+      );
     this.resolveIfEmpty();
   }
 
   private activateAreas(): void {
+    if (
+      this.mode === "TUTORIAL" &&
+      !tutorialActionEnabled(this.tutorialStep, "area")
+    )
+      return;
     if (!this.areas.length) {
       this.banner = "NO VEIL ANCHORS";
       return;
@@ -526,8 +580,8 @@ export class GameWorld {
     this.phaseTimer = DIFFICULTIES[this.difficulty].captureSeconds;
     this.banner = capturedVoid ? "AREA BREACH" : "AREA CASCADE";
     this.onSignal(capturedVoid ? "warning" : "area");
-    if (this.mode === "TUTORIAL")
-      this.tutorialStep = Math.max(this.tutorialStep, 4);
+    if (this.mode === "TUTORIAL" && this.tutorialStep === 5)
+      this.completeTutorialGate(capturedVoid ? "AREA BREACH" : "AREA CASCADE");
     this.resolveIfEmpty();
   }
 
@@ -555,6 +609,21 @@ export class GameWorld {
       this.completionAwardedForPuzzle === this.currentPuzzle.id
     )
       return;
+
+    if (this.mode === "TUTORIAL" && this.tutorialStep === 7) {
+      const perfectClear =
+        this.stats.misses === 0 &&
+        this.stats.voidCaptured === 0 &&
+        this.stats.perfect;
+      if (!perfectClear) {
+        this.phase = "CRUSHED";
+        this.phaseTimer = 1.8;
+        this.banner = "PERFECT REQUIRED — AGAIN";
+        this.input.clear();
+        return;
+      }
+    }
+
     this.completionAwardedForPuzzle = this.currentPuzzle.id;
     const allRequiredCaptured =
       this.stats.misses === 0 && this.stats.voidCaptured === 0;
@@ -572,9 +641,28 @@ export class GameWorld {
     } else {
       this.banner = "ORDEAL RESOLVED";
     }
-    if (this.mode === "TUTORIAL") this.tutorialStep = 7;
+    if (this.mode === "TUTORIAL" && this.tutorialStep === 7) {
+      this.tutorialStep = TUTORIAL_STAGE_COUNT;
+      this.banner = "PERFECT // TRAINING COMPLETE";
+    }
     this.phase = "PUZZLE_RESULT";
     this.phaseTimer = 2.3;
+    this.input.clear();
+  }
+
+  private completeTutorialGate(banner = "GATE CLEAR"): void {
+    if (
+      this.mode !== "TUTORIAL" ||
+      TERMINAL_PHASES.has(this.phase) ||
+      this.phase === "PUZZLE_RESULT" ||
+      this.tutorialStep >= TUTORIAL_STAGE_COUNT
+    )
+      return;
+    this.tutorialStep += 1;
+    this.hint = tutorialHint(this.tutorialStep);
+    this.banner = banner;
+    this.phase = "PUZZLE_RESULT";
+    this.phaseTimer = this.tutorialStep === TUTORIAL_STAGE_COUNT ? 2.3 : 0.8;
     this.input.clear();
   }
 
@@ -616,11 +704,15 @@ export class GameWorld {
   private advanceAfterResult(): void {
     if (TERMINAL_PHASES.has(this.phase)) return;
     if (this.phase === "CRUSHED") {
-      const residualMisses = this.stats.misses;
+      const residualMisses = this.mode === "TUTORIAL" ? 0 : this.stats.misses;
       this.loadPuzzle(this.currentPuzzle, false);
       this.stats.misses = residualMisses;
       this.stats.perfect = false;
       this.phase = this.mode === "TUTORIAL" ? "TUTORIAL" : "PLAYING";
+      if (this.mode === "TUTORIAL") {
+        this.hint = tutorialHint(this.tutorialStep);
+        this.banner = "ORDEAL ACTIVE";
+      }
       return;
     }
 
@@ -636,11 +728,34 @@ export class GameWorld {
       return;
     }
 
+    if (this.mode === "TUTORIAL") {
+      if (this.tutorialStep >= TUTORIAL_STAGE_COUNT) {
+        this.phase = "MENU";
+        this.phaseTimer = 0;
+        this.banner = "TRAINING COMPLETE";
+        this.input.clear();
+        return;
+      }
+      const nextTutorialPuzzle = getTutorialPuzzle(this.tutorialStep);
+      if (!nextTutorialPuzzle) {
+        this.phase = "MENU";
+        this.phaseTimer = 0;
+        this.banner = "TRAINING COMPLETE";
+        this.input.clear();
+        return;
+      }
+      this.loadPuzzle(nextTutorialPuzzle, true);
+      this.phase = "TUTORIAL";
+      this.phaseTimer = 0;
+      this.hint = tutorialHint(this.tutorialStep);
+      this.banner = `TRAINING ${this.tutorialStep + 1}/${TUTORIAL_STAGE_COUNT}`;
+      return;
+    }
+
     if (this.mode !== "CAMPAIGN") {
       this.phase = "MENU";
       this.phaseTimer = 0;
-      this.banner =
-        this.mode === "TUTORIAL" ? "TRAINING COMPLETE" : "ORDEAL COMPLETE";
+      this.banner = "ORDEAL COMPLETE";
       this.input.clear();
       return;
     }
@@ -754,6 +869,7 @@ export class GameWorld {
     this.isRolling = false;
     this.rollElapsed = 0;
     this.settleElapsed = 0;
+    this.tutorialProtectionObserved = false;
     this.phaseTimer = 0;
     this.pausedFromPhase = null;
     this.completionAwardedForPuzzle = null;
@@ -796,7 +912,7 @@ export class GameWorld {
     this.difficulty = difficulty;
     const puzzle =
       mode === "TUTORIAL"
-        ? makeTutorialPuzzle()
+        ? getTutorialPuzzle(0)
         : findPuzzle(this.puzzles, stage, wave, ordinal);
     if (!puzzle) {
       this.phase = "MENU";
@@ -808,6 +924,7 @@ export class GameWorld {
     this.duelScore = [0, 0];
     this.tutorialStep = 0;
     this.loadPuzzle(puzzle, true);
+    this.hint = tutorialHint(0);
     this.phase = "STAGE_INTRO";
     this.phaseTimer = 0;
     this.banner =
@@ -1020,19 +1137,9 @@ export class GameWorld {
 
   private updateTutorial(moveX: number, moveZ: number): void {
     if (this.mode !== "TUTORIAL") return;
-    if (Math.abs(moveX) + Math.abs(moveZ) > 0.1)
-      this.tutorialStep = Math.max(this.tutorialStep, 1);
-    const hints = [
-      "1/8: 盤面を横へ走り、移動入力を確認する。",
-      "2/8: 青いMARKを次に通る床へ置く。",
-      "3/8: 緑のVEILがMARKへ到着したらCAPTUREする。",
-      "4/8: 紫のVOIDが来る床へMARKを置き、AREAから保護する。",
-      "5/8: AREAは一度で消費される。VEILを巻き込んで次のAREAを作る。",
-      "6/8: VOIDが足場の端から落ちるのを確認する。",
-      "7/8: 取り逃しなしのPERFECTで足場が1列増える。",
-      "8/8: 練習問題を完了しました。MENUからCampaignへ進めます。",
-    ];
-    this.hint = hints[Math.min(this.tutorialStep, hints.length - 1)];
+    this.hint = tutorialHint(this.tutorialStep);
+    if (this.tutorialStep === 0 && Math.abs(moveX) + Math.abs(moveZ) > 0.1)
+      this.completeTutorialGate();
   }
 
   private runDemo(dt: number): void {
@@ -1280,32 +1387,4 @@ export class GameWorld {
     document.removeEventListener("visibilitychange", this.onVisibility);
     this.input.dispose();
   }
-}
-
-function makeTutorialPuzzle(): PuzzleDescriptor {
-  return {
-    id: "TUTORIAL-OBSERVATION-01",
-    stage: 1,
-    wave: 1,
-    ordinal: 1,
-    width: 4,
-    depth: 5,
-    spawnRow: 7,
-    requiredRolls: 0,
-    difficultyTag: "training",
-    seed: 0,
-    layout: [
-      { x: 2, z: 11, type: "veil" },
-      { x: 1, z: 11, type: "normal" },
-      { x: 3, z: 11, type: "void" },
-    ],
-    solution: [
-      { rotation: 10, action: "mark", x: 2, z: 0 },
-      { rotation: 11, action: "capture", x: 2, z: 0 },
-      { rotation: 11, action: "mark", x: 3, z: 0 },
-      { rotation: 11, action: "area", x: 3, z: 0 },
-    ],
-    validation: { valid: true, normal: 1, veil: 1, void: 1, travelBudget: 14 },
-    featured: true,
-  };
 }

@@ -25,6 +25,7 @@ main.tsx
 | `components/GameCanvas.tsx` | Babylon Engineの生成、resize、render loop、破棄 |
 | `game/scene.ts` | Scene、固定camera、light、mesh、material、描画補間、遅延演出 |
 | `game/GameWorld.ts` | 30Hz固定更新、状態機械、問題進行、保存復帰、スナップショット |
+| `game/tutorial.ts` | 本編外の8段階チュートリアル小問、ヒント、操作ゲートの正本 |
 | `game/InputManager.ts` | keyboard、gamepad、touchの意味論的な入力統合 |
 | `game/AudioManager.ts` | Web Audioの初回入力解除、効果音、設定反映 |
 | `game/rules.ts` | 捕獲、AREA、得点、MIND INDEXの純粋規則 |
@@ -62,9 +63,10 @@ main.tsx
 ```text
 BOOT → TITLE → MENU
 MENU → TUTORIAL | STAGE_INTRO | EDITOR
+TUTORIAL → PUZZLE_RESULT | CRUSHED | PAUSED | GAME_OVER
 STAGE_INTRO → COUNTDOWN → PLAYING ↔ CAPTURE_PAUSE
 PLAYING → PUZZLE_RESULT | CRUSHED | PAUSED | GAME_OVER
-PUZZLE_RESULT → PLAYING | WAVE_RESULT
+PUZZLE_RESULT → TUTORIAL | PLAYING | WAVE_RESULT
 WAVE_RESULT → PLAYING | STAGE_RESULT
 STAGE_RESULT → STAGE_INTRO | FINAL_RESULT
 PAUSED → PLAYING | MENU

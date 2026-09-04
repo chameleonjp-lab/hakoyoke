@@ -66,6 +66,7 @@ type WorldInternals = {
   marker: { x: number; z: number } | null;
   areas: Array<{ id: string; x: number; z: number; armed: boolean }>;
   stats: RunStats;
+  tutorialStep: number;
   isRolling: boolean;
   rollElapsed: number;
   settleElapsed: number;
@@ -75,6 +76,7 @@ type WorldInternals = {
   updateRoll: (dt: number, fast: boolean) => void;
   checkRollCollision: (previousProgress: number, progress: number) => void;
   finishRotation: () => void;
+  updateTutorial: (moveX: number, moveZ: number) => void;
   fallFromPlatform: () => void;
   losePlatformRow: (reason: string, preserveMisses?: boolean) => boolean;
   advanceAfterResult: () => void;
@@ -172,6 +174,98 @@ describe("GameWorld state invariants", () => {
 
     command({ type: "resume" });
     expect(state.phase).toBe("STAGE_INTRO");
+    world.dispose();
+  });
+
+  it("requires the tutorial gates in order instead of treating hints as progress", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+
+    command({ type: "start", mode: "TUTORIAL", difficulty: "BEGINNER" });
+    state.phase = "TUTORIAL";
+
+    state.markOrCapture();
+    expect(state.marker).toBeNull();
+    expect(state.tutorialStep).toBe(0);
+
+    state.updateTutorial(1, 0);
+    expect(state.phase).toBe("PUZZLE_RESULT");
+    expect(state.tutorialStep).toBe(1);
+
+    state.advanceAfterResult();
+    expect(state.phase).toBe("TUTORIAL");
+    expect(state.currentPuzzle.id).toBe("TUTORIAL-GATE-02-MARK");
+
+    state.markOrCapture();
+    expect(state.phase).toBe("PUZZLE_RESULT");
+    expect(state.tutorialStep).toBe(2);
+    world.dispose();
+  });
+
+  it("can complete each tutorial gate through the actual GameWorld rules", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    command({ type: "start", mode: "TUTORIAL", difficulty: "BEGINNER" });
+    state.phase = "TUTORIAL";
+
+    state.updateTutorial(1, 0);
+    state.advanceAfterResult();
+    state.markOrCapture();
+    state.advanceAfterResult();
+
+    state.cubes[0] = { ...state.cubes[0]!, z: 1, previousZ: 1 };
+    state.marker = { x: 2, z: 1 };
+    state.markOrCapture();
+    expect(state.tutorialStep).toBe(3);
+    state.advanceAfterResult();
+
+    state.cubes[0] = { ...state.cubes[0]!, z: 1, previousZ: 1 };
+    state.marker = { x: 2, z: 1 };
+    state.markOrCapture();
+    expect(state.tutorialStep).toBe(4);
+    state.advanceAfterResult();
+
+    state.cubes[0] = { ...state.cubes[0]!, z: 1, previousZ: 1 };
+    state.marker = { x: 2, z: 1 };
+    state.isRolling = true;
+    state.checkRollCollision(0, 1);
+    state.finishRotation();
+    expect(state.tutorialStep).toBe(5);
+    state.advanceAfterResult();
+
+    state.cubes[0] = { ...state.cubes[0]!, captured: true };
+    state.cubes[1] = { ...state.cubes[1]!, z: 1, previousZ: 1 };
+    state.areas = [{ id: "tutorial-area", x: 2, z: 1, armed: true }];
+    state.marker = null;
+    state.activateAreas();
+    expect(state.tutorialStep).toBe(6);
+    state.advanceAfterResult();
+
+    state.cubes[0] = {
+      ...state.cubes[0]!,
+      type: "normal",
+      z: 0,
+      previousZ: 0,
+    };
+    state.isRolling = true;
+    state.finishRotation();
+    expect(state.tutorialStep).toBe(7);
+    state.advanceAfterResult();
+
+    state.cubes[0] = { ...state.cubes[0]!, z: 1, previousZ: 1 };
+    state.marker = { x: 2, z: 1 };
+    state.markOrCapture();
+    expect(state.tutorialStep).toBe(8);
+    expect(state.phase).toBe("PUZZLE_RESULT");
+    expect(state.banner).toBe("PERFECT // TRAINING COMPLETE");
     world.dispose();
   });
 

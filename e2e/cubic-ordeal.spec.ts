@@ -6,6 +6,18 @@ import {
   installRankingMock,
 } from "./ranking-mock";
 
+async function completeTutorialMovementGate(
+  page: import("@playwright/test").Page
+) {
+  await expect(page.getByText("TRAINING 1 / 8", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "MARK" })).toBeDisabled();
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(100);
+  await page.keyboard.up("ArrowRight");
+  await expect(page.getByText("TRAINING 2 / 8", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "MARK" })).toBeEnabled();
+}
+
 test.beforeEach(async ({ page }) => {
   await installRankingMock(page);
   await page.goto("/");
@@ -410,6 +422,7 @@ test("プレイヤーが足場外へ出ると即座にゲームオーバーに�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await completeTutorialMovementGate(page);
   await page.keyboard.down("a");
   try {
     await expect(
@@ -427,6 +440,7 @@ test("スマートフォン縦画面でタップ地点に移動キーが出現�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByRole("button", { name: "AREA" })).toBeVisible();
+  await completeTutorialMovementGate(page);
   await page.evaluate(() => {
     (
       window as Window & { latestSnapshot?: { player: { z: number } } }
@@ -486,6 +500,7 @@ test("縦画面の上半分スワイプは移動入力を生まず、下半分�
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await completeTutorialMovementGate(page);
   await page.waitForTimeout(3_900);
   await expect
     .poll(() =>
@@ -608,9 +623,14 @@ test("開始後のMARKボタンは設置、専用CLEARで解除、状態表示�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
+  await completeTutorialMovementGate(page);
   const mark = page.getByRole("button", { name: "MARK" });
   if (testInfo.project.name === "webkit") await mark.tap();
   else await mark.click();
+  await expect(page.getByText("TRAINING 3 / 8", { exact: true })).toBeVisible();
+  const activeMark = page.getByRole("button", { name: "MARK" });
+  if (testInfo.project.name === "webkit") await activeMark.tap();
+  else await activeMark.click();
   await expect(page.getByText("MARK SET", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "CLEAR" })).toBeVisible();
   const clear = page.getByRole("button", { name: "CLEAR" });
@@ -640,6 +660,7 @@ test("モバイル入力は複数指とブラウザジェスチャーを無視�
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   const zone = page.locator(".touch-zone");
   await expect(zone).toBeVisible();
+  await completeTutorialMovementGate(page);
   await expect(zone).toHaveCSS("touch-action", "none");
 
   const contextMenuCanceled = await zone.evaluate(element => {
