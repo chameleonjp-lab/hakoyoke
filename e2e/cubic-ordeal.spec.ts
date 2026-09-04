@@ -425,7 +425,7 @@ test("プレイヤーが足場外へ出ると即座にゲームオーバーに�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
-  await completeTutorialMovementGate(page, true);
+  await completeTutorialMovementGate(page);
   await page.keyboard.down("a");
   try {
     await expect(
