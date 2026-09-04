@@ -3,6 +3,7 @@ export interface InputFrame {
   moveX: number;
   moveZ: number;
   mark: boolean;
+  clearMarker: boolean;
   area: boolean;
   pause: boolean;
   fast: boolean;
@@ -29,6 +30,8 @@ export class InputManager {
         "arrowright",
         " ",
         "escape",
+        "backspace",
+        "delete",
       ].includes(key)
     )
       event.preventDefault();
@@ -64,7 +67,7 @@ export class InputManager {
     this.touchFast = active;
   }
 
-  press(action: "mark" | "area" | "pause"): void {
+  press(action: "mark" | "clear" | "area" | "pause"): void {
     this.edges.add(`touch:${action}`);
   }
 
@@ -107,6 +110,12 @@ export class InputManager {
           this.consume("z") ||
           this.consume("touch:mark") ||
           this.consumeGamepad(0)),
+      clearMarker:
+        consumeActions &&
+        (this.consume("backspace") ||
+          this.consume("delete") ||
+          this.consume("touch:clear") ||
+          this.consumeGamepad(3)),
       area:
         consumeActions &&
         (this.consume("x") ||

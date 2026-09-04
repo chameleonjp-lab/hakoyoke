@@ -18,6 +18,7 @@ import "@babylonjs/core/Rendering/edgesRenderer";
 import { GameWorld } from "./GameWorld";
 import { AudioManager, type SoundSignal } from "./AudioManager";
 import { loadPuzzles } from "./puzzles";
+import { AREA_MARK_SIZE } from "./rules";
 import { ROLL_HALF, ROLL_SIZE } from "./rollPhysics";
 import type { CubeState, GameSnapshot } from "./types";
 
@@ -35,10 +36,7 @@ interface RenderCube {
 
 const PLAYER_RENDER_SCALE = 0.62;
 
-export async function createGameScene(
-  engine: Engine,
-  canvas: HTMLCanvasElement
-): Promise<GameHandle> {
+export async function createGameScene(engine: Engine): Promise<GameHandle> {
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0.008, 0.015, 0.035, 1);
   scene.ambientColor = new Color3(0.08, 0.11, 0.18);
@@ -64,7 +62,9 @@ export async function createGameScene(
   camera.upperBetaLimit = 1.12;
   camera.wheelPrecision = 80;
   camera.panningSensibility = 0;
-  camera.attachControl(canvas, false);
+  // The board is a reading surface. Do not let a swipe change the camera
+  // basis while the same swipe direction controls the player.
+  camera.inputs.clear();
 
   const fill = new HemisphericLight("void-fill", new Vector3(0, 1, 0), scene);
   fill.intensity = 0.76;
@@ -138,7 +138,6 @@ export async function createGameScene(
       )
   );
 
-  let lastCameraBasis = "";
   scene.onBeforeRenderObservable.add(() => {
     if (!world) return;
     world.update(scene.getEngine().getDeltaTime() / 1000);
@@ -161,19 +160,6 @@ export async function createGameScene(
     );
     if (latest.phase === "CRUSHED")
       camera.radius = Math.min(25, camera.radius + 0.08);
-    const forwardX = -Math.cos(camera.alpha);
-    const forwardZ = -Math.sin(camera.alpha);
-    const rightX = forwardZ;
-    const rightZ = -forwardX;
-    const serializedBasis = `${forwardX.toFixed(3)}:${forwardZ.toFixed(3)}:${rightX.toFixed(3)}:${rightZ.toFixed(3)}`;
-    if (serializedBasis !== lastCameraBasis) {
-      lastCameraBasis = serializedBasis;
-      window.dispatchEvent(
-        new CustomEvent("cubic:camera-basis", {
-          detail: { forwardX, forwardZ, rightX, rightZ },
-        })
-      );
-    }
   });
   const stopDeferredEnhancement = deferVisualEnhancement(() => {
     if (disposed) return;
@@ -403,7 +389,11 @@ class MarkerRenderer {
       if (!this.areaMeshes.has(area.id)) {
         const square = MeshBuilder.CreateGround(
           `area-${area.id}`,
-          { width: 2.86, height: 2.86, subdivisions: 1 },
+          {
+            width: AREA_MARK_SIZE,
+            height: AREA_MARK_SIZE,
+            subdivisions: 1,
+          },
           this.marker.getScene()
         );
         square.material = this.areaMaterial;

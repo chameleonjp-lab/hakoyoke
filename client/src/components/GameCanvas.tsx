@@ -26,7 +26,7 @@ export default function GameCanvas({
     let handle: GameHandle | null = null;
     let alive = true;
     let firstFrame = false;
-    void createGameScene(engine, canvas)
+    void createGameScene(engine)
       .then(created => {
         if (!alive) {
           created.dispose();

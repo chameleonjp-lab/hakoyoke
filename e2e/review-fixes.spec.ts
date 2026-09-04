@@ -62,6 +62,10 @@ test("モバイル操作ボタンはPointer Eventsの一経路でMARKを一度�
   });
   await expect(page.getByText("MARK SET", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "CLEAR" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "CLEAR" })).toHaveAttribute(
+    "aria-label",
+    "CLEAR"
+  );
 });
 
 test("縦画面の移動領域は下半分に限定され、pause中は入力面を解除する", async ({

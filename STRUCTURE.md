@@ -23,9 +23,9 @@ main.tsx
 | --- | --- |
 | `components/GameShell.tsx` | タイトル、モード選択、HUD、結果、CREATE、タッチ操作 |
 | `components/GameCanvas.tsx` | Babylon Engineの生成、resize、render loop、破棄 |
-| `game/scene.ts` | Scene、camera、light、mesh、material、描画補間、遅延演出 |
+| `game/scene.ts` | Scene、固定camera、light、mesh、material、描画補間、遅延演出 |
 | `game/GameWorld.ts` | 30Hz固定更新、状態機械、問題進行、保存復帰、スナップショット |
-| `game/InputManager.ts` | keyboard、gamepad、touch、camera基準の入力統合 |
+| `game/InputManager.ts` | keyboard、gamepad、touchの意味論的な入力統合 |
 | `game/AudioManager.ts` | Web Audioの初回入力解除、効果音、設定反映 |
 | `game/rules.ts` | 捕獲、AREA、得点、MIND INDEXの純粋規則 |
 | `game/rollPhysics.ts` | 辺支点回転と通過体積の純粋計算 |
@@ -55,7 +55,6 @@ main.tsx
 | `cubic:snapshot` | GameWorld → React/scene | 描画とHUD用の読み取り専用状態 |
 | `cubic:signal` | GameWorld → AudioManager | 効果音の種類 |
 | `cubic:settings` | React → scene/audio | quality、audio設定 |
-| `cubic:camera-basis` | scene → InputManager | 画面方向と盤面方向の対応 |
 | `cubic:user-gesture` | React → AudioManager | Web Audioの有効化 |
 
 ## 状態機械

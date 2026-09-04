@@ -13,6 +13,7 @@ import {
   markerCanCapture,
   markerProtectsRollSweep,
   normalCaptureScore,
+  nearestGridCell,
   perfectBonus,
   unresolvedCubeCount,
 } from "./rules";
@@ -38,6 +39,17 @@ describe("CUBIC ORDEAL deterministic rules", () => {
     expect(isPositionOnPlatform({ x: 0.5, z: 0.5 }, 4, 12)).toBe(true);
     expect(isPositionOnPlatform({ x: -0.4, z: 0.5 }, 4, 12)).toBe(false);
     expect(isPositionOnPlatform({ x: 0.5, z: 11.4 }, 4, 12)).toBe(false);
+  });
+
+  it("snaps MARK to the nearest in-bounds floor cell", () => {
+    expect(nearestGridCell({ x: 1.49, z: 2.51 }, 4, 6)).toEqual({
+      x: 1,
+      z: 3,
+    });
+    expect(nearestGridCell({ x: -0.49, z: 99 }, 4, 6)).toEqual({
+      x: 0,
+      z: 5,
+    });
   });
 
   it("captures only the cube directly over the single MARK", () => {

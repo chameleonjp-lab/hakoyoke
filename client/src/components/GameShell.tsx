@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { parsePuzzleDescriptor, validatePuzzle } from "@/game/puzzleValidation";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
-import { calculateMindIndex, cubeOccupiesCell } from "@/game/rules";
+import { areaTargets, calculateMindIndex, markerTarget } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
 import type { CubicCommand } from "@/game/GameWorld";
 import {
@@ -392,7 +392,7 @@ function MenuPanel({
         )}
       </div>
       <div className="title-footer">
-        <span>MARK / CAPTURE</span>
+        <span>MARK / CAPTURE / CLEAR</span>
         <i />
         <span>AREA</span>
         <i />
@@ -1533,7 +1533,6 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     x: number;
     y: number;
   } | null>(null);
-  const basis = useRef({ forwardX: 0, forwardZ: 1, rightX: 1, rightZ: 0 });
   const activePointer = useRef<number | null>(null);
   const activeFastPointer = useRef<number | null>(null);
   const clearMovement = useCallback(() => {
@@ -1584,29 +1583,27 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
       window.removeEventListener("touchcancel", releaseMovementOnTouchEnd);
     };
   }, [clearMovement]);
-  const markHasTarget = Boolean(
-    snapshot.marker &&
-      snapshot.cubes.some(cube =>
-        cubeOccupiesCell(
-          cube,
-          snapshot.marker!,
-          snapshot.rollProgress,
-          snapshot.isRolling ?? false
-        )
+  const markerTargetCube = snapshot.marker
+    ? markerTarget(
+        snapshot.cubes,
+        snapshot.marker,
+        snapshot.rollProgress,
+        snapshot.isRolling ?? false
       )
-  );
+    : undefined;
   const markAction = !snapshot.marker
     ? "MARK"
-    : markHasTarget
+    : markerTargetCube
       ? "CAPTURE"
-      : "CLEAR";
-  useEffect(() => {
-    const updateBasis = (event: Event) => {
-      basis.current = (event as CustomEvent<typeof basis.current>).detail;
-    };
-    window.addEventListener("cubic:camera-basis", updateBasis);
-    return () => window.removeEventListener("cubic:camera-basis", updateBasis);
-  }, []);
+      : "WAIT";
+  const areaTargetsReady = areaTargets(
+    snapshot.cubes,
+    snapshot.areas,
+    snapshot.marker,
+    snapshot.rollProgress,
+    snapshot.isRolling ?? false
+  );
+  const areaWarning = areaTargetsReady.some(cube => cube.type === "void");
   const begin = (event: PointerEvent<HTMLDivElement>) => {
     if (activePointer.current !== null || !event.isPrimary) return;
     activePointer.current = event.pointerId;
@@ -1628,12 +1625,8 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
       const screenForward = -next.y;
       command({
         type: "touch-move",
-        x:
-          basis.current.rightX * next.x +
-          basis.current.forwardX * screenForward,
-        z:
-          basis.current.rightZ * next.x +
-          basis.current.forwardZ * screenForward,
+        x: next.x,
+        z: screenForward,
       });
       return next;
     });
@@ -1644,7 +1637,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const pressAction = (
     event: PointerEvent<HTMLButtonElement>,
-    action: "mark" | "area"
+    action: "mark" | "clear" | "area"
   ) => {
     if (!event.isPrimary) return;
     event.preventDefault();
@@ -1658,7 +1651,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const keyAction = (
     event: KeyboardEvent<HTMLButtonElement>,
-    action: "mark" | "area"
+    action: "mark" | "clear" | "area"
   ) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -1720,10 +1713,20 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
           className="area"
           aria-label="AREA"
           disabled={!snapshot.areas.length}
+          data-ready={areaTargetsReady.length ? "yes" : "no"}
+          data-warning={areaWarning ? "yes" : "no"}
           onPointerDown={event => pressAction(event, "area")}
           onKeyDown={event => keyAction(event, "area")}
         >
           AREA
+          <br />
+          <span>
+            {areaWarning
+              ? "VOID ALERT"
+              : areaTargetsReady.length
+                ? "READY"
+                : "WAIT"}
+          </span>
         </button>
         <button
           className="fast"
@@ -1739,6 +1742,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         <button
           className="mark"
           aria-label={markAction}
+          disabled={markAction === "WAIT"}
           onPointerDown={event => pressAction(event, "mark")}
           onKeyDown={event => keyAction(event, "mark")}
         >
@@ -1748,9 +1752,22 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
             {markAction === "MARK"
               ? "SET TRAP"
               : markAction === "CAPTURE"
-                ? "ON SIGNAL"
-                : "REMOVE TRAP"}
+                ? markerTargetCube?.type === "void"
+                  ? "VOID: DO NOT CAPTURE"
+                  : "ON SIGNAL"
+                : "WAIT FOR CUBE"}
           </span>
+        </button>
+        <button
+          className="clear"
+          aria-label="CLEAR"
+          disabled={!snapshot.marker}
+          onPointerDown={event => pressAction(event, "clear")}
+          onKeyDown={event => keyAction(event, "clear")}
+        >
+          CLEAR
+          <br />
+          <span>REMOVE TRAP</span>
         </button>
       </div>
     </div>

@@ -480,18 +480,10 @@ test("スマートフォン縦画面でタップ地点に移動キーが出現�
   await expect(page.locator(".touch-stick.floating")).toHaveCount(0);
 });
 
-test("縦画面の上半分スワイプはカメラだけを動かし、下半分の上スワイプは画面奥へ移動する", async ({
+test("縦画面の上半分スワイプは移動入力を生まず、下半分の上スワイプは画面奥へ移動する", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.addInitScript(() => {
-    (window as Window & { cameraBasis?: unknown }).cameraBasis = undefined;
-    window.addEventListener("cubic:camera-basis", event => {
-      (window as Window & { cameraBasis?: unknown }).cameraBasis = (
-        event as CustomEvent
-      ).detail;
-    });
-  });
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await page.waitForTimeout(3_900);
@@ -502,6 +494,16 @@ test("縦画面の上半分スワイプはカメラだけを動かし、下半�
       )
     )
     .toBe("canvas");
+  await page.evaluate(() => {
+    (window as Window & { touchMoves?: unknown[] }).touchMoves = [];
+    window.addEventListener("cubic:command", event => {
+      const detail = (event as CustomEvent).detail;
+      if (detail?.type === "touch-move")
+        (window as Window & { touchMoves?: unknown[] }).touchMoves?.push(
+          detail
+        );
+    });
+  });
   await page.locator("canvas").dispatchEvent("pointerdown", {
     pointerId: 31,
     pointerType: "touch",
@@ -526,13 +528,12 @@ test("縦画面の上半分スワイプはカメラだけを動かし、下半�
     clientX: 242,
     clientY: 170,
   });
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () => (window as Window & { cameraBasis?: unknown }).cameraBasis
-      )
+  await page.waitForTimeout(80);
+  expect(
+    await page.evaluate(
+      () => (window as Window & { touchMoves?: unknown[] }).touchMoves
     )
-    .not.toBeUndefined();
+  ).toEqual([]);
   await page.evaluate(() => {
     (
       window as Window & { latestSnapshot?: { player: { z: number } } }
@@ -600,7 +601,7 @@ test("870×400横画面でタッチ操作を開始・解除してもHUDと盤面
   await expect(page.getByText("SCORE", { exact: true })).toBeVisible();
 });
 
-test("開始後のMARKボタンは設置、対象不在時の解除、状態表示を一貫して行う", async ({
+test("開始後のMARKボタンは設置、専用CLEARで解除、状態表示を一貫して行う", async ({
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 375, height: 812 });

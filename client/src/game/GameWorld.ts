@@ -23,6 +23,7 @@ import {
   markerCanCapture,
   markerProtectsRollSweep,
   markerTarget,
+  nearestGridCell,
   unresolvedCubeCount,
 } from "./rules";
 import { playerIntersectsRollSweep } from "./rollPhysics";
@@ -66,7 +67,10 @@ export type CubicCommand =
   | { type: "campaign-new" }
   | { type: "touch-move"; x: number; z: number }
   | { type: "touch-fast"; active: boolean }
-  | { type: "touch-press"; action: "mark" | "area" | "pause" }
+  | {
+      type: "touch-press";
+      action: "mark" | "clear" | "area" | "pause";
+    }
   | { type: "load-custom"; puzzle: PuzzleDescriptor }
   | { type: "set-debug"; active: boolean }
   | { type: "auto-solve" }
@@ -258,6 +262,7 @@ export class GameWorld {
 
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
     if (!this.movePlayer(input.moveX, input.moveZ, dt)) return;
+    if (input.clearMarker) this.clearMarker();
     if (input.mark) this.markOrCapture();
     if (input.area) this.activateAreas();
     this.updateTutorial(input.moveX, input.moveZ);
@@ -294,7 +299,10 @@ export class GameWorld {
     const config = DIFFICULTIES[this.difficulty];
     const multiplier = fast ? 1.82 : 1;
     if (!this.isRolling) {
-      this.settleElapsed += dt * multiplier;
+      // FAST is a planning aid for the dangerous roll itself. Keep the
+      // settle window and capture pause readable so holding FAST does not
+      // silently remove the time needed to make a decision.
+      this.settleElapsed += dt;
       if (this.settleElapsed >= config.settleSeconds) {
         this.isRolling = true;
         this.rollElapsed = 0;
@@ -382,10 +390,11 @@ export class GameWorld {
 
   private markOrCapture(): void {
     if (!this.marker) {
-      this.marker = {
-        x: Math.round(this.player.x),
-        z: Math.round(this.player.z),
-      };
+      this.marker = nearestGridCell(
+        this.player,
+        this.currentPuzzle.width,
+        this.stats.platformRows
+      );
       this.banner = "MARK SET";
       this.onSignal("mark");
       if (this.mode === "TUTORIAL") {
@@ -411,13 +420,19 @@ export class GameWorld {
       this.isRolling
     );
     if (!target) {
-      this.marker = null;
-      this.banner = "MARK CLEARED";
-      this.onSignal("mark");
+      this.banner = "MARK WAITING";
+      this.onSignal("warning");
       return;
     }
     this.captureCube(target, "manual");
     this.marker = null;
+  }
+
+  private clearMarker(): void {
+    if (!this.marker) return;
+    this.marker = null;
+    this.banner = "MARK CLEARED";
+    this.onSignal("mark");
   }
 
   private addAreaAnchor(cube: CubeState): void {
@@ -479,11 +494,10 @@ export class GameWorld {
       return;
     }
 
-    // AREA anchors are consumed before targets are captured. VEIL targets therefore create
-    // a fresh set that can only be used by a later AREA input.
+    // Resolve the preview first. A mistimed AREA press must not destroy the
+    // saved anchors; VEIL targets captured below create anchors for a later
+    // AREA input.
     const activeAreas = this.areas.map(area => ({ ...area }));
-    this.areas = [];
-    this.stats.areaMarks = 0;
     const targets = areaTargets(
       this.cubes,
       activeAreas,
@@ -492,10 +506,14 @@ export class GameWorld {
       this.isRolling
     );
     if (!targets.length) {
-      this.banner = "AREA DISCHARGED";
-      this.onSignal("area");
+      this.stats.areaMarks = this.areas.length;
+      this.banner = "AREA WAITING // NO TARGET";
+      this.onSignal("warning");
       return;
     }
+
+    this.areas = [];
+    this.stats.areaMarks = 0;
 
     let capturedVoid = false;
     for (const cube of targets) {
