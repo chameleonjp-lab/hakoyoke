@@ -1,8 +1,9 @@
-/** Deterministic 88-puzzle archive generated from the documented stage plan. */
+/** Deterministic 88-puzzle archive with an authored opening and generated continuation. */
 import {
   parsePuzzleDescriptor,
   validatePuzzleArchive,
 } from "./puzzleValidation";
+import { deriveDirectSolution } from "./solutionSimulation";
 import { STAGE_PLAN } from "./stagePlan";
 import type { CubeType, PuzzleDescriptor, SolutionStep } from "./types";
 
@@ -45,7 +46,15 @@ export function generatePuzzles(): PuzzleDescriptor[] {
     waves.forEach((plan, waveIndex) => {
       const wave = waveIndex + 1;
       for (let ordinal = 1; ordinal <= plan.puzzles; ordinal += 1) {
-        puzzles.push(buildPuzzle(stage, wave, ordinal, plan.width, plan.depth));
+        puzzles.push(
+          buildHandAuthoredPuzzle(
+            stage,
+            wave,
+            ordinal,
+            plan.width,
+            plan.depth
+          ) ?? buildPuzzle(stage, wave, ordinal, plan.width, plan.depth)
+        );
       }
     });
   }
@@ -77,6 +86,184 @@ export function puzzleOrdinals(
     .sort((a, b) => a - b);
 }
 
+type AuthoredAction = Omit<SolutionStep, "sequence">;
+
+interface HandAuthoredDesign {
+  rows: readonly (readonly CubeType[])[];
+  difficultyTag: string;
+  designIntent: string;
+  solution?: SolutionStep[];
+}
+
+/**
+ * The first six campaign puzzles are authored encounters rather than seeded
+ * variations. Their layouts deliberately teach one decision at a time before
+ * the generated archive introduces protection and AREA chains.
+ */
+const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
+  "1-1-1": {
+    rows: [
+      ["void", "normal", "normal", "void"],
+      ["void", "normal", "normal", "void"],
+    ],
+    difficultyTag: "intro-read",
+    designIntent:
+      "Hand-authored centered pair: read the safe lanes and let the outer VOID pass.",
+  },
+  "1-1-2": {
+    rows: [
+      ["normal", "normal", "void", "void"],
+      ["void", "void", "normal", "normal"],
+    ],
+    difficultyTag: "intro-shift",
+    designIntent:
+      "Hand-authored diagonal shift: move from the near left pair to the incoming right pair without touching VOID.",
+  },
+  "1-1-3": {
+    rows: [
+      ["normal", "void", "normal", "void"],
+      ["void", "normal", "void", "normal"],
+    ],
+    difficultyTag: "intro-avoid",
+    designIntent:
+      "Hand-authored alternating lanes: switch sides between rows while keeping MARK away from VOID.",
+  },
+  "1-2-1": {
+    rows: [
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "normal", "normal", "normal"],
+    ],
+    difficultyTag: "area-intro-range",
+    solution: authoredSolution([
+      { rotation: 4, action: "mark", x: 1, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 1, z: 0, timing: "settled" },
+      { rotation: 5, action: "mark", x: 3, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 3, z: 0, timing: "settled" },
+      { rotation: 5, action: "area", timing: "settled" },
+      { rotation: 6, action: "mark", x: 3, z: 0, timing: "settled" },
+      { rotation: 6, action: "capture", x: 3, z: 0, timing: "settled" },
+    ]),
+    designIntent:
+      "Hand-authored AREA introduction: use the VEIL anchor, then manually catch the lane outside its 3×3 range.",
+  },
+  "1-2-2": {
+    rows: [
+      ["normal", "normal", "veil", "normal"],
+      ["normal", "normal", "normal", "normal"],
+    ],
+    difficultyTag: "area-intro-timing",
+    solution: authoredSolution([
+      { rotation: 4, action: "mark", x: 2, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 2, z: 0, timing: "settled" },
+      { rotation: 5, action: "mark", x: 0, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 0, z: 0, timing: "settled" },
+      { rotation: 5, action: "area", timing: "settled" },
+      { rotation: 6, action: "mark", x: 0, z: 0, timing: "settled" },
+      { rotation: 6, action: "capture", x: 0, z: 0, timing: "settled" },
+    ]),
+    designIntent:
+      "Hand-authored AREA timing lesson: take the center VEIL, manually catch the opposite edge, then discharge the range.",
+  },
+  "1-2-3": {
+    rows: [
+      ["normal", "normal", "normal", "veil"],
+      ["normal", "normal", "normal", "normal"],
+    ],
+    difficultyTag: "area-intro-edge",
+    solution: authoredSolution([
+      { rotation: 4, action: "mark", x: 0, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 0, z: 0, timing: "settled" },
+      { rotation: 5, action: "mark", x: 1, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 1, z: 0, timing: "settled" },
+      { rotation: 5, action: "mark", x: 3, z: 0, timing: "settled" },
+      { rotation: 5, action: "capture", x: 3, z: 0, timing: "settled" },
+      { rotation: 5, action: "area", timing: "settled" },
+      { rotation: 6, action: "mark", x: 0, z: 0, timing: "settled" },
+      { rotation: 6, action: "capture", x: 0, z: 0, timing: "settled" },
+      { rotation: 6, action: "mark", x: 1, z: 0, timing: "settled" },
+      { rotation: 6, action: "capture", x: 1, z: 0, timing: "settled" },
+    ]),
+    designIntent:
+      "Hand-authored edge AREA lesson: manually clear the side outside the anchor, then let the edge VEIL sweep the paired lanes.",
+  },
+};
+
+function authoredSolution(actions: readonly AuthoredAction[]): SolutionStep[] {
+  return actions.map((action, sequence) => ({ ...action, sequence }));
+}
+
+function buildHandAuthoredPuzzle(
+  stage: number,
+  wave: number,
+  ordinal: number,
+  width: number,
+  depth: number
+): PuzzleDescriptor | undefined {
+  const design = HAND_AUTHORED_DESIGNS[`${stage}-${wave}-${ordinal}`];
+  if (!design) return undefined;
+  if (
+    design.rows.length !== depth ||
+    design.rows.some(row => row.length !== width)
+  ) {
+    throw new Error(
+      `Hand-authored puzzle ${stage}-${wave}-${ordinal} does not match ${width}x${depth}.`
+    );
+  }
+
+  const spawnRow = 5;
+  const id = puzzleId(stage, wave, ordinal);
+  const seed = puzzleSeed(stage, wave, ordinal);
+  const layout = design.rows.flatMap((row, offset) =>
+    row.map((type, x) => ({ x, z: spawnRow + offset, type }))
+  );
+  const solution = design.solution
+    ? design.solution.map(step => ({ ...step }))
+    : deriveDirectSolution({ id, width, depth, layout });
+  const actionRotations = solution
+    .filter(step => step.action === "capture" || step.action === "area")
+    .map(step => step.rotation);
+  const requiredRolls =
+    actionRotations.length < 2
+      ? 0
+      : Math.max(...actionRotations) - Math.min(...actionRotations);
+  const normal = layout.filter(cube => cube.type === "normal").length;
+  const veil = layout.filter(cube => cube.type === "veil").length;
+  const voids = layout.filter(cube => cube.type === "void").length;
+
+  return {
+    id,
+    stage,
+    wave,
+    ordinal,
+    width,
+    depth,
+    spawnRow,
+    requiredRolls,
+    difficultyTag: design.difficultyTag,
+    seed,
+    layout,
+    solution,
+    validation: {
+      valid: true,
+      normal,
+      veil,
+      void: voids,
+      travelBudget: width + depth + normal + veil + 4,
+    },
+    featured: ordinal === 1,
+    designIntent: design.designIntent,
+  };
+}
+
+function puzzleId(stage: number, wave: number, ordinal: number): string {
+  const prefix = stage === 9 ? "FINAL" : `STAGE-${stage}`;
+  return `${prefix}-W${wave}-P${String(ordinal).padStart(2, "0")}`;
+}
+
+function puzzleSeed(stage: number, wave: number, ordinal: number): number {
+  return stage * 100_000 + wave * 1_000 + ordinal * 17;
+}
+
 function buildPuzzle(
   stage: number,
   wave: number,
@@ -84,7 +271,7 @@ function buildPuzzle(
   width: number,
   depth: number
 ): PuzzleDescriptor {
-  const seed = stage * 100_000 + wave * 1_000 + ordinal * 17;
+  const seed = puzzleSeed(stage, wave, ordinal);
   const spawnRow = 5 + ((stage + wave + ordinal) % 2);
   const pairCount = Math.ceil(depth / 2);
   const pattern = (stage * 11 + wave * 5 + ordinal * 3) % 12;
@@ -266,10 +453,8 @@ function buildPuzzle(
         : stage >= 2
           ? "route"
           : "read";
-  const prefix = stage === 9 ? "FINAL" : `STAGE-${stage}`;
-
   return {
-    id: `${prefix}-W${wave}-P${String(ordinal).padStart(2, "0")}`,
+    id: puzzleId(stage, wave, ordinal),
     stage,
     wave,
     ordinal,

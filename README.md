@@ -90,6 +90,8 @@ round(score / 170 + stage × 18 + remainingRows × 9 − misses × 22)
 | Stage 8 | 7×8, 7×9, 7×9, 7×9 | 8 |
 | Final | 7×9を4ウェーブ | 4 |
 
+Stage 1のWave 1（3問）はAREAを使わず、VOIDを避けながら列を読む手設計です。Wave 2（3問）はVEILからAREAを作り、3×3範囲の外側を手動捕獲する手設計です。Wave 3以降は決定的な制約付き生成へ戻り、保護・連鎖・持ち越しAREAを段階的に追加します。
+
 ## 問題JSONの形式
 
 ```json

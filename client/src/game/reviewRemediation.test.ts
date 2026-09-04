@@ -56,7 +56,47 @@ describe("post-review regressions", () => {
     });
   });
 
-  it("validates all 88 complete formations with one-shot AREA replay", () => {
+  it("opens the campaign with authored learning beats before generated chains", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const records = puzzles.map((puzzle, index) => ({
+      puzzle,
+      result: archive.results[index]!,
+    }));
+    const waveOne = records.filter(
+      ({ puzzle }) => puzzle.stage === 1 && puzzle.wave === 1
+    );
+    const waveTwo = records.filter(
+      ({ puzzle }) => puzzle.stage === 1 && puzzle.wave === 2
+    );
+
+    expect(waveOne.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "intro-read",
+      "intro-shift",
+      "intro-avoid",
+    ]);
+    expect(waveOne.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      1, 1, 1,
+    ]);
+    expect(waveOne.map(({ result }) => result.areaUses)).toEqual([0, 0, 0]);
+    expect(
+      waveOne.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(waveOne.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(3);
+
+    expect(waveTwo.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "area-intro-range",
+      "area-intro-timing",
+      "area-intro-edge",
+    ]);
+    expect(waveTwo.map(({ result }) => result.areaUses)).toEqual([1, 1, 1]);
+  });
+
+  it("validates all 88 complete formations with registered solution replay", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
     expect(puzzles).toHaveLength(EXPECTED_PUZZLE_COUNT);
