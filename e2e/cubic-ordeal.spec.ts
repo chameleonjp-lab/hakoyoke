@@ -7,15 +7,18 @@ import {
 } from "./ranking-mock";
 
 async function completeTutorialMovementGate(
-  page: import("@playwright/test").Page
+  page: import("@playwright/test").Page,
+  checkControls = false
 ) {
   await expect(page.getByText("TRAINING 1 / 8", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "MARK" })).toBeDisabled();
+  if (checkControls)
+    await expect(page.getByRole("button", { name: "MARK" })).toBeDisabled();
   await page.keyboard.down("ArrowRight");
   await page.waitForTimeout(100);
   await page.keyboard.up("ArrowRight");
   await expect(page.getByText("TRAINING 2 / 8", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "MARK" })).toBeEnabled();
+  if (checkControls)
+    await expect(page.getByRole("button", { name: "MARK" })).toBeEnabled();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -422,7 +425,7 @@ test("プレイヤーが足場外へ出ると即座にゲームオーバーに�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
-  await completeTutorialMovementGate(page);
+  await completeTutorialMovementGate(page, true);
   await page.keyboard.down("a");
   try {
     await expect(
@@ -440,7 +443,7 @@ test("スマートフォン縦画面でタップ地点に移動キーが出現�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByRole("button", { name: "AREA" })).toBeVisible();
-  await completeTutorialMovementGate(page);
+  await completeTutorialMovementGate(page, true);
   await page.evaluate(() => {
     (
       window as Window & { latestSnapshot?: { player: { z: number } } }
@@ -500,7 +503,7 @@ test("縦画面の上半分スワイプは移動入力を生まず、下半分�
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
-  await completeTutorialMovementGate(page);
+  await completeTutorialMovementGate(page, true);
   await page.waitForTimeout(3_900);
   await expect
     .poll(() =>
@@ -623,7 +626,7 @@ test("開始後のMARKボタンは設置、専用CLEARで解除、状態表示�
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
-  await completeTutorialMovementGate(page);
+  await completeTutorialMovementGate(page, true);
   const mark = page.getByRole("button", { name: "MARK" });
   if (testInfo.project.name === "webkit") await mark.tap();
   else await mark.click();

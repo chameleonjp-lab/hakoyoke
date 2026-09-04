@@ -402,11 +402,7 @@ export class GameWorld {
 
   private handleFalling(cube: CubeState): void {
     cube.falling = true;
-    if (cube.type === "void") {
-      if (this.mode === "TUTORIAL" && this.tutorialStep === 6)
-        this.completeTutorialGate();
-      return;
-    }
+    if (cube.type === "void") return;
     this.stats.misses += 1;
     this.stats.perfect = false;
     this.banner = "SIGNAL LOST";
@@ -587,6 +583,8 @@ export class GameWorld {
 
   private resolveIfEmpty(): void {
     if (TERMINAL_PHASES.has(this.phase)) return;
+    if (this.mode === "TUTORIAL" && this.currentPuzzle.layout.length === 0)
+      return;
     if (
       this.cubes.some(
         cube => !cube.captured && !cube.falling && cube.type !== "void"
