@@ -8,7 +8,7 @@
 | ---------------------- | --------------------------------- | ------------------------------------------------------------------- |
 | ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                  |
 | Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                             |
-| 問題生成規則           | `client/src/game/puzzles.ts`      | `pnpm puzzles:write`                                                |
+| 問題生成規則           | `client/src/game/puzzles.ts`      | Stage 1序盤6問は手設計、残りは決定的生成。`pnpm puzzles:write`         |
 | 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                      |
 | 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証から作る。手編集禁止                            |
 | ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査 |
@@ -26,6 +26,8 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 ゲーム開始時にpuzzles.jsonを読み込む
 ```
 
+Stage 1のWave 1はAREAを使わず、VOIDを捕獲せずに通す読みと列移動を学ぶ3問です。Wave 2は先頭のVEILからAREAを作り、3×3範囲の外側だけを手動捕獲する3問です。この序盤6問は`puzzles.ts`内の`HAND_AUTHORED_DESIGNS`を正本とし、Wave 3以降は既存の制約付き決定的生成を使います。保護・連鎖・持ち越しAREAは後続Waveで段階的に扱います。
+
 旧`generate-puzzles.mjs`が独自のStage Planと別解法を持つ状態は廃止しました。互換用の3スクリプトはすべて同じ生成・検証モジュールを呼び出します。
 
 ## 現行機能
@@ -33,6 +35,7 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 - TUTORIAL、CAMPAIGN、PRACTICE、CREATE、DUELの5モード
 - NORMAL、VEIL、VOID、MARK、対象捕獲時だけ消費するAREA、MARK上VOID保護
 - 9 Stage、4 Wave、合計88問
+- Stage 1序盤6問の手設計導入（Wave 1: AREAなし、Wave 2: AREA導入）
 - 辺支点の回転、回転中の通過体積判定、盤外落下
 - MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
 - FASTは回転区間だけを加速し、着地待ち・捕獲停止時間は維持
