@@ -29,12 +29,14 @@ export const RANKING_CONFIG = Object.freeze({
 const SESSION_STORAGE_KEY = "chameleonjp_hakoyoke_ranking_session_v1";
 const PENDING_STORAGE_KEY = "chameleonjp_hakoyoke_pending_score_v1";
 const PENDING_ENTRY_PREFIX = `${PENDING_STORAGE_KEY}:`;
+const DEFERRED_STORAGE_KEY = "chameleonjp_hakoyoke_deferred_campaign_result_v1";
 const COMPLETED_STORAGE_KEY = "chameleonjp_hakoyoke_completed_score_v1";
 const COMPLETED_ENTRY_PREFIX = `${COMPLETED_STORAGE_KEY}:`;
 
 export const RANKING_STORAGE_KEYS = Object.freeze({
   session: SESSION_STORAGE_KEY,
   pending: PENDING_STORAGE_KEY,
+  deferred: DEFERRED_STORAGE_KEY,
   completed: COMPLETED_STORAGE_KEY,
   playerName: RANKING_CONFIG.playerNameStorageKey,
 });
@@ -76,6 +78,20 @@ interface PendingSubmission {
   createdAt: string;
   attemptCount: number;
   state: RankingSubmissionState;
+}
+
+interface DeferredCampaignResult {
+  version: 1;
+  submissionId: string;
+  startId: string;
+  displayName: string;
+  gameSlug: string;
+  clientVersion: string;
+  resultType: "clear" | "game_over";
+  reachedStage: number;
+  score: number;
+  createdAt: string;
+  attemptCount: number;
 }
 
 interface CompletedSubmission {
@@ -258,6 +274,33 @@ function isPending(value: unknown): value is PendingSubmission {
   );
 }
 
+function isDeferred(value: unknown): value is DeferredCampaignResult {
+  if (!isRecord(value)) return false;
+  const name =
+    typeof value.displayName === "string"
+      ? validatePlayerName(value.displayName)
+      : null;
+  return (
+    value.version === 1 &&
+    isUuid(value.submissionId) &&
+    isUuid(value.startId) &&
+    name?.ok === true &&
+    name.name === value.displayName &&
+    value.gameSlug === RANKING_CONFIG.gameSlug &&
+    value.clientVersion === RANKING_CONFIG.clientVersion &&
+    (value.resultType === "clear" || value.resultType === "game_over") &&
+    Number.isInteger(value.reachedStage) &&
+    Number(value.reachedStage) >= 1 &&
+    Number(value.reachedStage) <= 9 &&
+    Number.isSafeInteger(value.score) &&
+    Number(value.score) >= RANKING_CONFIG.scoreMin &&
+    Number(value.score) <= RANKING_CONFIG.scoreMax &&
+    typeof value.createdAt === "string" &&
+    Number.isInteger(value.attemptCount) &&
+    Number(value.attemptCount) >= 0
+  );
+}
+
 function isCompleted(value: unknown): value is CompletedSubmission {
   if (!isRecord(value)) return false;
   const name =
@@ -395,9 +438,11 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   const timeoutMs = options.timeoutMs ?? RANKING_CONFIG.timeoutMs;
   let volatileSession: RankingSession | null = null;
   let volatilePending: PendingSubmission[] = [];
+  let volatileDeferred: DeferredCampaignResult | null = null;
   let volatileCompleted: CompletedSubmission[] = [];
   let sessionHydrated = false;
   let pendingHydrated = false;
+  let deferredHydrated = false;
   let completedHydrated = false;
   const pendingListeners = new Set<() => void>();
   let startInFlight: {
@@ -453,6 +498,30 @@ export function createRankingClient(options: RankingClientOptions = {}) {
           true
         ),
         {}
+      );
+      return false;
+    }
+  };
+
+  const saveDeferred = (deferred: DeferredCampaignResult | null): boolean => {
+    if (!storage) return true;
+    try {
+      if (deferred) {
+        storage.setItem(DEFERRED_STORAGE_KEY, JSON.stringify(deferred));
+      } else {
+        storage.removeItem(DEFERRED_STORAGE_KEY);
+      }
+      return true;
+    } catch {
+      reportFailure(
+        new RankingRpcError(
+          "deferred-storage",
+          "deferred result could not be persisted",
+          0,
+          "deferred-save-failed",
+          true
+        ),
+        { submissionId: deferred?.submissionId, startId: deferred?.startId }
       );
       return false;
     }
@@ -524,6 +593,30 @@ export function createRankingClient(options: RankingClientOptions = {}) {
       // Fall through to the in-memory copy.
     }
     return volatileSession;
+  };
+
+  const readStoredDeferred = (): DeferredCampaignResult | null => {
+    if (!storage) return null;
+    try {
+      const stored = parseJson(storage.getItem(DEFERRED_STORAGE_KEY) ?? null);
+      return isDeferred(stored) ? stored : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const readDeferred = (): DeferredCampaignResult | null => {
+    if (deferredHydrated) return volatileDeferred;
+    deferredHydrated = true;
+    volatileDeferred = readStoredDeferred();
+    return volatileDeferred;
+  };
+
+  const writeDeferred = (deferred: DeferredCampaignResult | null): void => {
+    deferredHydrated = true;
+    volatileDeferred = deferred;
+    saveDeferred(deferred);
+    pendingListeners.forEach(listener => listener());
   };
 
   const writeSession = (session: RankingSession): void => {
@@ -1038,9 +1131,97 @@ export function createRankingClient(options: RankingClientOptions = {}) {
       !Number.isInteger(reachedStage) ||
       reachedStage < 1 ||
       reachedStage > 9 ||
-      !session?.playId ||
-      session.displayName !== (name.ok ? name.name : "") ||
-      (session.status !== "active" && session.status !== "finished")
+      !session ||
+      session.displayName !== (name.ok ? name.name : "")
+    ) {
+      return {
+        state: "permanent_failed",
+        message:
+          "このプレイはランキング開始情報を確認できないため登録対象外です。",
+      };
+    }
+
+    let activeSession: RankingSession = session;
+    if (!session.playId || session.status === "starting") {
+      if (session.status !== "starting") {
+        return {
+          state: "permanent_failed",
+          message:
+            "このプレイはランキング開始情報を確認できないため登録対象外です。",
+        };
+      }
+
+      const storedDeferred = readDeferred();
+      const deferred: DeferredCampaignResult =
+        storedDeferred &&
+        storedDeferred.startId === session.startId &&
+        storedDeferred.displayName === name.name &&
+        storedDeferred.resultType === result.resultType &&
+        storedDeferred.reachedStage === reachedStage &&
+        storedDeferred.score === score
+          ? storedDeferred
+          : {
+              version: 1,
+              submissionId: makeUuid(),
+              startId: session.startId,
+              displayName: name.name,
+              gameSlug: RANKING_CONFIG.gameSlug,
+              clientVersion: RANKING_CONFIG.clientVersion,
+              resultType: result.resultType,
+              reachedStage,
+              score,
+              createdAt: now().toISOString(),
+              attemptCount: 0,
+            };
+      // Save the immutable result before retrying the missing start record.
+      writeDeferred(deferred);
+      try {
+        await startCampaignPlay(name.name);
+      } catch (error) {
+        const rankingError =
+          error instanceof RankingRpcError
+            ? error
+            : reportFailure(error, {
+                startId: session.startId,
+                submissionId: deferred.submissionId,
+              });
+        if (rankingError.retryable) {
+          writeDeferred({
+            ...deferred,
+            attemptCount: deferred.attemptCount + 1,
+          });
+          return {
+            state: "retryable_failed",
+            message:
+              "ランキング開始を再試行できます。結果はこの端末に保存されています。",
+          };
+        }
+        writeDeferred(null);
+        return {
+          state: "permanent_failed",
+          message:
+            "このプレイはランキングへ登録できませんでした。入力内容を確認してください。",
+        };
+      }
+      const resolved = readSession();
+      if (
+        !resolved?.playId ||
+        resolved.displayName !== name.name ||
+        (resolved.status !== "active" && resolved.status !== "finished")
+      ) {
+        writeDeferred(null);
+        return {
+          state: "permanent_failed",
+          message:
+            "このプレイはランキング開始情報を確認できないため登録対象外です。",
+        };
+      }
+      activeSession = resolved;
+    }
+
+    if (
+      !activeSession.playId ||
+      (activeSession.status !== "active" && activeSession.status !== "finished")
     ) {
       return {
         state: "permanent_failed",
@@ -1051,14 +1232,15 @@ export function createRankingClient(options: RankingClientOptions = {}) {
 
     const completed = findCompleted(
       candidate =>
-        candidate.playId === session.playId &&
+        candidate.playId === activeSession.playId &&
         candidate.displayName === name.name &&
         candidate.resultType === result.resultType &&
         candidate.reachedStage === reachedStage &&
         candidate.score === score
     );
     if (completed) {
-      writeSession({ ...session, status: "finished" });
+      writeDeferred(null);
+      writeSession({ ...activeSession, status: "finished" });
       return {
         state: "submitted",
         message: submissionMessage("submitted"),
@@ -1067,33 +1249,57 @@ export function createRankingClient(options: RankingClientOptions = {}) {
 
     const existing = findPending(
       pending =>
-        pending.playId === session.playId &&
+        pending.playId === activeSession.playId &&
         pending.displayName === name.name &&
         pending.resultType === result.resultType &&
         pending.reachedStage === reachedStage &&
         pending.score === score
     );
+    const deferred = readDeferred();
+    const matchingDeferred =
+      deferred &&
+      deferred.startId === activeSession.startId &&
+      deferred.displayName === name.name &&
+      deferred.resultType === result.resultType &&
+      deferred.reachedStage === reachedStage &&
+      deferred.score === score
+        ? deferred
+        : null;
     const pending: PendingSubmission = existing ?? {
       version: 1,
-      submissionId: makeUuid(),
-      playId: session.playId,
+      submissionId: matchingDeferred?.submissionId ?? makeUuid(),
+      playId: activeSession.playId,
       displayName: name.name,
       gameSlug: RANKING_CONFIG.gameSlug,
       clientVersion: RANKING_CONFIG.clientVersion,
       resultType: result.resultType,
       reachedStage,
       score,
-      createdAt: now().toISOString(),
-      attemptCount: 0,
+      createdAt: matchingDeferred?.createdAt ?? now().toISOString(),
+      attemptCount: matchingDeferred?.attemptCount ?? 0,
       state: "idle",
     };
     // Persist the complete immutable result before the first network request.
+    if (matchingDeferred) writeDeferred(null);
     writePending(pending);
-    writeSession({ ...session, status: "finished" });
+    writeSession({ ...activeSession, status: "finished" });
     return submitPending(pending);
   };
 
   const retryPendingCampaignResult = async (): Promise<SubmissionOutcome> => {
+    const deferred = readDeferred();
+    let deferredOutcome: SubmissionOutcome | null = null;
+    if (deferred) {
+      deferredOutcome = await finishAndSubmitCampaignResult({
+        displayName: deferred.displayName,
+        resultType: deferred.resultType,
+        reachedStage: deferred.reachedStage,
+        score: deferred.score,
+      });
+      if (deferredOutcome.state === "retryable_failed") {
+        return deferredOutcome;
+      }
+    }
     const pendingEntries = readPendingEntries().filter(
       candidate =>
         candidate.state === "retryable_failed" &&
@@ -1104,12 +1310,14 @@ export function createRankingClient(options: RankingClientOptions = {}) {
         )
     );
     if (!pendingEntries.length) {
-      return {
-        state: "permanent_failed",
-        message: "再送できる結果がありません。",
-      };
+      return (
+        deferredOutcome ?? {
+          state: "permanent_failed",
+          message: "再送できる結果がありません。",
+        }
+      );
     }
-    let outcome: SubmissionOutcome = {
+    let outcome: SubmissionOutcome = deferredOutcome ?? {
       state: "retryable_failed",
       message: submissionMessage("retryable_failed"),
     };
@@ -1172,15 +1380,16 @@ export function createRankingClient(options: RankingClientOptions = {}) {
     },
     hasRetryablePendingCampaignResult: () =>
       Boolean(
-        findPending(
-          pending =>
-            pending.state === "retryable_failed" &&
-            !findCompleted(
-              completed =>
-                completed.submissionId === pending.submissionId &&
-                completed.playId === pending.playId
-            )
-        )
+        readDeferred() ||
+          findPending(
+            pending =>
+              pending.state === "retryable_failed" &&
+              !findCompleted(
+                completed =>
+                  completed.submissionId === pending.submissionId &&
+                  completed.playId === pending.playId
+              )
+          )
       ),
     loadBestRanking,
   };

@@ -11,9 +11,9 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 114件            |
+| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 116件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
-| ブラウザ操作   | `pnpm test:e2e`            | Chromium 23件、WebKit 23件                            | 最新CIを正とする — 46件 |
+| ブラウザ操作   | `pnpm test:e2e`            | Chromium 25件、WebKit 25件                            | 最新CIを正とする — 50件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
 | 公開受入       | iPhone Safari + Pages URL  | `/hakoyoke/` asset、manifest、Supabase登録値の突合    | BLOCKED — 外部受入待ち  |
 
@@ -65,6 +65,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - 88問すべての登録解法、移動可能性、全回収、VOID非捕獲
 - 表示名の前後空白・Unicode文字数・制御文字・20文字上限
 - 同じ`start_id`の開始再送、開始ボタン連打の単一化
+- 開始RPC障害時の結果保存、再読込後の開始再送、同じ`submission_id`への移行
 - 同じ`submission_id`による通信断・再読込後の冪等再送
 - RPC応答値の一致検査と、サーバー`rank_no`による同率順位
 
@@ -79,7 +80,8 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - フローティング移動キー、MARK/CAPTURE/CLEAR、AREAの待機・VOID警告、FAST
 - `pointerdown`、`pointerup`、`pointercancel`
 - RUM表示、ページ例外なし
-- 空名での開始拒否と、開始RPC受付までキャンペーンを起動しないこと
+- CAMPAIGNの空名拒否、対象外モードの名前なし開始とRPC未呼出し、開始RPC受付までの待機
+- CAMPAIGN開始の一時障害後のローカル継続と結果画面からの再送
 - GAME OVER結果画面の自動送信、再送、同率順位、再戦導線
 - FINAL RESULTから新しい開始記録を作る新規キャンペーン導線
 - メニューへ戻った後も未送信結果を再送できる導線
