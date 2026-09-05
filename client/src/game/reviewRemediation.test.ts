@@ -96,6 +96,43 @@ describe("post-review regressions", () => {
     expect(waveTwo.map(({ result }) => result.areaUses)).toEqual([1, 1, 1]);
   });
 
+  it("adds authored route variety before the scalable AREA chains", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageTwoOpening = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 2 && puzzle.wave <= 2);
+
+    expect(stageTwoOpening.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "route-stagger",
+      "route-split",
+      "route-thread",
+      "route-weave",
+      "route-gate",
+      "route-return",
+    ]);
+    expect(
+      stageTwoOpening.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(stageTwoOpening.map(({ result }) => result.areaUses)).toEqual([
+      0, 0, 0, 0, 0, 0,
+    ]);
+    expect(
+      new Set(
+        stageTwoOpening.map(({ puzzle }) => JSON.stringify(puzzle.layout))
+      )
+    ).toHaveLength(6);
+    expect(
+      stageTwoOpening.every(
+        ({ puzzle }) =>
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("validates all 88 complete formations with registered solution replay", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);

@@ -1,4 +1,4 @@
-/** Deterministic 88-puzzle archive with an authored opening and generated continuation. */
+/** Deterministic 88-puzzle archive with authored learning beats and generated continuation. */
 import {
   parsePuzzleDescriptor,
   validatePuzzleArchive,
@@ -96,9 +96,10 @@ interface HandAuthoredDesign {
 }
 
 /**
- * The first six campaign puzzles are authored encounters rather than seeded
- * variations. Their layouts deliberately teach one decision at a time before
- * the generated archive introduces protection and AREA chains.
+ * Early campaign puzzles are authored encounters rather than seeded variations.
+ * Stage 1 teaches one decision at a time; Stage 2 then asks the player to read
+ * changing routes without making AREA the only correct answer. Later waves use
+ * the deterministic generator for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -185,6 +186,78 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ]),
     designIntent:
       "Hand-authored edge AREA lesson: manually clear the side outside the anchor, then let the edge VEIL sweep the paired lanes.",
+  },
+  "2-1-1": {
+    rows: [
+      ["normal", "normal", "void", "void"],
+      ["void", "normal", "normal", "void"],
+      ["void", "void", "normal", "veil"],
+      ["void", "normal", "normal", "void"],
+      ["normal", "normal", "void", "void"],
+    ],
+    difficultyTag: "route-stagger",
+    designIntent:
+      "Hand-authored route read: the safe pair drifts across the floor and returns, so the player must follow the lane rather than hold center.",
+  },
+  "2-1-2": {
+    rows: [
+      ["normal", "void", "void", "normal"],
+      ["normal", "normal", "void", "void"],
+      ["void", "normal", "veil", "void"],
+      ["void", "void", "normal", "normal"],
+      ["normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "route-split",
+    designIntent:
+      "Hand-authored split route: the safe lanes form two opposing banks, rewarding deliberate side-to-side travel instead of repeated center captures.",
+  },
+  "2-1-3": {
+    rows: [
+      ["void", "normal", "normal", "void"],
+      ["void", "void", "veil", "normal"],
+      ["normal", "void", "void", "void"],
+      ["void", "normal", "normal", "void"],
+      ["void", "void", "void", "normal"],
+    ],
+    difficultyTag: "route-thread",
+    designIntent:
+      "Hand-authored single thread: one safe cube at a time crosses the player path, with a quiet VOID tail that tests patience and alignment.",
+  },
+  "2-2-1": {
+    rows: [
+      ["normal", "void", "normal", "void"],
+      ["void", "normal", "void", "normal"],
+      ["normal", "void", "veil", "void"],
+      ["void", "normal", "void", "normal"],
+      ["normal", "void", "normal", "void"],
+    ],
+    difficultyTag: "route-weave",
+    designIntent:
+      "Hand-authored weave: the usable cells alternate on every row, turning movement rhythm into the puzzle instead of AREA timing.",
+  },
+  "2-2-2": {
+    rows: [
+      ["void", "normal", "normal", "void"],
+      ["normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "void"],
+      ["normal", "normal", "void", "void"],
+      ["void", "void", "normal", "normal"],
+    ],
+    difficultyTag: "route-gate",
+    designIntent:
+      "Hand-authored gate sequence: each row opens a different side of the floor, making the next safe landing legible only after the current row is read.",
+  },
+  "2-2-3": {
+    rows: [
+      ["normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "void"],
+      ["void", "void", "normal", "void"],
+      ["void", "normal", "normal", "void"],
+      ["normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "route-return",
+    designIntent:
+      "Hand-authored return route: a narrow center detour reconnects two edge pairs, asking for a planned out-and-back path.",
   },
 };
 
