@@ -5,8 +5,8 @@
 ## 検証結果
 
 - 問題数: 88
-- AREAを使用する問題: 73
-- AREAを2回以上使用する連鎖問題: 70
+- AREAを使用する問題: 67
+- AREAを2回以上使用する連鎖問題: 64
 - 検査内容: 問題数、ID・seedの一意性、Stage Plan、全マス形成、配置範囲、保存件数、MARK到達性、AREAの一回使用と再生成、必要キューブ全回収、VOID非捕獲、規定回転数
 - 結果: **PASS**
 
@@ -36,12 +36,12 @@
 | STAGE-2-W4-P01 | Stage 2 | 4 | 4×6 | 4 | chain-pulse | 204017 | 21 | 3 | 3 | PASS |
 | STAGE-2-W4-P02 | Stage 2 | 4 | 4×6 | 4 | chain-switch | 204034 | 21 | 3 | 3 | PASS |
 | STAGE-2-W4-P03 | Stage 2 | 4 | 4×6 | 5 | chain-ladder | 204051 | 21 | 3 | 3 | PASS |
-| STAGE-3-W1-P01 | Stage 3 | 1 | 5×4 | 3 | route | 301017 | 13 | 7 | 2 | PASS |
-| STAGE-3-W1-P02 | Stage 3 | 1 | 5×4 | 1 | route | 301034 | 13 | 7 | 2 | PASS |
-| STAGE-3-W1-P03 | Stage 3 | 1 | 5×4 | 2 | route | 301051 | 13 | 7 | 2 | PASS |
-| STAGE-3-W2-P01 | Stage 3 | 2 | 5×5 | 2 | route | 302017 | 16 | 9 | 3 | PASS |
-| STAGE-3-W2-P02 | Stage 3 | 2 | 5×5 | 3 | route | 302034 | 16 | 9 | 3 | PASS |
-| STAGE-3-W2-P03 | Stage 3 | 2 | 5×5 | 4 | route | 302051 | 16 | 9 | 3 | PASS |
+| STAGE-3-W1-P01 | Stage 3 | 1 | 5×4 | 3 | wide-center | 301017 | 13 | 7 | 0 | PASS |
+| STAGE-3-W1-P02 | Stage 3 | 1 | 5×4 | 3 | wide-split | 301034 | 12 | 8 | 0 | PASS |
+| STAGE-3-W1-P03 | Stage 3 | 1 | 5×4 | 3 | wide-cross | 301051 | 13 | 7 | 0 | PASS |
+| STAGE-3-W2-P01 | Stage 3 | 2 | 5×5 | 4 | long-braid | 302017 | 16 | 9 | 0 | PASS |
+| STAGE-3-W2-P02 | Stage 3 | 2 | 5×5 | 4 | long-gate | 302034 | 16 | 9 | 0 | PASS |
+| STAGE-3-W2-P03 | Stage 3 | 2 | 5×5 | 4 | long-return | 302051 | 15 | 10 | 0 | PASS |
 | STAGE-3-W3-P01 | Stage 3 | 3 | 5×6 | 5 | route | 303017 | 19 | 11 | 3 | PASS |
 | STAGE-3-W3-P02 | Stage 3 | 3 | 5×6 | 5 | route | 303034 | 19 | 11 | 3 | PASS |
 | STAGE-3-W3-P03 | Stage 3 | 3 | 5×6 | 5 | route | 303051 | 19 | 11 | 3 | PASS |

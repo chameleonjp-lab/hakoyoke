@@ -171,6 +171,48 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("widens the authored route language in the opening of Stage 3", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageThreeOpening = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 3 && puzzle.wave <= 2);
+
+    expect(stageThreeOpening.map(({ puzzle }) => puzzle.difficultyTag)).toEqual(
+      [
+        "wide-center",
+        "wide-split",
+        "wide-cross",
+        "long-braid",
+        "long-gate",
+        "long-return",
+      ]
+    );
+    expect(stageThreeOpening.map(({ puzzle }) => puzzle.requiredRolls)).toEqual(
+      [3, 3, 3, 4, 4, 4]
+    );
+    expect(stageThreeOpening.map(({ result }) => result.areaUses)).toEqual([
+      0, 0, 0, 0, 0, 0,
+    ]);
+    expect(
+      stageThreeOpening.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(
+        stageThreeOpening.map(({ puzzle }) => JSON.stringify(puzzle.layout))
+      )
+    ).toHaveLength(6);
+    expect(
+      stageThreeOpening.every(
+        ({ puzzle }) =>
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
