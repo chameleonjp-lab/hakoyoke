@@ -99,8 +99,8 @@ interface HandAuthoredDesign {
  * Early campaign puzzles are authored encounters rather than seeded variations.
  * Stage 1 teaches one decision at a time and then tests changing routes; Stage 2
  * continues that route reading without making AREA the only correct answer.
- * Later waves use the deterministic generator for scalable chain/protection
- * pressure.
+ * Stage 3 widens the route language before the later waves return to the
+ * deterministic generator for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -445,6 +445,132 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     difficultyTag: "long-return",
     designIntent:
       "Hand-authored long return route: the safe path narrows to a right-center thread, then widens again for a planned return.",
+  },
+  "3-3-1": {
+    rows: [
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "wide-area-ribbon",
+    solution: areaChainSolution(1, 4, [
+      "normal",
+      "normal",
+      "void",
+      "normal",
+      "void",
+      "normal",
+    ]),
+    designIntent:
+      "Hand-authored wide AREA ribbon: the left three lanes chain through repeated VEILs while the far-right lane opens and closes by row.",
+  },
+  "3-3-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "wide-area-edge",
+    solution: areaChainSolution(3, 0, [
+      "normal",
+      "void",
+      "normal",
+      "void",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored mirrored AREA edge: the right three lanes form the chain, leaving an alternating far-left lane for manual capture.",
+  },
+  "3-3-3": {
+    rows: [
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "wide-area-switch",
+    solution: areaChainSolution(1, 4, [
+      "void",
+      "normal",
+      "normal",
+      "void",
+      "normal",
+      "normal",
+    ]),
+    designIntent:
+      "Hand-authored AREA switch: the anchor remains on the left inner band while the manual edge changes from closed to open in short pairs.",
+  },
+  "3-4-1": {
+    rows: [
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+    ],
+    difficultyTag: "wide-area-pulse",
+    solution: areaChainSolution(1, 4, [
+      "normal",
+      "normal",
+      "void",
+      "void",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored AREA pulse: two adjacent outer captures create a brief opening before the far edge closes again.",
+  },
+  "3-4-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "wide-area-return",
+    solution: areaChainSolution(3, 0, [
+      "normal",
+      "void",
+      "void",
+      "normal",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored AREA return: the right-side chain holds steady while the left edge asks for an out-and-back capture route.",
+  },
+  "3-4-3": {
+    rows: [
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+    ],
+    difficultyTag: "wide-area-ladder",
+    solution: areaChainSolution(1, 4, [
+      "normal",
+      "void",
+      "void",
+      "normal",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored AREA ladder: the manual edge opens in two separated steps, so the player must read each handoff instead of holding position.",
   },
   "2-1-1": {
     rows: [
