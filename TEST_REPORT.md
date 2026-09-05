@@ -11,7 +11,7 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 121件            |
+| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 122件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
 | ブラウザ操作   | `pnpm test:e2e`            | Chromium 25件、WebKit 25件                            | 最新CIを正とする — 50件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
@@ -45,7 +45,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - AREAの1回消費、VEIL捕獲によるアンカー再生成
 - 必要キューブ全回収、VOID非捕獲
 - 登録済み規定回転数とヘッドレス再生結果の一致
-- Stage 1全12問（AREAなし→AREA導入→6つの手設計ルート）、Stage 2全12問（AREAなしルート→3回連鎖するAREA局面）、Stage 3全12問（幅5列ルート→幅5列AREA連鎖）、序盤36問の手設計タグ
+- Stage 1全12問（AREAなし→AREA導入→6つの手設計ルート）、Stage 2全12問（AREAなしルート→3回連鎖するAREA局面）、Stage 3全12問（幅5列ルート→幅5列AREA連鎖）、Stage 4 Wave 1–2の長いAREA連鎖4問、序盤40問の手設計タグ
 - JSONと検証レポートが正本から生成した内容と完全一致
 
 問題ごとの値は[LEVEL_VALIDATION_REPORT.md](./LEVEL_VALIDATION_REPORT.md)に自動出力します。
