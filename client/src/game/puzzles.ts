@@ -97,9 +97,10 @@ interface HandAuthoredDesign {
 
 /**
  * Early campaign puzzles are authored encounters rather than seeded variations.
- * Stage 1 teaches one decision at a time; Stage 2 then asks the player to read
- * changing routes without making AREA the only correct answer. Later waves use
- * the deterministic generator for scalable chain/protection pressure.
+ * Stage 1 teaches one decision at a time and then tests changing routes; Stage 2
+ * continues that route reading without making AREA the only correct answer.
+ * Later waves use the deterministic generator for scalable chain/protection
+ * pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -186,6 +187,69 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ]),
     designIntent:
       "Hand-authored edge AREA lesson: manually clear the side outside the anchor, then let the edge VEIL sweep the paired lanes.",
+  },
+  "1-3-1": {
+    rows: [
+      ["normal", "veil", "void", "normal"],
+      ["void", "normal", "normal", "void"],
+      ["normal", "void", "veil", "normal"],
+    ],
+    difficultyTag: "read-branch",
+    designIntent:
+      "Hand-authored branch route: the safe path opens on both sides, then reconnects through a second VEIL row.",
+  },
+  "1-3-2": {
+    rows: [
+      ["void", "normal", "normal", "void"],
+      ["normal", "void", "veil", "normal"],
+      ["void", "normal", "void", "normal"],
+    ],
+    difficultyTag: "read-cross",
+    designIntent:
+      "Hand-authored crossing route: each incoming row changes the safe side, so a held center position is no longer reliable.",
+  },
+  "1-3-3": {
+    rows: [
+      ["normal", "void", "veil", "void"],
+      ["void", "normal", "normal", "void"],
+      ["normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "read-corner",
+    designIntent:
+      "Hand-authored corner route: the first VEIL invites a wide sweep, while the last row forces a deliberate edge choice.",
+  },
+  "1-4-1": {
+    rows: [
+      ["normal", "void", "normal", "void"],
+      ["void", "normal", "veil", "normal"],
+      ["normal", "void", "void", "normal"],
+      ["void", "normal", "normal", "void"],
+    ],
+    difficultyTag: "read-braid",
+    designIntent:
+      "Hand-authored braided route: alternating safe bands turn movement rhythm into the main decision after AREA is introduced.",
+  },
+  "1-4-2": {
+    rows: [
+      ["void", "normal", "normal", "void"],
+      ["normal", "void", "veil", "normal"],
+      ["normal", "normal", "void", "void"],
+      ["void", "void", "normal", "normal"],
+    ],
+    difficultyTag: "read-return",
+    designIntent:
+      "Hand-authored return route: the safe pair leaves center, crosses the VEIL line, and returns through the opposite half.",
+  },
+  "1-4-3": {
+    rows: [
+      ["normal", "normal", "void", "void"],
+      ["void", "normal", "void", "normal"],
+      ["void", "void", "veil", "normal"],
+      ["normal", "void", "normal", "void"],
+    ],
+    difficultyTag: "read-ring",
+    designIntent:
+      "Hand-authored ring route: safe cells orbit the center and expose a VOID pocket that must be left untouched.",
   },
   "2-1-1": {
     rows: [

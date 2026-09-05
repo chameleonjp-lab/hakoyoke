@@ -5,8 +5,8 @@
 ## 検証結果
 
 - 問題数: 88
-- AREAを使用する問題: 79
-- AREAを2回以上使用する連鎖問題: 76
+- AREAを使用する問題: 73
+- AREAを2回以上使用する連鎖問題: 70
 - 検査内容: 問題数、ID・seedの一意性、Stage Plan、全マス形成、配置範囲、保存件数、MARK到達性、AREAの一回使用と再生成、必要キューブ全回収、VOID非捕獲、規定回転数
 - 結果: **PASS**
 
@@ -18,12 +18,12 @@
 | STAGE-1-W2-P01 | Stage 1 | 2 | 4×2 | 1 | area-intro-range | 102017 | 8 | 0 | 1 | PASS |
 | STAGE-1-W2-P02 | Stage 1 | 2 | 4×2 | 1 | area-intro-timing | 102034 | 8 | 0 | 1 | PASS |
 | STAGE-1-W2-P03 | Stage 1 | 2 | 4×2 | 1 | area-intro-edge | 102051 | 8 | 0 | 1 | PASS |
-| STAGE-1-W3-P01 | Stage 1 | 3 | 4×3 | 1 | read | 103017 | 9 | 3 | 2 | PASS |
-| STAGE-1-W3-P02 | Stage 1 | 3 | 4×3 | 2 | read | 103034 | 10 | 2 | 2 | PASS |
-| STAGE-1-W3-P03 | Stage 1 | 3 | 4×3 | 2 | read | 103051 | 10 | 2 | 2 | PASS |
-| STAGE-1-W4-P01 | Stage 1 | 4 | 4×4 | 2 | read | 104017 | 13 | 3 | 2 | PASS |
-| STAGE-1-W4-P02 | Stage 1 | 4 | 4×4 | 3 | read | 104034 | 13 | 3 | 2 | PASS |
-| STAGE-1-W4-P03 | Stage 1 | 4 | 4×4 | 1 | read | 104051 | 13 | 3 | 2 | PASS |
+| STAGE-1-W3-P01 | Stage 1 | 3 | 4×3 | 2 | read-branch | 103017 | 8 | 4 | 0 | PASS |
+| STAGE-1-W3-P02 | Stage 1 | 3 | 4×3 | 2 | read-cross | 103034 | 7 | 5 | 0 | PASS |
+| STAGE-1-W3-P03 | Stage 1 | 3 | 4×3 | 2 | read-corner | 103051 | 6 | 6 | 0 | PASS |
+| STAGE-1-W4-P01 | Stage 1 | 4 | 4×4 | 3 | read-braid | 104017 | 9 | 7 | 0 | PASS |
+| STAGE-1-W4-P02 | Stage 1 | 4 | 4×4 | 3 | read-return | 104034 | 9 | 7 | 0 | PASS |
+| STAGE-1-W4-P03 | Stage 1 | 4 | 4×4 | 3 | read-ring | 104051 | 8 | 8 | 0 | PASS |
 | STAGE-2-W1-P01 | Stage 2 | 1 | 4×5 | 4 | route-stagger | 201017 | 10 | 10 | 0 | PASS |
 | STAGE-2-W1-P02 | Stage 2 | 1 | 4×5 | 4 | route-split | 201034 | 10 | 10 | 0 | PASS |
 | STAGE-2-W1-P03 | Stage 2 | 1 | 4×5 | 4 | route-thread | 201051 | 8 | 12 | 0 | PASS |
