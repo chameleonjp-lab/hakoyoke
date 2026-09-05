@@ -4,16 +4,16 @@
 
 ## 正本と生成物
 
-| 対象                   | 正本                              | 派生物・検査                                                        |
-| ---------------------- | --------------------------------- | ------------------------------------------------------------------- |
-| ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                  |
-| チュートリアルゲート   | `client/src/game/tutorial.ts`     | 8段階の手設計小問と操作ロックをGameWorld／HUDで共有                 |
-| Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                             |
-| 問題生成規則           | `client/src/game/puzzles.ts`      | Stage 1序盤6問は手設計、残りは決定的生成。`pnpm puzzles:write`      |
-| 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                      |
-| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証から作る。手編集禁止                            |
-| ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査 |
-| 現行の検査結果         | GitHub Actionsの`CI`              | `TEST_REPORT.md`に検査範囲を記録                                    |
+| 対象                   | 正本                              | 派生物・検査                                                                   |
+| ---------------------- | --------------------------------- | ------------------------------------------------------------------------------ |
+| ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                             |
+| チュートリアルゲート   | `client/src/game/tutorial.ts`     | 8段階の手設計小問と操作ロックをGameWorld／HUDで共有                            |
+| Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                                        |
+| 問題生成規則           | `client/src/game/puzzles.ts`      | Stage 1序盤6問＋Stage 2序盤6問は手設計、残りは決定的生成。`pnpm puzzles:write` |
+| 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                                 |
+| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証から作る。手編集禁止                                       |
+| ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査            |
+| 現行の検査結果         | GitHub Actionsの`CI`              | `TEST_REPORT.md`に検査範囲を記録                                               |
 
 問題データの流れは次の1本だけです。
 
@@ -27,7 +27,7 @@ puzzles.json + LEVEL_VALIDATION_REPORT.md
 ゲーム開始時にpuzzles.jsonを読み込む
 ```
 
-Stage 1のWave 1はAREAを使わず、VOIDを捕獲せずに通す読みと列移動を学ぶ3問です。Wave 2は先頭のVEILからAREAを作り、3×3範囲の外側だけを手動捕獲する3問です。この序盤6問は`puzzles.ts`内の`HAND_AUTHORED_DESIGNS`を正本とし、Wave 3以降は既存の制約付き決定的生成を使います。保護・連鎖・持ち越しAREAは後続Waveで段階的に扱います。
+Stage 1のWave 1はAREAを使わず、VOIDを捕獲せずに通す読みと列移動を学ぶ3問です。Wave 2は先頭のVEILからAREAを作り、3×3範囲の外側だけを手動捕獲する3問です。続くStage 2のWave 1–2は、千鳥・分岐・単線・編み込み・ゲート・往復という6つの手設計ルートで、AREAを使わずに次の安全マスを読む局面を置いています。この序盤12問は`puzzles.ts`内の`HAND_AUTHORED_DESIGNS`を正本とし、Stage 1 Wave 3以降とStage 2 Wave 3以降は既存の制約付き決定的生成を使います。保護・連鎖・持ち越しAREAは後続Waveで段階的に扱います。
 
 TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とする8ゲートです。移動、MARK、通常捕獲、VEIL、VOID保護、AREA、LOSS、PERFECTを各1段階で実演し、現段階で不要な操作はGameWorldとタッチHUDの双方でロックします。ゲート間は短い結果表示を挟んで次の専用小問へ進み、最後のPERFECTは取り逃し時に同じゲートを再試行します。
 
@@ -38,7 +38,7 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 - TUTORIAL、CAMPAIGN、PRACTICE、CREATE、DUELの5モード
 - NORMAL、VEIL、VOID、MARK、対象捕獲時だけ消費するAREA、MARK上VOID保護
 - 9 Stage、4 Wave、合計88問
-- Stage 1序盤6問の手設計導入（Wave 1: AREAなし、Wave 2: AREA導入）
+- 序盤12問の手設計導入（Stage 1: AREAなし→AREA導入、Stage 2: ルート読解）
 - TUTORIALの8段階手設計ゲート（操作ごとの入力ロック、LOSS実演、失敗時のゲート再試行）
 - 辺支点の回転、回転中の通過体積判定、盤外落下
 - MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ

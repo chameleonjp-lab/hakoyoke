@@ -1601,14 +1601,14 @@
     "width": 4,
     "depth": 5,
     "spawnRow": 5,
-    "requiredRolls": 2,
-    "difficultyTag": "route",
+    "requiredRolls": 4,
+    "difficultyTag": "route-stagger",
     "seed": 201017,
     "layout": [
       {
         "x": 0,
         "z": 5,
-        "type": "void"
+        "type": "normal"
       },
       {
         "x": 1,
@@ -1618,7 +1618,292 @@
       {
         "x": 2,
         "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 6,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 7,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 7,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 7,
         "type": "veil"
+      },
+      {
+        "x": 0,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 1,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 8,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 8,
+        "type": "void"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "normal"
+      },
+      {
+        "x": 2,
+        "z": 9,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 9,
+        "type": "void"
+      }
+    ],
+    "solution": [
+      {
+        "rotation": 4,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 0
+      },
+      {
+        "rotation": 5,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 1
+      },
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 2
+      },
+      {
+        "rotation": 5,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 3
+      },
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 4
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 5
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 6
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 7
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 8
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 9
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 10
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 11
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 12
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 13
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 14
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 15
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 16
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 17
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 18
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 19
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "normal": 9,
+      "veil": 1,
+      "void": 10,
+      "travelBudget": 23
+    },
+    "featured": true,
+    "designIntent": "Hand-authored route read: the safe pair drifts across the floor and returns, so the player must follow the lane rather than hold center."
+  },
+  {
+    "id": "STAGE-2-W1-P02",
+    "stage": 2,
+    "wave": 1,
+    "ordinal": 2,
+    "width": 4,
+    "depth": 5,
+    "spawnRow": 5,
+    "requiredRolls": 4,
+    "difficultyTag": "route-split",
+    "seed": 201034,
+    "layout": [
+      {
+        "x": 0,
+        "z": 5,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
       },
       {
         "x": 3,
@@ -1628,7 +1913,7 @@
       {
         "x": 0,
         "z": 6,
-        "type": "void"
+        "type": "normal"
       },
       {
         "x": 1,
@@ -1638,17 +1923,17 @@
       {
         "x": 2,
         "z": 6,
-        "type": "veil"
+        "type": "void"
       },
       {
         "x": 3,
         "z": 6,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 1,
@@ -1663,7 +1948,7 @@
       {
         "x": 3,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
@@ -1673,12 +1958,12 @@
       {
         "x": 1,
         "z": 8,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
         "z": 8,
-        "type": "veil"
+        "type": "normal"
       },
       {
         "x": 3,
@@ -1688,17 +1973,17 @@
       {
         "x": 0,
         "z": 9,
-        "type": "void"
+        "type": "normal"
       },
       {
         "x": 1,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 3,
@@ -1710,7 +1995,7 @@
       {
         "rotation": 4,
         "action": "mark",
-        "x": 2,
+        "x": 0,
         "z": 0,
         "timing": "settled",
         "sequence": 0
@@ -1718,7 +2003,7 @@
       {
         "rotation": 5,
         "action": "capture",
-        "x": 2,
+        "x": 0,
         "z": 0,
         "timing": "settled",
         "sequence": 1
@@ -1726,169 +2011,42 @@
       {
         "rotation": 5,
         "action": "mark",
-        "x": 0,
+        "x": 3,
         "z": 0,
         "timing": "settled",
         "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area",
+        "action": "capture",
+        "x": 3,
+        "z": 0,
         "timing": "settled",
         "sequence": 3
       },
       {
-        "rotation": 6,
-        "action": "area",
+        "rotation": 5,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
         "timing": "settled",
         "sequence": 4
       },
       {
-        "rotation": 7,
-        "action": "area",
+        "rotation": 6,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
         "timing": "settled",
         "sequence": 5
       },
       {
-        "rotation": 7,
-        "action": "capture",
-        "x": 0,
+        "rotation": 6,
+        "action": "mark",
+        "x": 1,
         "z": 0,
         "timing": "settled",
         "sequence": 6
-      }
-    ],
-    "validation": {
-      "valid": true,
-      "normal": 12,
-      "veil": 4,
-      "void": 4,
-      "travelBudget": 18
-    },
-    "featured": true,
-    "designIntent": "Complete formation with a one-shot AREA chain, MARK-protected VOID, and isolated route captures."
-  },
-  {
-    "id": "STAGE-2-W1-P02",
-    "stage": 2,
-    "wave": 1,
-    "ordinal": 2,
-    "width": 4,
-    "depth": 5,
-    "spawnRow": 6,
-    "requiredRolls": 3,
-    "difficultyTag": "route",
-    "seed": 201034,
-    "layout": [
-      {
-        "x": 0,
-        "z": 6,
-        "type": "normal"
-      },
-      {
-        "x": 1,
-        "z": 6,
-        "type": "veil"
-      },
-      {
-        "x": 2,
-        "z": 6,
-        "type": "normal"
-      },
-      {
-        "x": 3,
-        "z": 6,
-        "type": "void"
-      },
-      {
-        "x": 0,
-        "z": 7,
-        "type": "veil"
-      },
-      {
-        "x": 1,
-        "z": 7,
-        "type": "veil"
-      },
-      {
-        "x": 2,
-        "z": 7,
-        "type": "normal"
-      },
-      {
-        "x": 3,
-        "z": 7,
-        "type": "void"
-      },
-      {
-        "x": 0,
-        "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 1,
-        "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 2,
-        "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 3,
-        "z": 8,
-        "type": "void"
-      },
-      {
-        "x": 0,
-        "z": 9,
-        "type": "normal"
-      },
-      {
-        "x": 1,
-        "z": 9,
-        "type": "veil"
-      },
-      {
-        "x": 2,
-        "z": 9,
-        "type": "normal"
-      },
-      {
-        "x": 3,
-        "z": 9,
-        "type": "normal"
-      },
-      {
-        "x": 0,
-        "z": 10,
-        "type": "normal"
-      },
-      {
-        "x": 1,
-        "z": 10,
-        "type": "normal"
-      },
-      {
-        "x": 2,
-        "z": 10,
-        "type": "normal"
-      },
-      {
-        "x": 3,
-        "z": 10,
-        "type": "void"
-      }
-    ],
-    "solution": [
-      {
-        "rotation": 5,
-        "action": "mark",
-        "x": 1,
-        "z": 0,
-        "timing": "settled",
-        "sequence": 0
       },
       {
         "rotation": 6,
@@ -1896,33 +2054,95 @@
         "x": 1,
         "z": 0,
         "timing": "settled",
-        "sequence": 1
+        "sequence": 7
       },
       {
         "rotation": 6,
         "action": "mark",
-        "x": 3,
+        "x": 1,
         "z": 0,
         "timing": "settled",
-        "sequence": 2
-      },
-      {
-        "rotation": 6,
-        "action": "area",
-        "timing": "settled",
-        "sequence": 3
+        "sequence": 8
       },
       {
         "rotation": 7,
-        "action": "area",
+        "action": "capture",
+        "x": 1,
+        "z": 0,
         "timing": "settled",
-        "sequence": 4
+        "sequence": 9
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 10
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 11
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 12
       },
       {
         "rotation": 8,
-        "action": "area",
+        "action": "capture",
+        "x": 2,
+        "z": 0,
         "timing": "settled",
-        "sequence": 5
+        "sequence": 13
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 14
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 15
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 16
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 17
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 18
       },
       {
         "rotation": 9,
@@ -1930,18 +2150,18 @@
         "x": 3,
         "z": 0,
         "timing": "settled",
-        "sequence": 6
+        "sequence": 19
       }
     ],
     "validation": {
       "valid": true,
-      "normal": 12,
-      "veil": 4,
-      "void": 4,
-      "travelBudget": 18
+      "normal": 9,
+      "veil": 1,
+      "void": 10,
+      "travelBudget": 23
     },
     "featured": false,
-    "designIntent": "Complete formation with a one-shot AREA chain, MARK-protected VOID, and isolated route captures."
+    "designIntent": "Hand-authored split route: the safe lanes form two opposing banks, rewarding deliberate side-to-side travel instead of repeated center captures."
   },
   {
     "id": "STAGE-2-W1-P03",
@@ -1952,7 +2172,7 @@
     "depth": 5,
     "spawnRow": 5,
     "requiredRolls": 4,
-    "difficultyTag": "route",
+    "difficultyTag": "route-thread",
     "seed": 201051,
     "layout": [
       {
@@ -1968,12 +2188,12 @@
       {
         "x": 2,
         "z": 5,
-        "type": "veil"
+        "type": "normal"
       },
       {
         "x": 3,
         "z": 5,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
@@ -1983,7 +2203,7 @@
       {
         "x": 1,
         "z": 6,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
@@ -1998,22 +2218,22 @@
       {
         "x": 0,
         "z": 7,
-        "type": "void"
+        "type": "normal"
       },
       {
         "x": 1,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 3,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
@@ -2028,39 +2248,39 @@
       {
         "x": 2,
         "z": 8,
-        "type": "veil"
+        "type": "normal"
       },
       {
         "x": 3,
         "z": 8,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 1,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 3,
         "z": 9,
-        "type": "veil"
+        "type": "normal"
       }
     ],
     "solution": [
       {
         "rotation": 4,
         "action": "mark",
-        "x": 2,
+        "x": 1,
         "z": 0,
         "timing": "settled",
         "sequence": 0
@@ -2068,7 +2288,7 @@
       {
         "rotation": 5,
         "action": "capture",
-        "x": 2,
+        "x": 1,
         "z": 0,
         "timing": "settled",
         "sequence": 1
@@ -2076,47 +2296,125 @@
       {
         "rotation": 5,
         "action": "mark",
-        "x": 0,
+        "x": 2,
         "z": 0,
         "timing": "settled",
         "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area",
+        "action": "capture",
+        "x": 2,
+        "z": 0,
         "timing": "settled",
         "sequence": 3
       },
       {
-        "rotation": 6,
-        "action": "area",
+        "rotation": 5,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
         "timing": "settled",
         "sequence": 4
       },
       {
-        "rotation": 7,
-        "action": "area",
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
         "timing": "settled",
         "sequence": 5
       },
       {
-        "rotation": 9,
+        "rotation": 6,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 6
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 7
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 8
+      },
+      {
+        "rotation": 7,
         "action": "capture",
         "x": 0,
         "z": 0,
         "timing": "settled",
-        "sequence": 6
+        "sequence": 9
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 10
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 11
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 12
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 13
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 14
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 15
       }
     ],
     "validation": {
       "valid": true,
-      "normal": 12,
-      "veil": 4,
-      "void": 4,
-      "travelBudget": 18
+      "normal": 7,
+      "veil": 1,
+      "void": 12,
+      "travelBudget": 21
     },
     "featured": false,
-    "designIntent": "Complete formation with a one-shot AREA chain, MARK-protected VOID, and isolated route captures."
+    "designIntent": "Hand-authored single thread: one safe cube at a time crosses the player path, with a quiet VOID tail that tests patience and alignment."
   },
   {
     "id": "STAGE-2-W2-P01",
@@ -2125,13 +2423,33 @@
     "ordinal": 1,
     "width": 4,
     "depth": 5,
-    "spawnRow": 6,
-    "requiredRolls": 3,
-    "difficultyTag": "route",
+    "spawnRow": 5,
+    "requiredRolls": 4,
+    "difficultyTag": "route-weave",
     "seed": 202017,
     "layout": [
       {
         "x": 0,
+        "z": 5,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "normal"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 0,
         "z": 6,
         "type": "void"
       },
@@ -2143,7 +2461,7 @@
       {
         "x": 2,
         "z": 6,
-        "type": "veil"
+        "type": "void"
       },
       {
         "x": 3,
@@ -2153,12 +2471,12 @@
       {
         "x": 0,
         "z": 7,
-        "type": "void"
+        "type": "normal"
       },
       {
         "x": 1,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
@@ -2168,7 +2486,7 @@
       {
         "x": 3,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
@@ -2183,7 +2501,7 @@
       {
         "x": 2,
         "z": 8,
-        "type": "veil"
+        "type": "void"
       },
       {
         "x": 3,
@@ -2198,55 +2516,83 @@
       {
         "x": 1,
         "z": 9,
-        "type": "normal"
-      },
-      {
-        "x": 2,
-        "z": 9,
-        "type": "veil"
-      },
-      {
-        "x": 3,
-        "z": 9,
-        "type": "normal"
-      },
-      {
-        "x": 0,
-        "z": 10,
         "type": "void"
       },
       {
-        "x": 1,
-        "z": 10,
-        "type": "normal"
-      },
-      {
         "x": 2,
-        "z": 10,
+        "z": 9,
         "type": "normal"
       },
       {
         "x": 3,
-        "z": 10,
-        "type": "normal"
+        "z": 9,
+        "type": "void"
       }
     ],
     "solution": [
+      {
+        "rotation": 4,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 0
+      },
+      {
+        "rotation": 5,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 1
+      },
       {
         "rotation": 5,
         "action": "mark",
         "x": 2,
         "z": 0,
         "timing": "settled",
-        "sequence": 0
+        "sequence": 2
       },
       {
-        "rotation": 6,
+        "rotation": 5,
         "action": "capture",
         "x": 2,
         "z": 0,
         "timing": "settled",
-        "sequence": 1
+        "sequence": 3
+      },
+      {
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 4
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 5
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 6
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 7
       },
       {
         "rotation": 6,
@@ -2254,25 +2600,71 @@
         "x": 0,
         "z": 0,
         "timing": "settled",
-        "sequence": 2
-      },
-      {
-        "rotation": 6,
-        "action": "area",
-        "timing": "settled",
-        "sequence": 3
+        "sequence": 8
       },
       {
         "rotation": 7,
-        "action": "area",
+        "action": "capture",
+        "x": 0,
+        "z": 0,
         "timing": "settled",
-        "sequence": 4
+        "sequence": 9
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 10
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 11
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 12
       },
       {
         "rotation": 8,
-        "action": "area",
+        "action": "capture",
+        "x": 1,
+        "z": 0,
         "timing": "settled",
-        "sequence": 5
+        "sequence": 13
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 14
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 15
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 16
       },
       {
         "rotation": 9,
@@ -2280,18 +2672,34 @@
         "x": 0,
         "z": 0,
         "timing": "settled",
-        "sequence": 6
+        "sequence": 17
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 18
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 19
       }
     ],
     "validation": {
       "valid": true,
-      "normal": 12,
-      "veil": 4,
-      "void": 4,
-      "travelBudget": 18
+      "normal": 9,
+      "veil": 1,
+      "void": 10,
+      "travelBudget": 23
     },
     "featured": true,
-    "designIntent": "Complete formation with a one-shot AREA chain, MARK-protected VOID, and isolated route captures."
+    "designIntent": "Hand-authored weave: the usable cells alternate on every row, turning movement rhythm into the puzzle instead of AREA timing."
   },
   {
     "id": "STAGE-2-W2-P02",
@@ -2302,18 +2710,18 @@
     "depth": 5,
     "spawnRow": 5,
     "requiredRolls": 4,
-    "difficultyTag": "route",
+    "difficultyTag": "route-gate",
     "seed": 202034,
     "layout": [
       {
         "x": 0,
         "z": 5,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 1,
         "z": 5,
-        "type": "veil"
+        "type": "normal"
       },
       {
         "x": 2,
@@ -2328,27 +2736,27 @@
       {
         "x": 0,
         "z": 6,
-        "type": "veil"
-      },
-      {
-        "x": 1,
-        "z": 6,
-        "type": "veil"
-      },
-      {
-        "x": 2,
-        "z": 6,
         "type": "normal"
       },
       {
-        "x": 3,
+        "x": 1,
         "z": 6,
         "type": "void"
       },
       {
+        "x": 2,
+        "z": 6,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 6,
+        "type": "normal"
+      },
+      {
         "x": 0,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 1,
@@ -2358,7 +2766,7 @@
       {
         "x": 2,
         "z": 7,
-        "type": "normal"
+        "type": "veil"
       },
       {
         "x": 3,
@@ -2373,12 +2781,12 @@
       {
         "x": 1,
         "z": 8,
-        "type": "veil"
+        "type": "normal"
       },
       {
         "x": 2,
         "z": 8,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 3,
@@ -2388,12 +2796,12 @@
       {
         "x": 0,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 1,
         "z": 9,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
@@ -2426,28 +2834,138 @@
       {
         "rotation": 5,
         "action": "mark",
-        "x": 3,
+        "x": 2,
         "z": 0,
         "timing": "settled",
         "sequence": 2
       },
       {
         "rotation": 5,
-        "action": "area",
+        "action": "capture",
+        "x": 2,
+        "z": 0,
         "timing": "settled",
         "sequence": 3
       },
       {
-        "rotation": 6,
-        "action": "area",
+        "rotation": 5,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
         "timing": "settled",
         "sequence": 4
       },
       {
-        "rotation": 7,
-        "action": "area",
+        "rotation": 6,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
         "timing": "settled",
         "sequence": 5
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 6
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 7
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 8
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 9
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 10
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 11
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 12
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 13
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 14
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 15
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 16
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 17
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 18
       },
       {
         "rotation": 9,
@@ -2455,18 +2973,18 @@
         "x": 3,
         "z": 0,
         "timing": "settled",
-        "sequence": 6
+        "sequence": 19
       }
     ],
     "validation": {
       "valid": true,
-      "normal": 12,
-      "veil": 4,
-      "void": 4,
-      "travelBudget": 18
+      "normal": 9,
+      "veil": 1,
+      "void": 10,
+      "travelBudget": 23
     },
     "featured": false,
-    "designIntent": "Complete formation with a one-shot AREA chain and isolated route captures."
+    "designIntent": "Hand-authored gate sequence: each row opens a different side of the floor, making the next safe landing legible only after the current row is read."
   },
   {
     "id": "STAGE-2-W2-P03",
@@ -2475,13 +2993,33 @@
     "ordinal": 3,
     "width": 4,
     "depth": 5,
-    "spawnRow": 6,
-    "requiredRolls": 2,
-    "difficultyTag": "route",
+    "spawnRow": 5,
+    "requiredRolls": 4,
+    "difficultyTag": "route-return",
     "seed": 202051,
     "layout": [
       {
         "x": 0,
+        "z": 5,
+        "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 2,
+        "z": 5,
+        "type": "void"
+      },
+      {
+        "x": 3,
+        "z": 5,
+        "type": "normal"
+      },
+      {
+        "x": 0,
         "z": 6,
         "type": "void"
       },
@@ -2498,7 +3036,7 @@
       {
         "x": 3,
         "z": 6,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
@@ -2508,140 +3046,214 @@
       {
         "x": 1,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 2,
         "z": 7,
-        "type": "veil"
+        "type": "normal"
       },
       {
         "x": 3,
         "z": 7,
-        "type": "normal"
+        "type": "void"
       },
       {
         "x": 0,
         "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 1,
-        "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 2,
-        "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 3,
-        "z": 8,
-        "type": "normal"
-      },
-      {
-        "x": 0,
-        "z": 9,
         "type": "void"
       },
       {
         "x": 1,
-        "z": 9,
+        "z": 8,
         "type": "normal"
       },
       {
         "x": 2,
-        "z": 9,
-        "type": "veil"
-      },
-      {
-        "x": 3,
-        "z": 9,
+        "z": 8,
         "type": "normal"
       },
       {
-        "x": 0,
-        "z": 10,
+        "x": 3,
+        "z": 8,
         "type": "void"
       },
       {
-        "x": 1,
-        "z": 10,
+        "x": 0,
+        "z": 9,
         "type": "normal"
+      },
+      {
+        "x": 1,
+        "z": 9,
+        "type": "void"
       },
       {
         "x": 2,
-        "z": 10,
-        "type": "normal"
+        "z": 9,
+        "type": "void"
       },
       {
         "x": 3,
-        "z": 10,
-        "type": "veil"
+        "z": 9,
+        "type": "normal"
       }
     ],
     "solution": [
       {
-        "rotation": 5,
+        "rotation": 4,
         "action": "mark",
-        "x": 2,
+        "x": 0,
         "z": 0,
         "timing": "settled",
         "sequence": 0
       },
       {
-        "rotation": 6,
+        "rotation": 5,
         "action": "capture",
-        "x": 2,
+        "x": 0,
         "z": 0,
         "timing": "settled",
         "sequence": 1
       },
       {
-        "rotation": 6,
+        "rotation": 5,
         "action": "mark",
-        "x": 0,
+        "x": 3,
         "z": 0,
         "timing": "settled",
         "sequence": 2
       },
       {
-        "rotation": 6,
-        "action": "area",
+        "rotation": 5,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
         "timing": "settled",
         "sequence": 3
       },
       {
-        "rotation": 7,
-        "action": "area",
+        "rotation": 5,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
         "timing": "settled",
         "sequence": 4
       },
       {
-        "rotation": 8,
-        "action": "area",
+        "rotation": 6,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
         "timing": "settled",
         "sequence": 5
       },
       {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 6
+      },
+      {
+        "rotation": 6,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 7
+      },
+      {
+        "rotation": 6,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 8
+      },
+      {
+        "rotation": 7,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 9
+      },
+      {
+        "rotation": 7,
+        "action": "mark",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 10
+      },
+      {
         "rotation": 8,
+        "action": "capture",
+        "x": 1,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 11
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 12
+      },
+      {
+        "rotation": 8,
+        "action": "capture",
+        "x": 2,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 13
+      },
+      {
+        "rotation": 8,
+        "action": "mark",
+        "x": 0,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 14
+      },
+      {
+        "rotation": 9,
         "action": "capture",
         "x": 0,
         "z": 0,
         "timing": "settled",
-        "sequence": 6
+        "sequence": 15
+      },
+      {
+        "rotation": 9,
+        "action": "mark",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 16
+      },
+      {
+        "rotation": 9,
+        "action": "capture",
+        "x": 3,
+        "z": 0,
+        "timing": "settled",
+        "sequence": 17
       }
     ],
     "validation": {
       "valid": true,
-      "normal": 12,
-      "veil": 4,
-      "void": 4,
-      "travelBudget": 18
+      "normal": 8,
+      "veil": 1,
+      "void": 11,
+      "travelBudget": 22
     },
     "featured": false,
-    "designIntent": "Complete formation with a one-shot AREA chain and isolated route captures."
+    "designIntent": "Hand-authored return route: a narrow center detour reconnects two edge pairs, asking for a planned out-and-back path."
   },
   {
     "id": "STAGE-2-W3-P01",
