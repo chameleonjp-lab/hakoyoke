@@ -18,6 +18,7 @@ import { TUTORIAL_STAGE_COUNT, tutorialActionEnabled } from "@/game/tutorial";
 import type { CubicCommand } from "@/game/GameWorld";
 import {
   RANKING_CONFIG,
+  RankingRpcError,
   formatRankingScore,
   rankingClient,
   readStoredPlayerName,
@@ -159,25 +160,29 @@ export default function GameShell({
     ordinal = practice.ordinal
   ) => {
     if (startingPlay) return;
-    const validation = saveStoredPlayerName(playerName);
-    if (!validation.ok) {
-      setNameMessage(validation.message);
-      setPanel("title");
-      return;
-    }
-    setPlayerName(validation.name);
     let resumeCampaign: boolean | undefined;
     if (mode === "CAMPAIGN") {
+      const validation = saveStoredPlayerName(playerName);
+      if (!validation.ok) {
+        setNameMessage(validation.message);
+        setPanel("title");
+        return;
+      }
+      setPlayerName(validation.name);
       setStartingPlay(true);
       setNameMessage("ランキング対象プレイの開始を確認中…");
       try {
         const started = await rankingClient.startCampaignPlay(validation.name);
         resumeCampaign = started.resumed;
       } catch (error) {
-        setNameMessage(startErrorMessage(error));
-        setPanel("title");
-        setStartingPlay(false);
-        return;
+        if (!(error instanceof RankingRpcError) || !error.retryable) {
+          setNameMessage(startErrorMessage(error));
+          setPanel("title");
+          setStartingPlay(false);
+          return;
+        }
+        // Keep the local run playable when the ranking service is unavailable.
+        // The unfinished ranking start is retained and retried from the result.
       }
       setStartingPlay(false);
     }
@@ -250,13 +255,6 @@ export default function GameShell({
           practice={practice}
           setPractice={setPractice}
           onTest={puzzle => {
-            const validation = saveStoredPlayerName(playerName);
-            if (!validation.ok) {
-              setNameMessage(validation.message);
-              setPanel("title");
-              return;
-            }
-            setPlayerName(validation.name);
             launch({ type: "load-custom", puzzle });
             setPanel(null);
           }}
@@ -341,6 +339,7 @@ function MenuPanel({
           playerName={playerName}
           onChange={setPlayerName}
           message={nameMessage}
+          required={panel === "difficulty" && chosenMode === "CAMPAIGN"}
         />
         <PendingRankingNotice />
         {panel === "title" && (
@@ -430,7 +429,7 @@ function PendingRankingNotice() {
   return (
     <aside className="pending-ranking-notice">
       <span className="eyebrow">RANKING // UNSENT RESULT</span>
-      <p>前回のランキング送信が完了していません。</p>
+      <p>前回のランキング結果が未送信です。</p>
       {hasRetryable && (
         <button
           className="platform-action ranking-retry"
@@ -511,28 +510,33 @@ function PlayerNameGate({
   playerName,
   onChange,
   message,
+  required,
 }: {
   playerName: string;
   onChange(value: string): void;
   message: string;
+  required: boolean;
 }) {
   const validation = validatePlayerName(playerName);
+  const hasInput = Boolean(playerName.trim());
   return (
     <section className="player-name-gate" aria-labelledby="player-name-title">
       <span className="eyebrow" id="player-name-title">
         PLAYER DISPLAY NAME
       </span>
-      <label htmlFor="cubic-player-name">公開表示名（同名可・必須）</label>
+      <label htmlFor="cubic-player-name">
+        公開表示名（キャンペーンのみ必須）
+      </label>
       <input
         id="cubic-player-name"
         type="text"
         value={playerName}
         autoComplete="nickname"
-        placeholder="20文字以内で入力"
+        placeholder={required ? "20文字以内で入力" : "キャンペーン参加時に入力"}
         onChange={event => onChange(event.target.value)}
-        aria-invalid={!validation.ok}
+        aria-invalid={required && !validation.ok}
         aria-describedby="cubic-player-name-status"
-        required
+        required={required}
       />
       <small
         className="platform-status"
@@ -541,9 +545,15 @@ function PlayerNameGate({
         aria-live="polite"
       >
         {message ||
-          (validation.ok
-            ? `${validation.name}さんの名前で記録します。`
-            : validation.message)}
+          (hasInput
+            ? validation.ok
+              ? `${validation.name}さんの名前で記録します。`
+              : required
+                ? validation.message
+                : "キャンペーン参加時の名前としては無効ですが、対象外モードはこのまま遊べます。"
+            : required
+              ? "キャンペーン開始時はプレイヤー名が必要です。"
+              : "キャンペーン以外は名前なしで遊べます。")}
       </small>
     </section>
   );

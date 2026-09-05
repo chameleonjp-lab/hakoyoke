@@ -27,7 +27,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
 });
 
-test("名前が空のままではゲームを開始できない", async ({ page }) => {
+test("キャンペーンは名前が空のままでは開始できない", async ({ page }) => {
   await page.evaluate(
     ({ blankKey, nameKey }) => {
       sessionStorage.setItem(blankKey, "1");
@@ -39,12 +39,48 @@ test("名前が空のままではゲームを開始できない", async ({ page 
     }
   );
   await page.reload();
-  await expect(page.getByLabel("公開表示名（同名可・必須）")).toHaveValue("");
-  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await expect(
+    page.getByLabel("公開表示名（キャンペーンのみ必須）")
+  ).toHaveValue("");
+  await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+  await page.getByRole("button", { name: /CAMPAIGN STAGE 1 TO FINAL/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await page.getByRole("button", { name: /BEGIN ORDEAL/ }).click();
   await expect(
     page.getByText("プレイヤー名を入力してください。")
   ).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
+});
+
+test("ランキング対象外モードは名前なし・RPCなしで開始できる", async ({
+  page,
+}) => {
+  await page.evaluate(
+    ({ blankKey, nameKey }) => {
+      sessionStorage.setItem(blankKey, "1");
+      localStorage.removeItem(nameKey);
+    },
+    {
+      blankKey: BLANK_NAME_SESSION_KEY,
+      nameKey: PLAYER_NAME_STORAGE_KEY,
+    }
+  );
+  await page.reload();
+  let rpcRequests = 0;
+  page.on("request", request => {
+    if (request.url().includes("/rest/v1/rpc/")) rpcRequests += 1;
+  });
+  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await expect(page.locator("canvas")).toBeVisible();
+  expect(rpcRequests).toBe(0);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        nameKey => localStorage.getItem(nameKey),
+        PLAYER_NAME_STORAGE_KEY
+      )
+    )
+    .toBeNull();
 });
 
 test("開始RPCの受付前にはキャンペーン本体を開始しない", async ({ page }) => {
@@ -69,6 +105,55 @@ test("開始RPCの受付前にはキャンペーン本体を開始しない", as
 
   releaseRequest?.();
   await expect(page.locator("canvas")).toBeVisible();
+});
+
+test("ランキング開始の一時障害でもローカル継続し、結果画面から再送できる", async ({
+  page,
+}) => {
+  await installGameCanvasStub(page);
+  let startAttempts = 0;
+  await page.route("**/rest/v1/rpc/start_game_play_v1", async route => {
+    startAttempts += 1;
+    if (startAttempts === 1) {
+      await route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ code: "PT500", message: "temporary" }),
+      });
+      return;
+    }
+    await route.fallback();
+  });
+  await page.reload();
+  await page.getByRole("button", { name: /CAMPAIGN/ }).click();
+  await page.getByRole("button", { name: /CAMPAIGN STAGE 1 TO FINAL/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await page.getByRole("button", { name: /BEGIN ORDEAL/ }).click();
+  await expect(page.locator("canvas")).toBeVisible();
+  expect(startAttempts).toBe(1);
+
+  await page.evaluate(() => {
+    window.dispatchEvent(
+      new CustomEvent("cubic:snapshot", {
+        detail: {
+          e2eResult: true,
+          phase: "GAME_OVER",
+          mode: "CAMPAIGN",
+          banner: "CONTACT LOST",
+          stage: 3,
+          stats: {
+            score: 4200,
+            platformRows: 7,
+            misses: 2,
+          },
+        },
+      })
+    );
+  });
+  await expect(
+    page.getByText("ランキングへの登録を確認しました。")
+  ).toBeVisible();
+  await expect.poll(() => startAttempts).toBe(2);
 });
 
 test("GAME OVERで冪等再送、同率順位、再戦導線を同じ結果画面に保つ", async ({

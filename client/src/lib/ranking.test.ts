@@ -176,6 +176,106 @@ describe("ranking integration contract", () => {
     ]);
   });
 
+  it("retries a missing campaign start before submitting the result", async () => {
+    const storage = memoryStorage();
+    const ids = [START_ID, SUBMISSION_ID];
+    let startAttempts = 0;
+    const fetchImpl = vi.fn(
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        const rpc = String(input).split("/").at(-1);
+        const payload = JSON.parse(String(init?.body)) as Record<
+          string,
+          unknown
+        >;
+        if (rpc === RANKING_CONFIG.startRpc) {
+          startAttempts += 1;
+          return startAttempts === 1
+            ? response({ code: "PT500", message: "temporary" }, 503)
+            : response(startResponse(String(payload.p_start_id)));
+        }
+        if (rpc === RANKING_CONFIG.finishRpc) return response(finishResponse());
+        return response(submitResponse());
+      }
+    );
+    const client = createRankingClient({
+      storage,
+      makeUuid: () => ids.shift() ?? SUBMISSION_ID,
+      fetchImpl,
+    });
+
+    await expect(client.startCampaignPlay("山田 太郎")).rejects.toMatchObject({
+      retryable: true,
+    });
+    await expect(
+      client.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 3,
+        score: 4200,
+      })
+    ).resolves.toMatchObject({ state: "submitted" });
+    expect(startAttempts).toBe(2);
+    expect(storage.getItem(RANKING_STORAGE_KEYS.deferred)).toBeNull();
+    expect(storage.getItem(RANKING_STORAGE_KEYS.pending)).toBe("[]");
+  });
+
+  it("persists a result without a play_id and retries its start after reload", async () => {
+    const storage = memoryStorage();
+    let startAttempts = 0;
+    const fetchImpl = vi.fn(
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        const rpc = String(input).split("/").at(-1);
+        const payload = JSON.parse(String(init?.body)) as Record<
+          string,
+          unknown
+        >;
+        if (rpc === RANKING_CONFIG.startRpc) {
+          startAttempts += 1;
+          return startAttempts <= 2
+            ? response({ code: "PT500", message: "temporary" }, 503)
+            : response(startResponse(String(payload.p_start_id)));
+        }
+        if (rpc === RANKING_CONFIG.finishRpc) return response(finishResponse());
+        return response(submitResponse());
+      }
+    );
+    const firstPage = createRankingClient({
+      storage,
+      makeUuid: () => (startAttempts === 0 ? START_ID : SUBMISSION_ID),
+      fetchImpl,
+    });
+
+    await expect(
+      firstPage.startCampaignPlay("山田 太郎")
+    ).rejects.toMatchObject({
+      retryable: true,
+    });
+    await expect(
+      firstPage.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 3,
+        score: 4200,
+      })
+    ).resolves.toMatchObject({ state: "retryable_failed" });
+    expect(firstPage.hasRetryablePendingCampaignResult()).toBe(true);
+    expect(storage.getItem(RANKING_STORAGE_KEYS.deferred)).not.toBeNull();
+
+    const reloadedPage = createRankingClient({
+      storage,
+      makeUuid: () => {
+        throw new Error("reload retry must reuse stored IDs");
+      },
+      fetchImpl,
+    });
+    await expect(
+      reloadedPage.retryPendingCampaignResult()
+    ).resolves.toMatchObject({ state: "submitted" });
+    expect(startAttempts).toBe(3);
+    expect(storage.getItem(RANKING_STORAGE_KEYS.deferred)).toBeNull();
+    expect(storage.getItem(RANKING_STORAGE_KEYS.pending)).toBe("[]");
+  });
+
   it("coalesces rapid replay clicks into one forced start request", async () => {
     let release: ((value: Response) => void) | undefined;
     const waiting = new Promise<Response>(resolve => {
