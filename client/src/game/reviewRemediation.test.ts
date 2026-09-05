@@ -133,6 +133,44 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("adds authored AREA chains after the Stage 2 route lessons", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageTwoChains = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 2 && puzzle.wave >= 3);
+
+    expect(stageTwoChains.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "area-ribbon",
+      "area-edge",
+      "area-reverse",
+      "chain-pulse",
+      "chain-switch",
+      "chain-ladder",
+    ]);
+    expect(stageTwoChains.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      5, 4, 5, 4, 4, 5,
+    ]);
+    expect(stageTwoChains.map(({ result }) => result.areaUses)).toEqual([
+      3, 3, 3, 3, 3, 3,
+    ]);
+    expect(
+      stageTwoChains.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(stageTwoChains.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(6);
+    expect(
+      stageTwoChains.every(
+        ({ puzzle }) =>
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);

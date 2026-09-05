@@ -251,6 +251,132 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     designIntent:
       "Hand-authored ring route: safe cells orbit the center and expose a VOID pocket that must be left untouched.",
   },
+  "2-3-1": {
+    rows: [
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+    ],
+    difficultyTag: "area-ribbon",
+    solution: areaChainSolution(1, 3, [
+      "void",
+      "normal",
+      "void",
+      "normal",
+      "void",
+      "normal",
+    ]),
+    designIntent:
+      "Hand-authored AREA ribbon: a stable inner chain clears the center while an alternating outer lane still needs manual timing.",
+  },
+  "2-3-2": {
+    rows: [
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "area-edge",
+    solution: areaChainSolution(1, 3, [
+      "normal",
+      "void",
+      "normal",
+      "void",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored edge pressure: the outer lane alternates with every row, making the AREA discharge rhythm and side travel compete for attention.",
+  },
+  "2-3-3": {
+    rows: [
+      ["void", "normal", "veil", "normal"],
+      ["normal", "normal", "veil", "normal"],
+      ["void", "normal", "veil", "normal"],
+      ["normal", "normal", "veil", "normal"],
+      ["void", "normal", "veil", "normal"],
+      ["normal", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "area-reverse",
+    solution: areaChainSolution(2, 0, [
+      "void",
+      "normal",
+      "void",
+      "normal",
+      "void",
+      "normal",
+    ]),
+    designIntent:
+      "Hand-authored reverse AREA ribbon: the chain starts on the opposite inner side and moves the manual lane to the left edge.",
+  },
+  "2-4-1": {
+    rows: [
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "chain-pulse",
+    solution: areaChainSolution(1, 3, [
+      "normal",
+      "normal",
+      "void",
+      "void",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored pulse chain: two adjacent outer captures create a short burst before the route opens again.",
+  },
+  "2-4-2": {
+    rows: [
+      ["normal", "normal", "veil", "normal"],
+      ["void", "normal", "veil", "normal"],
+      ["void", "normal", "veil", "normal"],
+      ["normal", "normal", "veil", "normal"],
+      ["normal", "normal", "veil", "normal"],
+      ["void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "chain-switch",
+    solution: areaChainSolution(2, 0, [
+      "normal",
+      "void",
+      "void",
+      "normal",
+      "normal",
+      "void",
+    ]),
+    designIntent:
+      "Hand-authored switching chain: the AREA anchor begins on the right and leaves a left-edge timing lane to read between discharges.",
+  },
+  "2-4-3": {
+    rows: [
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "normal"],
+      ["normal", "veil", "normal", "void"],
+      ["normal", "veil", "normal", "normal"],
+    ],
+    difficultyTag: "chain-ladder",
+    solution: areaChainSolution(1, 3, [
+      "void",
+      "void",
+      "normal",
+      "normal",
+      "void",
+      "normal",
+    ]),
+    designIntent:
+      "Hand-authored ladder chain: the manual lane stays closed for two rows, opens for two, then closes before the final handoff.",
+  },
   "2-1-1": {
     rows: [
       ["normal", "normal", "void", "void"],
@@ -327,6 +453,36 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
 
 function authoredSolution(actions: readonly AuthoredAction[]): SolutionStep[] {
   return actions.map((action, sequence) => ({ ...action, sequence }));
+}
+
+function areaChainSolution(
+  anchorX: number,
+  edgeX: number,
+  edgeRows: readonly CubeType[]
+): SolutionStep[] {
+  const actions: AuthoredAction[] = [
+    { rotation: 4, action: "mark", x: anchorX, z: 0, timing: "settled" },
+    { rotation: 5, action: "capture", x: anchorX, z: 0, timing: "settled" },
+  ];
+  edgeRows.forEach((type, offset) => {
+    if (type !== "normal") return;
+    const rotation = 5 + offset;
+    actions.push(
+      { rotation, action: "mark", x: edgeX, z: 0, timing: "settled" },
+      { rotation, action: "capture", x: edgeX, z: 0, timing: "settled" }
+    );
+    if (offset < 3)
+      actions.push({ rotation, action: "area", timing: "settled" });
+  });
+  for (const rotation of [5, 6, 7]) {
+    if (
+      !actions.some(
+        action => action.rotation === rotation && action.action === "area"
+      )
+    )
+      actions.push({ rotation, action: "area", timing: "settled" });
+  }
+  return authoredSolution(actions);
 }
 
 function buildHandAuthoredPuzzle(

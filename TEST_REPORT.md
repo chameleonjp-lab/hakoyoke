@@ -45,7 +45,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - AREAの1回消費、VEIL捕獲によるアンカー再生成
 - 必要キューブ全回収、VOID非捕獲
 - 登録済み規定回転数とヘッドレス再生結果の一致
-- Stage 1全12問（AREAなし→AREA導入→6つの手設計ルート）、Stage 2 Wave 1–2のAREAなしルート6問、序盤18問の手設計タグ
+- Stage 1全12問（AREAなし→AREA導入→6つの手設計ルート）、Stage 2全12問（AREAなしルート→3回連鎖するAREA局面）、序盤24問の手設計タグ
 - JSONと検証レポートが正本から生成した内容と完全一致
 
 問題ごとの値は[LEVEL_VALIDATION_REPORT.md](./LEVEL_VALIDATION_REPORT.md)に自動出力します。
