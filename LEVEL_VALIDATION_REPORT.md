@@ -72,10 +72,10 @@
 | STAGE-6-W1-P02 | Stage 6 | 1 | 6×8 | 7 | six-deep-mirror | 601034 | 30 | 18 | 4 | PASS |
 | STAGE-6-W2-P01 | Stage 6 | 2 | 6×8 | 7 | six-deep-pulse | 602017 | 29 | 19 | 4 | PASS |
 | STAGE-6-W2-P02 | Stage 6 | 2 | 6×8 | 6 | six-deep-return | 602034 | 29 | 19 | 4 | PASS |
-| STAGE-6-W3-P01 | Stage 6 | 3 | 6×9 | 8 | chain-protect | 603017 | 29 | 25 | 5 | PASS |
-| STAGE-6-W3-P02 | Stage 6 | 3 | 6×9 | 8 | chain-protect | 603034 | 29 | 25 | 5 | PASS |
-| STAGE-6-W4-P01 | Stage 6 | 4 | 6×9 | 5 | chain-protect | 604017 | 28 | 26 | 5 | PASS |
-| STAGE-6-W4-P02 | Stage 6 | 4 | 6×9 | 4 | chain-protect | 604034 | 28 | 26 | 5 | PASS |
+| STAGE-6-W3-P01 | Stage 6 | 3 | 6×9 | 8 | six-deep-long-ribbon | 603017 | 33 | 21 | 5 | PASS |
+| STAGE-6-W3-P02 | Stage 6 | 3 | 6×9 | 8 | six-deep-long-mirror | 603034 | 33 | 21 | 5 | PASS |
+| STAGE-6-W4-P01 | Stage 6 | 4 | 6×9 | 8 | six-deep-long-pulse | 604017 | 33 | 21 | 5 | PASS |
+| STAGE-6-W4-P02 | Stage 6 | 4 | 6×9 | 8 | six-deep-long-return | 604034 | 33 | 21 | 5 | PASS |
 | STAGE-7-W1-P01 | Stage 7 | 1 | 7×7 | 6 | chain-protect | 701017 | 22 | 27 | 4 | PASS |
 | STAGE-7-W1-P02 | Stage 7 | 1 | 7×7 | 6 | chain-protect | 701034 | 23 | 26 | 4 | PASS |
 | STAGE-7-W1-P03 | Stage 7 | 1 | 7×7 | 6 | chain-protect | 701051 | 22 | 27 | 4 | PASS |

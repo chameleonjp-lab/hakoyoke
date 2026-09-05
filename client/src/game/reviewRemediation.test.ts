@@ -416,6 +416,44 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("extends Stage 6 with authored nine-row AREA chains", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageSixLong = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 6 && puzzle.wave >= 3);
+
+    expect(stageSixLong.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "six-deep-long-ribbon",
+      "six-deep-long-mirror",
+      "six-deep-long-pulse",
+      "six-deep-long-return",
+    ]);
+    expect(stageSixLong.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      8, 8, 8, 8,
+    ]);
+    expect(stageSixLong.map(({ result }) => result.areaUses)).toEqual([
+      5, 5, 5, 5,
+    ]);
+    expect(
+      stageSixLong.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(stageSixLong.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(4);
+    expect(
+      stageSixLong.every(
+        ({ puzzle }) =>
+          puzzle.width === 6 &&
+          puzzle.depth === 9 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
