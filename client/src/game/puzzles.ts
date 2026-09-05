@@ -99,9 +99,9 @@ interface HandAuthoredDesign {
  * Early campaign puzzles are authored encounters rather than seeded variations.
  * Stage 1 teaches one decision at a time and then tests changing routes; Stage 2
  * continues that route reading without making AREA the only correct answer.
- * Stage 3 widens the route language and Stage 4 opens with longer chains
- * before the later waves return to the deterministic generator for scalable
- * chain/protection pressure.
+ * Stage 3 widens the route language and Stage 4 uses longer chains across
+ * both its short and long waves before later stages return to the
+ * deterministic generator for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -652,6 +652,126 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ),
     designIntent:
       "Hand-authored long return chain: the right-side AREA band persists while the far-left lane asks for an out-and-back route.",
+  },
+  "4-3-1": {
+    rows: [
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "long-chain-ladder",
+    solution: areaChainSolution(
+      1,
+      4,
+      [
+        "normal",
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 8, 10]
+    ),
+    designIntent:
+      "Hand-authored long ladder: one empty outer row delays the next AREA discharge, then three close handoffs rebuild the rhythm.",
+  },
+  "4-3-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "long-chain-switchback",
+    solution: areaChainSolution(
+      3,
+      0,
+      [
+        "normal",
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 8, 10]
+    ),
+    designIntent:
+      "Hand-authored long switchback: the left edge opens, pauses, and returns twice while the right AREA band keeps the middle readable.",
+  },
+  "4-4-1": {
+    rows: [
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "long-chain-delay",
+    solution: areaChainSolution(
+      1,
+      4,
+      [
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 8, 11]
+    ),
+    designIntent:
+      "Hand-authored long delay: the outer lane is available early, disappears for two rows, then reopens only near the final handoff.",
+  },
+  "4-4-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "long-chain-braid",
+    solution: areaChainSolution(
+      3,
+      0,
+      [
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 8, 11]
+    ),
+    designIntent:
+      "Hand-authored long braid: paired outer captures split around two gaps, so the player must keep the next safe handoff in mind.",
   },
   "2-1-1": {
     rows: [

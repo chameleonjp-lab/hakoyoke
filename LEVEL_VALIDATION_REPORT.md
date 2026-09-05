@@ -52,10 +52,10 @@
 | STAGE-4-W1-P02 | Stage 4 | 1 | 5×7 | 6 | long-chain-mirror | 401034 | 26 | 9 | 4 | PASS |
 | STAGE-4-W2-P01 | Stage 4 | 2 | 5×7 | 6 | long-chain-pulse | 402017 | 26 | 9 | 4 | PASS |
 | STAGE-4-W2-P02 | Stage 4 | 2 | 5×7 | 6 | long-chain-return | 402034 | 25 | 10 | 4 | PASS |
-| STAGE-4-W3-P01 | Stage 4 | 3 | 5×8 | 6 | chain | 403017 | 25 | 15 | 4 | PASS |
-| STAGE-4-W3-P02 | Stage 4 | 3 | 5×8 | 5 | chain | 403034 | 25 | 15 | 4 | PASS |
-| STAGE-4-W4-P01 | Stage 4 | 4 | 5×8 | 6 | chain | 404017 | 25 | 15 | 4 | PASS |
-| STAGE-4-W4-P02 | Stage 4 | 4 | 5×8 | 5 | chain | 404034 | 25 | 15 | 4 | PASS |
+| STAGE-4-W3-P01 | Stage 4 | 3 | 5×8 | 7 | long-chain-ladder | 403017 | 29 | 11 | 4 | PASS |
+| STAGE-4-W3-P02 | Stage 4 | 3 | 5×8 | 7 | long-chain-switchback | 403034 | 29 | 11 | 4 | PASS |
+| STAGE-4-W4-P01 | Stage 4 | 4 | 5×8 | 7 | long-chain-delay | 404017 | 29 | 11 | 4 | PASS |
+| STAGE-4-W4-P02 | Stage 4 | 4 | 5×8 | 7 | long-chain-braid | 404034 | 29 | 11 | 4 | PASS |
 | STAGE-5-W1-P01 | Stage 5 | 1 | 6×6 | 5 | chain | 501017 | 20 | 16 | 3 | PASS |
 | STAGE-5-W1-P02 | Stage 5 | 1 | 6×6 | 3 | chain | 501034 | 19 | 17 | 3 | PASS |
 | STAGE-5-W1-P03 | Stage 5 | 1 | 6×6 | 3 | chain | 501051 | 19 | 17 | 3 | PASS |
