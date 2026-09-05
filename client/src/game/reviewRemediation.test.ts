@@ -253,24 +253,28 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
-  it("extends authored AREA chains into the long Stage 4 opening", () => {
+  it("extends authored AREA chains across the full Stage 4 sequence", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
     const stageFourOpening = puzzles
       .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
-      .filter(({ puzzle }) => puzzle.stage === 4 && puzzle.wave <= 2);
+      .filter(({ puzzle }) => puzzle.stage === 4);
 
     expect(stageFourOpening.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
       "long-chain-ribbon",
       "long-chain-mirror",
       "long-chain-pulse",
       "long-chain-return",
+      "long-chain-ladder",
+      "long-chain-switchback",
+      "long-chain-delay",
+      "long-chain-braid",
     ]);
     expect(stageFourOpening.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
-      6, 6, 6, 6,
+      6, 6, 6, 6, 7, 7, 7, 7,
     ]);
     expect(stageFourOpening.map(({ result }) => result.areaUses)).toEqual([
-      4, 4, 4, 4,
+      4, 4, 4, 4, 4, 4, 4, 4,
     ]);
     expect(
       stageFourOpening.every(({ puzzle }) =>
@@ -281,7 +285,7 @@ describe("post-review regressions", () => {
       new Set(
         stageFourOpening.map(({ puzzle }) => JSON.stringify(puzzle.layout))
       )
-    ).toHaveLength(4);
+    ).toHaveLength(8);
     expect(
       stageFourOpening.every(
         ({ puzzle }) =>
