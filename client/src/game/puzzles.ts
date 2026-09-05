@@ -100,9 +100,9 @@ interface HandAuthoredDesign {
  * Stage 1 teaches one decision at a time and then tests changing routes; Stage 2
  * continues that route reading without making AREA the only correct answer.
  * Stage 3 widens the route language, Stage 4 uses longer chains across both
- * its short and long waves, and Stage 5 opens with six-column chain bands
- * before later stages return to the deterministic generator for scalable
- * chain/protection pressure.
+ * its short and long waves, and Stage 5 uses six-column chain bands across
+ * all four waves before later stages return to the deterministic generator
+ * for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -895,6 +895,126 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ]),
     designIntent:
       "Hand-authored six-column return: the right AREA band holds the center while the far-left lane asks for an out-and-back route.",
+  },
+  "5-3-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "six-long-ribbon",
+    solution: areaChainSolution(
+      2,
+      5,
+      ["normal", "normal", "void", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored six-column long ribbon: four AREA discharges keep the inner band readable while the far-right lane changes rhythm over seven rows.",
+  },
+  "5-3-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "six-long-mirror",
+    solution: areaChainSolution(
+      3,
+      0,
+      ["normal", "normal", "void", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored mirrored six-column chain: the AREA band moves right and the far-left lane alternates across the longer approach.",
+  },
+  "5-3-3": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "six-long-pulse",
+    solution: areaChainSolution(
+      2,
+      5,
+      ["normal", "void", "normal", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored six-column pulse: the outer lane opens, closes, then returns after a second timing change while the AREA band continues forward.",
+  },
+  "5-4-1": {
+    rows: [
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "six-long-gate",
+    solution: areaChainSolution(
+      3,
+      0,
+      ["void", "normal", "normal", "void", "normal", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored six-column gate: the first outer gap delays the manual route, then two close openings force a planned side return.",
+  },
+  "5-4-2": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "six-long-switchback",
+    solution: areaChainSolution(
+      2,
+      5,
+      ["normal", "normal", "void", "void", "normal", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored six-column switchback: the far-right route pauses for two rows, so each AREA handoff must be read instead of held.",
+  },
+  "5-4-3": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "six-long-delay",
+    solution: areaChainSolution(
+      3,
+      0,
+      ["normal", "void", "void", "normal", "normal", "void", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored six-column delay: the left route disappears twice while the right AREA band continues, testing memory of the next safe opening.",
   },
   "2-1-1": {
     rows: [
