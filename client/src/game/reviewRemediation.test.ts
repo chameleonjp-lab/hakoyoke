@@ -213,6 +213,46 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("adds wide authored AREA chains after the Stage 3 route lessons", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageThreeChains = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 3 && puzzle.wave >= 3);
+
+    expect(stageThreeChains.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "wide-area-ribbon",
+      "wide-area-edge",
+      "wide-area-switch",
+      "wide-area-pulse",
+      "wide-area-return",
+      "wide-area-ladder",
+    ]);
+    expect(stageThreeChains.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      5, 4, 5, 4, 4, 4,
+    ]);
+    expect(stageThreeChains.map(({ result }) => result.areaUses)).toEqual([
+      3, 3, 3, 3, 3, 3,
+    ]);
+    expect(
+      stageThreeChains.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(
+        stageThreeChains.map(({ puzzle }) => JSON.stringify(puzzle.layout))
+      )
+    ).toHaveLength(6);
+    expect(
+      stageThreeChains.every(
+        ({ puzzle }) =>
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
