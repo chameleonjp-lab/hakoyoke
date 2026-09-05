@@ -377,6 +377,75 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     designIntent:
       "Hand-authored ladder chain: the manual lane stays closed for two rows, opens for two, then closes before the final handoff.",
   },
+  "3-1-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void"],
+      ["normal", "normal", "void", "normal", "normal"],
+      ["void", "normal", "normal", "normal", "void"],
+      ["normal", "void", "veil", "void", "normal"],
+    ],
+    difficultyTag: "wide-center",
+    designIntent:
+      "Hand-authored wide center route: the safe band expands, breaks around a central VOID, then reconnects through the far edge pair.",
+  },
+  "3-1-2": {
+    rows: [
+      ["normal", "normal", "void", "void", "normal"],
+      ["void", "normal", "normal", "normal", "void"],
+      ["normal", "void", "veil", "void", "normal"],
+      ["void", "normal", "normal", "normal", "void"],
+    ],
+    difficultyTag: "wide-split",
+    designIntent:
+      "Hand-authored wide split route: two outer banks alternate with a three-cell bridge, forcing a clear side choice on every row.",
+  },
+  "3-1-3": {
+    rows: [
+      ["normal", "void", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void"],
+      ["normal", "normal", "void", "normal", "normal"],
+      ["void", "normal", "normal", "normal", "void"],
+    ],
+    difficultyTag: "wide-cross",
+    designIntent:
+      "Hand-authored wide crossing route: the center opens only once, while the outer pairs trade places across the remaining rows.",
+  },
+  "3-2-1": {
+    rows: [
+      ["normal", "void", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void"],
+      ["normal", "normal", "void", "normal", "normal"],
+      ["void", "normal", "normal", "normal", "void"],
+      ["normal", "void", "veil", "void", "normal"],
+    ],
+    difficultyTag: "long-braid",
+    designIntent:
+      "Hand-authored long braid: alternating outer pairs and a delayed center VEIL create a five-row route with two timing changes.",
+  },
+  "3-2-2": {
+    rows: [
+      ["void", "normal", "normal", "normal", "void"],
+      ["normal", "void", "veil", "void", "normal"],
+      ["normal", "normal", "void", "normal", "normal"],
+      ["void", "normal", "normal", "normal", "void"],
+      ["normal", "void", "normal", "void", "normal"],
+    ],
+    difficultyTag: "long-gate",
+    designIntent:
+      "Hand-authored long gate route: a central gap divides two broad passages before the final row restores both outer lanes.",
+  },
+  "3-2-3": {
+    rows: [
+      ["normal", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "void", "normal"],
+      ["void", "void", "normal", "normal", "void"],
+      ["normal", "normal", "void", "normal", "normal"],
+    ],
+    difficultyTag: "long-return",
+    designIntent:
+      "Hand-authored long return route: the safe path narrows to a right-center thread, then widens again for a planned return.",
+  },
   "2-1-1": {
     rows: [
       ["normal", "normal", "void", "void"],
