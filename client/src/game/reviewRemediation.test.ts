@@ -133,6 +133,44 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageOneRoutes = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 1 && puzzle.wave >= 3);
+
+    expect(stageOneRoutes.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "read-branch",
+      "read-cross",
+      "read-corner",
+      "read-braid",
+      "read-return",
+      "read-ring",
+    ]);
+    expect(stageOneRoutes.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      2, 2, 2, 3, 3, 3,
+    ]);
+    expect(stageOneRoutes.map(({ result }) => result.areaUses)).toEqual([
+      0, 0, 0, 0, 0, 0,
+    ]);
+    expect(
+      stageOneRoutes.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(stageOneRoutes.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(6);
+    expect(
+      stageOneRoutes.every(
+        ({ puzzle }) =>
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("validates all 88 complete formations with registered solution replay", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
