@@ -99,8 +99,9 @@ interface HandAuthoredDesign {
  * Early campaign puzzles are authored encounters rather than seeded variations.
  * Stage 1 teaches one decision at a time and then tests changing routes; Stage 2
  * continues that route reading without making AREA the only correct answer.
- * Stage 3 widens the route language before the later waves return to the
- * deterministic generator for scalable chain/protection pressure.
+ * Stage 3 widens the route language and Stage 4 opens with longer chains
+ * before the later waves return to the deterministic generator for scalable
+ * chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -572,6 +573,86 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     designIntent:
       "Hand-authored AREA ladder: the manual edge opens in two separated steps, so the player must read each handoff instead of holding position.",
   },
+  "4-1-1": {
+    rows: [
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "long-chain-ribbon",
+    solution: areaChainSolution(
+      1,
+      4,
+      ["normal", "normal", "void", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored long chain: four AREA discharges clear the left three lanes while the far-right lane changes rhythm over seven rows.",
+  },
+  "4-1-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "long-chain-mirror",
+    solution: areaChainSolution(
+      3,
+      0,
+      ["normal", "normal", "void", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored mirrored long chain: the safe AREA band moves to the right and leaves an alternating far-left capture lane.",
+  },
+  "4-2-1": {
+    rows: [
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "void"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+      ["normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "long-chain-pulse",
+    solution: areaChainSolution(
+      1,
+      4,
+      ["void", "normal", "normal", "void", "normal", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored long pulse: the outer lane opens in a pair, closes once, then stays open through the final handoff.",
+  },
+  "4-2-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+      ["void", "void", "normal", "veil", "normal"],
+      ["normal", "void", "normal", "veil", "normal"],
+    ],
+    difficultyTag: "long-chain-return",
+    solution: areaChainSolution(
+      3,
+      0,
+      ["normal", "void", "void", "normal", "normal", "void", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored long return chain: the right-side AREA band persists while the far-left lane asks for an out-and-back route.",
+  },
   "2-1-1": {
     rows: [
       ["normal", "normal", "void", "void"],
@@ -653,7 +734,8 @@ function authoredSolution(actions: readonly AuthoredAction[]): SolutionStep[] {
 function areaChainSolution(
   anchorX: number,
   edgeX: number,
-  edgeRows: readonly CubeType[]
+  edgeRows: readonly CubeType[],
+  areaRotations: readonly number[] = [5, 6, 7]
 ): SolutionStep[] {
   const actions: AuthoredAction[] = [
     { rotation: 4, action: "mark", x: anchorX, z: 0, timing: "settled" },
@@ -666,10 +748,10 @@ function areaChainSolution(
       { rotation, action: "mark", x: edgeX, z: 0, timing: "settled" },
       { rotation, action: "capture", x: edgeX, z: 0, timing: "settled" }
     );
-    if (offset < 3)
+    if (offset < areaRotations.length)
       actions.push({ rotation, action: "area", timing: "settled" });
   });
-  for (const rotation of [5, 6, 7]) {
+  for (const rotation of areaRotations) {
     if (
       !actions.some(
         action => action.rotation === rotation && action.action === "area"
