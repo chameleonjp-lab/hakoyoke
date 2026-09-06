@@ -172,14 +172,14 @@ describe("CUBIC ORDEAL deterministic rules", () => {
     );
   });
 
-  it("contains a representative one-shot AREA chain with MARK protection", () => {
+  it("contains a representative authored long AREA chain", () => {
     const representative = generatePuzzles().find(
       puzzle => puzzle.id === "STAGE-6-W3-P01"
     );
-    expect(representative?.designIntent).toMatch(/one-shot AREA/);
+    expect(representative?.designIntent).toMatch(/five AREA discharges/);
     expect(
       representative?.solution.filter(step => step.action === "area").length
-    ).toBeGreaterThanOrEqual(2);
+    ).toBe(5);
     expect(
       representative?.layout.filter(item => item.type === "veil").length
     ).toBeGreaterThan(2);

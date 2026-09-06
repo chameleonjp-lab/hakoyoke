@@ -101,9 +101,9 @@ interface HandAuthoredDesign {
  * continues that route reading without making AREA the only correct answer.
  * Stage 3 widens the route language, Stage 4 uses longer chains across both
  * its short and long waves, Stage 5 uses six-column chain bands across all
- * four waves, and Stage 6 opens with deeper six-column chains before later
- * stages return to the deterministic generator for scalable chain/protection
- * pressure.
+ * four waves, and Stage 6 uses deeper six-column chains across all four waves
+ * before later stages return to the deterministic generator for scalable
+ * chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -1136,6 +1136,134 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ),
     designIntent:
       "Hand-authored six-column deep return: the left route leaves and revisits the board edge while the right AREA band holds the center.",
+  },
+  "6-3-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "six-deep-long-ribbon",
+    solution: areaChainSolution(
+      2,
+      5,
+      [
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored six-column long ribbon: five AREA discharges carry the inner band through nine rows while the far edge opens in delayed beats.",
+  },
+  "6-3-2": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "six-deep-long-mirror",
+    solution: areaChainSolution(
+      3,
+      0,
+      [
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored mirrored six-column long chain: the AREA band holds the right side while the far-left lane alternates across the deep approach.",
+  },
+  "6-4-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "six-deep-long-pulse",
+    solution: areaChainSolution(
+      2,
+      5,
+      [
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored six-column long pulse: the manual outer lane opens in short bursts, then stays available for the final deep handoff.",
+  },
+  "6-4-2": {
+    rows: [
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "six-deep-long-return",
+    solution: areaChainSolution(
+      3,
+      0,
+      [
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored six-column long return: the left edge disappears and returns repeatedly while five AREA discharges preserve the right route.",
   },
   "2-1-1": {
     rows: [
