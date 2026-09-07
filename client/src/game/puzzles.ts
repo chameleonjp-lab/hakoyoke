@@ -1385,6 +1385,186 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     designIntent:
       "Hand-authored seven-column return: the right AREA band holds the middle while the far-left route leaves and revisits the edge.",
   },
+  "7-3-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "seven-wide-long-ribbon",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column long ribbon: four AREA discharges carry the inner band through eight rows while the far edge opens in delayed beats.",
+  },
+  "7-3-2": {
+    rows: [
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "seven-wide-long-mirror",
+    solution: areaChainSolution(
+      4,
+      0,
+      [
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored mirrored seven-column chain: four AREA discharges hold the right side while the far-left lane alternates across the deeper approach.",
+  },
+  "7-3-3": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "seven-wide-long-pulse",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column long pulse: four AREA discharges carry the inner band while the outer lane opens in short bursts and returns for a late handoff.",
+  },
+  "7-4-1": {
+    rows: [
+      ["void", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+    ],
+    difficultyTag: "seven-wide-long-gate",
+    solution: areaChainSolution(
+      3,
+      0,
+      [
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column long gate: four AREA discharges carry the inner band while the left route pauses behind a two-cell throat before rebuilding its handoff near the end.",
+  },
+  "7-4-2": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "seven-wide-long-switchback",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "normal",
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column long switchback: four AREA discharges carry the inner band while the far-right route disappears twice and returns only after the next rhythm is established.",
+  },
+  "7-4-3": {
+    rows: [
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "seven-wide-long-return",
+    solution: areaChainSolution(
+      4,
+      0,
+      [
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column long return: four AREA discharges hold the middle while the far-left route leaves, waits, and revisits the edge.",
+  },
   "2-1-1": {
     rows: [
       ["normal", "normal", "void", "void"],

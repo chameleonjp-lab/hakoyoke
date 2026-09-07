@@ -498,6 +498,46 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("extends Stage 7 with authored eight-row AREA chains", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageSevenLong = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 7 && puzzle.wave >= 3);
+
+    expect(stageSevenLong.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "seven-wide-long-ribbon",
+      "seven-wide-long-mirror",
+      "seven-wide-long-pulse",
+      "seven-wide-long-gate",
+      "seven-wide-long-switchback",
+      "seven-wide-long-return",
+    ]);
+    expect(stageSevenLong.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      7, 7, 7, 7, 7, 7,
+    ]);
+    expect(stageSevenLong.map(({ result }) => result.areaUses)).toEqual([
+      4, 4, 4, 4, 4, 4,
+    ]);
+    expect(
+      stageSevenLong.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(stageSevenLong.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(6);
+    expect(
+      stageSevenLong.every(
+        ({ puzzle }) =>
+          puzzle.width === 7 &&
+          puzzle.depth === 8 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
