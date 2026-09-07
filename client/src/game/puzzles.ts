@@ -101,9 +101,9 @@ interface HandAuthoredDesign {
  * continues that route reading without making AREA the only correct answer.
  * Stage 3 widens the route language, Stage 4 uses longer chains across both
  * its short and long waves, Stage 5 uses six-column chain bands across all
- * four waves, and Stage 6 uses deeper six-column chains across all four waves
- * before later stages return to the deterministic generator for scalable
- * chain/protection pressure.
+ * four waves, Stage 6 uses deeper six-column chains across all four waves,
+ * and Stage 7 opens with wider seven-column chains before later stages return
+ * to the deterministic generator for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -1264,6 +1264,126 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ),
     designIntent:
       "Hand-authored six-column long return: the left edge disappears and returns repeatedly while five AREA discharges preserve the right route.",
+  },
+  "7-1-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "seven-wide-ribbon",
+    solution: areaChainSolution(
+      2,
+      6,
+      ["normal", "normal", "void", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column ribbon: the inner AREA band stays fixed while the far-right lane opens and closes across the wider approach.",
+  },
+  "7-1-2": {
+    rows: [
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "seven-wide-mirror",
+    solution: areaChainSolution(
+      4,
+      0,
+      ["normal", "normal", "void", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column mirror: the AREA band shifts right and the far-left lane asks for repeated short returns.",
+  },
+  "7-1-3": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "seven-wide-pulse",
+    solution: areaChainSolution(
+      2,
+      6,
+      ["normal", "void", "normal", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column pulse: the outer lane alternates in short bursts before returning for the final wide handoff.",
+  },
+  "7-2-1": {
+    rows: [
+      ["void", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+    ],
+    difficultyTag: "seven-wide-gate",
+    solution: areaChainSolution(
+      3,
+      0,
+      ["void", "normal", "normal", "void", "normal", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column gate: a two-cell VOID throat delays the left route before two close openings restore the handoff.",
+  },
+  "7-2-2": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "seven-wide-switchback",
+    solution: areaChainSolution(
+      2,
+      6,
+      ["normal", "void", "void", "normal", "normal", "void", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column switchback: the far-right lane disappears twice, so the next safe opening must be remembered between AREA discharges.",
+  },
+  "7-2-3": {
+    rows: [
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "seven-wide-return",
+    solution: areaChainSolution(
+      4,
+      0,
+      ["normal", "void", "normal", "normal", "void", "normal", "normal"],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored seven-column return: the right AREA band holds the middle while the far-left route leaves and revisits the edge.",
   },
   "2-1-1": {
     rows: [

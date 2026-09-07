@@ -454,6 +454,50 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("opens Stage 7 with authored seven-column AREA chains", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageSevenOpening = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 7 && puzzle.wave <= 2);
+
+    expect(stageSevenOpening.map(({ puzzle }) => puzzle.difficultyTag)).toEqual(
+      [
+        "seven-wide-ribbon",
+        "seven-wide-mirror",
+        "seven-wide-pulse",
+        "seven-wide-gate",
+        "seven-wide-switchback",
+        "seven-wide-return",
+      ]
+    );
+    expect(stageSevenOpening.map(({ puzzle }) => puzzle.requiredRolls)).toEqual(
+      [6, 6, 6, 6, 6, 6]
+    );
+    expect(stageSevenOpening.map(({ result }) => result.areaUses)).toEqual([
+      4, 4, 4, 4, 4, 4,
+    ]);
+    expect(
+      stageSevenOpening.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(
+        stageSevenOpening.map(({ puzzle }) => JSON.stringify(puzzle.layout))
+      )
+    ).toHaveLength(6);
+    expect(
+      stageSevenOpening.every(
+        ({ puzzle }) =>
+          puzzle.width === 7 &&
+          puzzle.depth === 7 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
