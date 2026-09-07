@@ -102,8 +102,9 @@ interface HandAuthoredDesign {
  * Stage 3 widens the route language, Stage 4 uses longer chains across both
  * its short and long waves, Stage 5 uses six-column chain bands across all
  * four waves, Stage 6 uses deeper six-column chains across all four waves,
- * and Stage 7 opens with wider seven-column chains before later stages return
- * to the deterministic generator for scalable chain/protection pressure.
+ * Stage 7 opens with wider seven-column chains, and Stage 8 extends that
+ * language into deeper opening waves before later stages return to the
+ * deterministic generator for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -1564,6 +1565,130 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ),
     designIntent:
       "Hand-authored seven-column long return: four AREA discharges hold the middle while the far-left route leaves, waits, and revisits the edge.",
+  },
+  "8-1-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "eight-wide-ribbon",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "normal",
+        "void",
+        "void",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored eight-row ribbon: the inner AREA band stays fixed while the far-right lane opens in delayed beats across the deeper approach.",
+  },
+  "8-1-2": {
+    rows: [
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "eight-wide-mirror",
+    solution: areaChainSolution(
+      4,
+      0,
+      [
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8]
+    ),
+    designIntent:
+      "Hand-authored eight-row mirror: the right AREA band holds the middle while the far-left lane alternates across the deeper approach.",
+  },
+  "8-2-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "eight-wide-long-pulse",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored nine-row pulse: five AREA discharges carry the inner band while the outer lane appears in short bursts and returns late.",
+  },
+  "8-2-2": {
+    rows: [
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "eight-wide-long-return",
+    solution: areaChainSolution(
+      4,
+      0,
+      [
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored nine-row return: five AREA discharges hold the middle while the far-left route leaves, waits, and revisits the edge.",
   },
   "2-1-1": {
     rows: [
