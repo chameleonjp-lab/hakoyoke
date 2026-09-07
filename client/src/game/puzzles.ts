@@ -103,7 +103,7 @@ interface HandAuthoredDesign {
  * its short and long waves, Stage 5 uses six-column chain bands across all
  * four waves, Stage 6 uses deeper six-column chains across all four waves,
  * Stage 7 opens with wider seven-column chains, and Stage 8 extends that
- * language into deeper opening waves before later stages return to the
+ * language through all four waves before the Final returns to the
  * deterministic generator for scalable chain/protection pressure.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
@@ -1689,6 +1689,134 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     ),
     designIntent:
       "Hand-authored nine-row return: five AREA discharges hold the middle while the far-left route leaves, waits, and revisits the edge.",
+  },
+  "8-3-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "eight-wide-gate",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored nine-row gate: five AREA discharges carry the inner band through a two-cell throat before the far edge opens again.",
+  },
+  "8-3-2": {
+    rows: [
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "eight-wide-switchback",
+    solution: areaChainSolution(
+      4,
+      0,
+      [
+        "normal",
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored nine-row switchback: the far-left route trades two-row openings with two-row pauses while the right AREA band stays readable.",
+  },
+  "8-4-1": {
+    rows: [
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+      ["void", "normal", "veil", "normal", "void", "void", "void"],
+      ["void", "normal", "veil", "normal", "void", "void", "normal"],
+    ],
+    difficultyTag: "eight-wide-ladder",
+    solution: areaChainSolution(
+      2,
+      6,
+      [
+        "normal",
+        "void",
+        "void",
+        "normal",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored nine-row ladder: the far-right lane opens in separated steps, so each AREA handoff requires a new position read.",
+  },
+  "8-4-2": {
+    rows: [
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["void", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+      ["normal", "void", "void", "normal", "veil", "normal", "void"],
+    ],
+    difficultyTag: "eight-wide-delay",
+    solution: areaChainSolution(
+      4,
+      0,
+      [
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "void",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+      ],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored nine-row delay: the far-left lane reappears after three pauses, then stays open for the final AREA handoffs.",
   },
   "2-1-1": {
     rows: [

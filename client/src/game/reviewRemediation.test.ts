@@ -609,6 +609,80 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("adds authored gate and switchback chains to Stage 8 Wave 3", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageEightWaveThree = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 8 && puzzle.wave === 3);
+
+    expect(
+      stageEightWaveThree.map(({ puzzle }) => puzzle.difficultyTag)
+    ).toEqual(["eight-wide-gate", "eight-wide-switchback"]);
+    expect(
+      stageEightWaveThree.map(({ puzzle }) => puzzle.requiredRolls)
+    ).toEqual([8, 8]);
+    expect(stageEightWaveThree.map(({ result }) => result.areaUses)).toEqual([
+      5, 5,
+    ]);
+    expect(
+      stageEightWaveThree.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(
+        stageEightWaveThree.map(({ puzzle }) => JSON.stringify(puzzle.layout))
+      )
+    ).toHaveLength(2);
+    expect(
+      stageEightWaveThree.every(
+        ({ puzzle }) =>
+          puzzle.width === 7 &&
+          puzzle.depth === 9 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
+  it("closes Stage 8 with authored ladder and delay chains", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const stageEightWaveFour = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 8 && puzzle.wave === 4);
+
+    expect(
+      stageEightWaveFour.map(({ puzzle }) => puzzle.difficultyTag)
+    ).toEqual(["eight-wide-ladder", "eight-wide-delay"]);
+    expect(
+      stageEightWaveFour.map(({ puzzle }) => puzzle.requiredRolls)
+    ).toEqual([8, 8]);
+    expect(stageEightWaveFour.map(({ result }) => result.areaUses)).toEqual([
+      5, 5,
+    ]);
+    expect(
+      stageEightWaveFour.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(
+        stageEightWaveFour.map(({ puzzle }) => JSON.stringify(puzzle.layout))
+      )
+    ).toHaveLength(2);
+    expect(
+      stageEightWaveFour.every(
+        ({ puzzle }) =>
+          puzzle.width === 7 &&
+          puzzle.depth === 9 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
