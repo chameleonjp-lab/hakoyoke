@@ -92,10 +92,10 @@
 | STAGE-8-W1-P02 | Stage 8 | 1 | 7×8 | 7 | eight-wide-mirror | 801034 | 30 | 26 | 4 | PASS |
 | STAGE-8-W2-P01 | Stage 8 | 2 | 7×9 | 8 | eight-wide-long-pulse | 802017 | 33 | 30 | 5 | PASS |
 | STAGE-8-W2-P02 | Stage 8 | 2 | 7×9 | 8 | eight-wide-long-return | 802034 | 33 | 30 | 5 | PASS |
-| STAGE-8-W3-P01 | Stage 8 | 3 | 7×9 | 5 | chain-protect | 803017 | 28 | 35 | 5 | PASS |
-| STAGE-8-W3-P02 | Stage 8 | 3 | 7×9 | 8 | chain-protect | 803034 | 29 | 34 | 5 | PASS |
-| STAGE-8-W4-P01 | Stage 8 | 4 | 7×9 | 8 | chain-protect | 804017 | 29 | 34 | 5 | PASS |
-| STAGE-8-W4-P02 | Stage 8 | 4 | 7×9 | 7 | chain-protect | 804034 | 28 | 35 | 5 | PASS |
+| STAGE-8-W3-P01 | Stage 8 | 3 | 7×9 | 8 | eight-wide-gate | 803017 | 33 | 30 | 5 | PASS |
+| STAGE-8-W3-P02 | Stage 8 | 3 | 7×9 | 8 | eight-wide-switchback | 803034 | 33 | 30 | 5 | PASS |
+| STAGE-8-W4-P01 | Stage 8 | 4 | 7×9 | 8 | eight-wide-ladder | 804017 | 32 | 31 | 5 | PASS |
+| STAGE-8-W4-P02 | Stage 8 | 4 | 7×9 | 8 | eight-wide-delay | 804034 | 33 | 30 | 5 | PASS |
 | FINAL-W1-P01 | Final | 1 | 7×9 | 6 | chain-protect | 901017 | 28 | 35 | 5 | PASS |
 | FINAL-W2-P01 | Final | 2 | 7×9 | 4 | chain-protect | 902017 | 28 | 35 | 5 | PASS |
 | FINAL-W3-P01 | Final | 3 | 7×9 | 8 | chain-protect | 903017 | 29 | 34 | 5 | PASS |
