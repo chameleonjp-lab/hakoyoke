@@ -63,7 +63,7 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 
 正式URL、公開版、ゲーム識別子、名前保存キー、RPC名、8秒の時間切れは`ranking-manifest.json`と`client/src/lib/ranking.ts`で一致させます。公開SupabaseキーはブラウザRPC呼出しに限って使用し、secret/service-roleキーは含めません。
 
-公開受入には未完了の外部確認があります。現行のSupabase `public.games`登録値とmanifest（説明、シェア文、スコア範囲）の一致、およびGitHub Pagesの`/hakoyoke/`配下でのVite asset参照を確認する必要があります。リポジトリ側ではPages設定・デプロイworkflowをこのPRから変更せず、公開・`is_active`変更は受入担当の明示承認後に行います。
+公開受入には未完了の外部確認があります。現行のSupabase `public.games`登録値とmanifest（説明、シェア文、スコア範囲）の一致、およびGitHub Pagesの`/hakoyoke/`配下でのVite asset参照を確認する必要があります。PR01では、CI成功前にPagesへ公開しないよう、CIが作成した同一コミットのPages成果物を、成功した`workflow_run`から受け取って公開する構成へ変更します。公開・`is_active`変更は受入担当の明示承認後に行います。
 
 ## PR #1で行った削除監査（履歴）
 
