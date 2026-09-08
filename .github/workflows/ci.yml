@@ -96,6 +96,19 @@ jobs:
 
       - name: Production build
         run: pnpm build
+        env:
+          # Build the same base-path variant that GitHub Pages serves. The
+          # production server also serves this build at / for E2E checks.
+          VITE_BASE_PATH: /hakoyoke/
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-site-${{ github.sha }}
+          path: dist/public
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Install browser runtimes
         if: github.event_name != 'pull_request'
