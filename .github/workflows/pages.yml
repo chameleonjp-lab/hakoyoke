@@ -1,50 +1,40 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
-  push:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
     branches:
       - main
-    paths:
-      - ".github/workflows/pages.yml"
-      - "client/**"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "shared/**"
-      - "tsconfig*.json"
-      - "vite.config.ts"
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  group: pages
+  group: pages-main
   cancel-in-progress: true
 
 jobs:
   build:
+    if: >-
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Download verified Pages artifact
+        uses: actions/download-artifact@v5
         with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build static site
-        run: pnpm build
-        env:
-          VITE_BASE_PATH: /hakoyoke/
+          name: pages-site-${{ github.event.workflow_run.head_sha }}
+          path: dist/public
+          run-id: ${{ github.event.workflow_run.id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -53,6 +43,7 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist/public
+          if-no-files-found: error
 
   deploy:
     needs: build
