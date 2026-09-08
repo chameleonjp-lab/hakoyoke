@@ -55,6 +55,9 @@ async function startServer() {
     }
   });
 
+  // The CI build uses the GitHub Pages base path so the exact same static
+  // artifact can be published and served by the production E2E server.
+  app.use("/hakoyoke", express.static(staticPath));
   app.use(express.static(staticPath));
 
   // Handle client-side routing - serve index.html for all routes
