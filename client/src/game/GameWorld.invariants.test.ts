@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { GameWorld } from "./GameWorld";
+import { getTutorialPuzzle } from "./tutorial";
 import {
   DIFFICULTIES,
   initialStats,
@@ -67,6 +68,8 @@ type WorldInternals = {
   areas: Array<{ id: string; x: number; z: number; armed: boolean }>;
   stats: RunStats;
   tutorialStep: number;
+  duelTurn: number;
+  duelScore: [number, number];
   isRolling: boolean;
   rollElapsed: number;
   settleElapsed: number;
@@ -266,6 +269,114 @@ describe("GameWorld state invariants", () => {
     expect(state.tutorialStep).toBe(8);
     expect(state.phase).toBe("PUZZLE_RESULT");
     expect(state.banner).toBe("PERFECT // TRAINING COMPLETE");
+    world.dispose();
+  });
+
+  it("resets a failed tutorial PERFECT gate for repeated clean retries", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    command({ type: "start", mode: "TUTORIAL", difficulty: "BEGINNER" });
+    state.tutorialStep = 7;
+    state.currentPuzzle = getTutorialPuzzle(7)!;
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      state.phase = "CRUSHED";
+      state.stats = {
+        ...initialStats(4),
+        score: 900,
+        misses: 1,
+        areaMarks: 1,
+        perfect: false,
+      };
+      state.areas = [{ id: "stale-area", x: 1, z: 1, armed: true }];
+
+      state.advanceAfterResult();
+
+      expect(state.phase).toBe("TUTORIAL");
+      expect(state.currentPuzzle.id).toBe("TUTORIAL-GATE-08-PERFECT");
+      expect(state.stats.misses).toBe(0);
+      expect(state.stats.perfect).toBe(true);
+      expect(state.stats.score).toBe(0);
+      expect(state.areas).toEqual([]);
+    }
+
+    state.cubes[0] = { ...state.cubes[0]!, z: 1, previousZ: 1 };
+    state.marker = { x: 2, z: 1 };
+    state.markOrCapture();
+
+    expect(state.tutorialStep).toBe(8);
+    expect(state.phase).toBe("PUZZLE_RESULT");
+    expect(state.banner).toBe("PERFECT // TRAINING COMPLETE");
+    world.dispose();
+  });
+
+  it("retries every non-campaign GAME_OVER in its own mode", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    const custom = {
+      ...puzzle({ id: "CUSTOM-RETRY" }),
+      difficultyTag: "custom",
+      solution: [
+        { rotation: 0, action: "mark" as const, x: 1, z: 0, sequence: 0 },
+        {
+          rotation: 0,
+          action: "capture" as const,
+          x: 1,
+          z: 0,
+          sequence: 1,
+        },
+      ],
+    };
+
+    command({ type: "start", mode: "TUTORIAL", difficulty: "BEGINNER" });
+    state.tutorialStep = 2;
+    state.phase = "GAME_OVER";
+    command({ type: "retry" });
+    expect(state.mode).toBe("TUTORIAL");
+    expect(state.phase).toBe("TUTORIAL");
+    expect(state.currentPuzzle.id).toBe("TUTORIAL-GATE-03-CAPTURE");
+    expect(state.stats.perfect).toBe(true);
+
+    command({
+      type: "start",
+      mode: "PRACTICE",
+      difficulty: "NORMAL",
+      stage: 1,
+      wave: 1,
+      ordinal: 1,
+    });
+    state.phase = "GAME_OVER";
+    command({ type: "retry" });
+    expect(state.mode).toBe("PRACTICE");
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.banner).toBe("STAGE 1 // RETRY");
+
+    command({ type: "load-custom", puzzle: custom });
+    state.phase = "GAME_OVER";
+    command({ type: "retry" });
+    expect(state.mode).toBe("CREATE");
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.currentPuzzle.id).toBe("CUSTOM-RETRY");
+    expect(state.banner).toBe("CUSTOM ORDEAL // RETRY");
+
+    command({ type: "start", mode: "DUEL", difficulty: "NORMAL" });
+    state.duelScore = [1, 0];
+    state.duelTurn = 1;
+    state.phase = "GAME_OVER";
+    command({ type: "retry" });
+    expect(state.mode).toBe("DUEL");
+    expect(state.phase).toBe("STAGE_INTRO");
+    expect(state.duelScore).toEqual([1, 0]);
+    expect(state.duelTurn).toBe(1);
+    expect(state.banner).toBe("DUEL // PLAYER 2 // RETRY");
     world.dispose();
   });
 

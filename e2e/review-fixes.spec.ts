@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { installRankingMock } from "./ranking-mock";
+import { installGameCanvasStub, installRankingMock } from "./ranking-mock";
 
 async function completeTutorialMovementGate(
   page: import("@playwright/test").Page
@@ -15,6 +15,90 @@ async function completeTutorialMovementGate(
 
 test.beforeEach(async ({ page }) => {
   await installRankingMock(page);
+});
+
+test("非CampaignのGAME OVERは同じ問題の再試行とメニューへ復帰できる", async ({
+  page,
+}) => {
+  await installGameCanvasStub(page);
+  await page.addInitScript(() => {
+    window.addEventListener(
+      "cubic:snapshot",
+      event => {
+        const detail = (event as CustomEvent<{ e2eResult?: boolean }>).detail;
+        if (!detail?.e2eResult) event.stopImmediatePropagation();
+      },
+      true
+    );
+  });
+  let rpcRequests = 0;
+  page.on("request", request => {
+    if (request.url().includes("/rest/v1/rpc/")) rpcRequests += 1;
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /TUTORIAL/ }).click();
+  await expect(page.locator("canvas")).toBeVisible();
+
+  await page.evaluate(() => {
+    (window as Window & { terminalCommands?: unknown[] }).terminalCommands = [];
+    window.addEventListener("cubic:command", event => {
+      (
+        window as Window & { terminalCommands?: unknown[] }
+      ).terminalCommands?.push((event as CustomEvent).detail);
+    });
+    window.dispatchEvent(
+      new CustomEvent("cubic:snapshot", {
+        detail: {
+          e2eResult: true,
+          phase: "GAME_OVER",
+          mode: "TUTORIAL",
+          banner: "FALL INTO VOID",
+          stage: 1,
+          stats: { score: 0, platformRows: 10, misses: 0 },
+        },
+      })
+    );
+  });
+
+  await expect(
+    page.getByRole("heading", { name: "FALL INTO VOID" })
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "プレイヤーが足場の外へ出ました。安全なマスで止まってください。",
+      {
+        exact: true,
+      }
+    )
+  ).toBeVisible();
+  await page.getByRole("button", { name: /RETRY SAME ORDEAL/ }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as Window & {
+              terminalCommands?: Array<{ type?: string }>;
+            }
+          ).terminalCommands?.at(-1)?.type
+      )
+    )
+    .toBe("retry");
+
+  await page.getByRole("button", { name: /RETURN TO MENU/ }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as Window & {
+              terminalCommands?: Array<{ type?: string }>;
+            }
+          ).terminalCommands?.at(-1)?.type
+      )
+    )
+    .toBe("menu");
+  expect(rpcRequests).toBe(0);
 });
 
 test("CREATEは一般的な画面サイズで最終操作までスクロールできる", async ({

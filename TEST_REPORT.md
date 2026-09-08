@@ -11,9 +11,9 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 134件            |
+| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 137件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
-| ブラウザ操作   | `pnpm test:e2e`            | Chromium 25件、WebKit 25件                            | 最新CIを正とする — 50件 |
+| ブラウザ操作   | `pnpm test:e2e`            | Chromium 26件、WebKit 26件                            | 最新CIを正とする — 52件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
 | 公開受入       | iPhone Safari + Pages URL  | `/hakoyoke/` asset、manifest、Supabase登録値の突合    | BLOCKED — 外部受入待ち  |
 
@@ -62,6 +62,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - PERFECTの3得点帯、通常捕獲、AREA捕獲、MIND INDEX
 - Stage Plan、PRACTICEの問題番号、DUELの同問再試行
 - TUTORIALの8ゲート順序、操作ロック、GameWorldでの全ゲート達成
+- TUTORIAL最終PERFECTの複数回失敗後の局所リトライ、非Campaign GAME_OVERの各モード復帰
 - 88問すべての登録解法、移動可能性、全回収、VOID非捕獲
 - 表示名の前後空白・Unicode文字数・制御文字・20文字上限
 - 同じ`start_id`の開始再送、開始ボタン連打の単一化
@@ -83,6 +84,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - CAMPAIGNの空名拒否、対象外モードの名前なし開始とRPC未呼出し、開始RPC受付までの待機
 - CAMPAIGN開始の一時障害後のローカル継続と結果画面からの再送
 - GAME OVER結果画面の自動送信、再送、同率順位、再戦導線
+- 非Campaign GAME_OVERの同じ問題へのRETRY、メニュー復帰、ランキングRPC未呼出し
 - FINAL RESULTから新しい開始記録を作る新規キャンペーン導線
 - メニューへ戻った後も未送信結果を再送できる導線
 - CREATEの1280×720、870×400、320×480で最終操作までスクロールできること

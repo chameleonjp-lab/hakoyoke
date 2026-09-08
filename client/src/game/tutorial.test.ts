@@ -45,4 +45,9 @@ describe("authored tutorial gates", () => {
     expect(tutorialHint(0)).toBe(TUTORIAL_HINTS[0]);
     expect(tutorialHint(TUTORIAL_STAGE_COUNT)).toBe(TUTORIAL_HINTS.at(-1));
   });
+
+  it("describes the LOSS gate's NORMAL miss instead of a VOID capture", () => {
+    expect(TUTORIAL_HINTS[6]).toContain("NORMAL");
+    expect(TUTORIAL_HINTS[6]).not.toContain("VOID");
+  });
 });
