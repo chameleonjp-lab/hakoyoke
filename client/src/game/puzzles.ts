@@ -1,4 +1,4 @@
-/** Deterministic 88-puzzle archive with authored learning beats and generated continuation. */
+/** Deterministic 88-puzzle archive with authored learning beats throughout. */
 import {
   parsePuzzleDescriptor,
   validatePuzzleArchive,
@@ -102,9 +102,9 @@ interface HandAuthoredDesign {
  * Stage 3 widens the route language, Stage 4 uses longer chains across both
  * its short and long waves, Stage 5 uses six-column chain bands across all
  * four waves, Stage 6 uses deeper six-column chains across all four waves,
- * Stage 7 opens with wider seven-column chains, and Stage 8 extends that
- * language through all four waves before the Final returns to the
- * deterministic generator for scalable chain/protection pressure.
+ * Stage 7 opens with wider seven-column chains, Stage 8 extends that language
+ * through all four waves, and the Final tests alternating outer routes with
+ * the same fixed-grid rules.
  */
 const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
   "1-1-1": {
@@ -1818,6 +1818,90 @@ const HAND_AUTHORED_DESIGNS: Readonly<Record<string, HandAuthoredDesign>> = {
     designIntent:
       "Hand-authored nine-row delay: the far-left lane reappears after three pauses, then stays open for the final AREA handoffs.",
   },
+  "9-1-1": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "final-edge-cross",
+    solution: edgePathAreaChainSolution(
+      3,
+      [0, 0, 6, 6, 0, 6, 0, 6, 6],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored Final crossing: the centered AREA spine stays readable while the manual capture lane switches from side to side across the deep approach.",
+  },
+  "9-2-1": {
+    rows: [
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "final-return-pairs",
+    solution: edgePathAreaChainSolution(
+      3,
+      [6, 6, 0, 0, 6, 0, 0, 6, 6],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored Final pair return: the outer capture route holds each side for two rows, returns across the spine, and closes with another paired handoff.",
+  },
+  "9-3-1": {
+    rows: [
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+    ],
+    difficultyTag: "final-short-switch",
+    solution: edgePathAreaChainSolution(
+      3,
+      [0, 0, 6, 0, 0, 6, 6, 0, 0],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored Final short switch: the outer capture route breaks a two-row hold with a single-row crossing, so the next side must be read rather than assumed.",
+  },
+  "9-4-1": {
+    rows: [
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["normal", "void", "normal", "veil", "normal", "void", "void"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+      ["void", "void", "normal", "veil", "normal", "void", "normal"],
+    ],
+    difficultyTag: "final-return-pulse",
+    solution: edgePathAreaChainSolution(
+      3,
+      [6, 6, 0, 6, 6, 0, 0, 6, 6],
+      [5, 6, 7, 8, 9]
+    ),
+    designIntent:
+      "Hand-authored Final pulse return: two-row outer bursts alternate with short returns, demanding a fresh side read before each manual handoff.",
+  },
   "2-1-1": {
     rows: [
       ["normal", "normal", "void", "void"],
@@ -1908,6 +1992,35 @@ function areaChainSolution(
   ];
   edgeRows.forEach((type, offset) => {
     if (type !== "normal") return;
+    const rotation = 5 + offset;
+    actions.push(
+      { rotation, action: "mark", x: edgeX, z: 0, timing: "settled" },
+      { rotation, action: "capture", x: edgeX, z: 0, timing: "settled" }
+    );
+    if (offset < areaRotations.length)
+      actions.push({ rotation, action: "area", timing: "settled" });
+  });
+  for (const rotation of areaRotations) {
+    if (
+      !actions.some(
+        action => action.rotation === rotation && action.action === "area"
+      )
+    )
+      actions.push({ rotation, action: "area", timing: "settled" });
+  }
+  return authoredSolution(actions);
+}
+
+function edgePathAreaChainSolution(
+  anchorX: number,
+  edgeXs: readonly number[],
+  areaRotations: readonly number[] = [5, 6, 7]
+): SolutionStep[] {
+  const actions: AuthoredAction[] = [
+    { rotation: 4, action: "mark", x: anchorX, z: 0, timing: "settled" },
+    { rotation: 5, action: "capture", x: anchorX, z: 0, timing: "settled" },
+  ];
+  edgeXs.forEach((edgeX, offset) => {
     const rotation = 5 + offset;
     actions.push(
       { rotation, action: "mark", x: edgeX, z: 0, timing: "settled" },

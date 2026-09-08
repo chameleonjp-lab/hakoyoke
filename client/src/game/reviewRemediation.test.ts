@@ -683,6 +683,74 @@ describe("post-review regressions", () => {
     ).toBe(true);
   });
 
+  it("opens Final with authored outer-route crossings", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const finalOpening = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 9 && puzzle.wave <= 2);
+
+    expect(finalOpening.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "final-edge-cross",
+      "final-return-pairs",
+    ]);
+    expect(finalOpening.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      8, 8,
+    ]);
+    expect(finalOpening.map(({ result }) => result.areaUses)).toEqual([5, 5]);
+    expect(
+      finalOpening.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(finalOpening.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(2);
+    expect(
+      finalOpening.every(
+        ({ puzzle }) =>
+          puzzle.width === 7 &&
+          puzzle.depth === 9 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
+  it("closes Final with authored gate and return rhythms", () => {
+    const puzzles = generatePuzzles();
+    const archive = validatePuzzleArchive(puzzles);
+    const finalClosing = puzzles
+      .map((puzzle, index) => ({ puzzle, result: archive.results[index]! }))
+      .filter(({ puzzle }) => puzzle.stage === 9 && puzzle.wave >= 3);
+
+    expect(finalClosing.map(({ puzzle }) => puzzle.difficultyTag)).toEqual([
+      "final-short-switch",
+      "final-return-pulse",
+    ]);
+    expect(finalClosing.map(({ puzzle }) => puzzle.requiredRolls)).toEqual([
+      8, 8,
+    ]);
+    expect(finalClosing.map(({ result }) => result.areaUses)).toEqual([5, 5]);
+    expect(
+      finalClosing.every(({ puzzle }) =>
+        puzzle.designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
+    expect(
+      new Set(finalClosing.map(({ puzzle }) => JSON.stringify(puzzle.layout)))
+    ).toHaveLength(2);
+    expect(
+      finalClosing.every(
+        ({ puzzle }) =>
+          puzzle.width === 7 &&
+          puzzle.depth === 9 &&
+          puzzle.layout.some(cube => cube.type === "veil") &&
+          puzzle.layout.some(cube => cube.type === "void")
+      )
+    ).toBe(true);
+  });
+
   it("keeps all of Stage 1 authored while shifting from AREA to route reading", () => {
     const puzzles = generatePuzzles();
     const archive = validatePuzzleArchive(puzzles);
@@ -727,6 +795,11 @@ describe("post-review regressions", () => {
     expect(puzzles).toHaveLength(EXPECTED_PUZZLE_COUNT);
     expect(archive.issues).toEqual([]);
     expect(archive.valid).toBe(true);
+    expect(
+      puzzles.every(({ designIntent }) =>
+        designIntent?.startsWith("Hand-authored")
+      )
+    ).toBe(true);
     expect(
       archive.results.filter(result => result.areaUses >= 2).length
     ).toBeGreaterThan(40);

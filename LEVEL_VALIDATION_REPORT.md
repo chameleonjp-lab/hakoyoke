@@ -96,7 +96,7 @@
 | STAGE-8-W3-P02 | Stage 8 | 3 | 7×9 | 8 | eight-wide-switchback | 803034 | 33 | 30 | 5 | PASS |
 | STAGE-8-W4-P01 | Stage 8 | 4 | 7×9 | 8 | eight-wide-ladder | 804017 | 32 | 31 | 5 | PASS |
 | STAGE-8-W4-P02 | Stage 8 | 4 | 7×9 | 8 | eight-wide-delay | 804034 | 33 | 30 | 5 | PASS |
-| FINAL-W1-P01 | Final | 1 | 7×9 | 6 | chain-protect | 901017 | 28 | 35 | 5 | PASS |
-| FINAL-W2-P01 | Final | 2 | 7×9 | 4 | chain-protect | 902017 | 28 | 35 | 5 | PASS |
-| FINAL-W3-P01 | Final | 3 | 7×9 | 8 | chain-protect | 903017 | 29 | 34 | 5 | PASS |
-| FINAL-W4-P01 | Final | 4 | 7×9 | 8 | chain-protect | 904017 | 29 | 34 | 5 | PASS |
+| FINAL-W1-P01 | Final | 1 | 7×9 | 8 | final-edge-cross | 901017 | 36 | 27 | 5 | PASS |
+| FINAL-W2-P01 | Final | 2 | 7×9 | 8 | final-return-pairs | 902017 | 36 | 27 | 5 | PASS |
+| FINAL-W3-P01 | Final | 3 | 7×9 | 8 | final-short-switch | 903017 | 36 | 27 | 5 | PASS |
+| FINAL-W4-P01 | Final | 4 | 7×9 | 8 | final-return-pulse | 904017 | 36 | 27 | 5 | PASS |
