@@ -39,7 +39,8 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 - NORMAL、VEIL、VOID、MARK、対象捕獲時だけ消費するAREA、MARK上VOID保護
 - 9 Stage、4 Wave、合計88問
 - 88問すべての手設計導入（Stage 1全12問: AREAなし→AREA導入→ルート読解、Stage 2全12問: ルート読解→AREA連鎖、Stage 3全12問: 幅5列のルート読解→AREA連鎖、Stage 4全8問: 奥行7〜8列の長いAREA連鎖、Stage 5全12問: 幅6列と奥行7列の長いAREA連鎖、Stage 6全8問: 奥行8〜9列の長いAREA連鎖、Stage 7全12問: 幅7列・奥行7〜8列のAREA連鎖、Stage 8全8問: 幅7列・奥行8〜9列のAREA連鎖、Final全4問: 外周レーンの左右切替）
-- TUTORIALの8段階手設計ゲート（操作ごとの入力ロック、LOSS実演、失敗時のゲート再試行）
+- TUTORIALの8段階手設計ゲート（操作ごとの入力ロック、NORMAL取り逃しのLOSS実演、最終PERFECT失敗後の局所リトライ）
+- 非CampaignのGAME_OVERは、同じ問題のRETRYとメニュー復帰を画面上から選択でき、ランキングRPCを呼び出さない
 - 辺支点の回転、回転中の通過体積判定、盤外落下
 - MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
 - FASTは回転区間だけを加速し、着地待ち・捕獲停止時間は維持

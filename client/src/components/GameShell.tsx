@@ -1410,7 +1410,9 @@ function ResultOverlay({
       </div>
       <p>
         {gameOver
-          ? "足場が必要な奥行を失いました。別の進路を試してください。"
+          ? snapshot.banner === "FALL INTO VOID"
+            ? "プレイヤーが足場の外へ出ました。安全なマスで止まってください。"
+            : "足場が必要な奥行を失いました。別の進路を試してください。"
           : final
             ? "すべての観測対象を通過しました。"
             : "次の解析結果を待機しています。"}
@@ -1525,6 +1527,16 @@ function ResultOverlay({
             onClick={() => void startAnotherCampaign("campaign-new")}
             disabled={startingReplay}
             primary={final}
+          />
+          <Action label="RETURN TO MENU" note="HOME" onClick={onContinue} />
+        </div>
+      ) : gameOver ? (
+        <div className="result-actions">
+          <Action
+            label="RETRY"
+            note="SAME ORDEAL"
+            onClick={() => command({ type: "retry" })}
+            primary
           />
           <Action label="RETURN TO MENU" note="HOME" onClick={onContinue} />
         </div>

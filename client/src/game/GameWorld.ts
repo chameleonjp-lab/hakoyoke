@@ -68,6 +68,7 @@ export type CubicCommand =
   | { type: "quick-load" }
   | { type: "step-roll" }
   | { type: "continue" }
+  | { type: "retry" }
   | { type: "campaign-continue" }
   | { type: "campaign-new" }
   | { type: "touch-move"; x: number; z: number }
@@ -702,10 +703,17 @@ export class GameWorld {
   private advanceAfterResult(): void {
     if (TERMINAL_PHASES.has(this.phase)) return;
     if (this.phase === "CRUSHED") {
-      const residualMisses = this.mode === "TUTORIAL" ? 0 : this.stats.misses;
-      this.loadPuzzle(this.currentPuzzle, false);
-      this.stats.misses = residualMisses;
-      this.stats.perfect = false;
+      // A tutorial retry is a local teaching attempt. Reset its puzzle state
+      // completely so a failed PERFECT gate cannot poison the next attempt.
+      // Campaign retries intentionally keep the run's miss state instead.
+      if (this.mode === "TUTORIAL") {
+        this.loadPuzzle(this.currentPuzzle, true);
+      } else {
+        const residualMisses = this.stats.misses;
+        this.loadPuzzle(this.currentPuzzle, false);
+        this.stats.misses = residualMisses;
+        this.stats.perfect = false;
+      }
       this.phase = this.mode === "TUTORIAL" ? "TUTORIAL" : "PLAYING";
       if (this.mode === "TUTORIAL") {
         this.hint = tutorialHint(this.tutorialStep);
@@ -793,6 +801,38 @@ export class GameWorld {
     if (!stageChanged && !waveChanged) this.banner = "NEXT ORDEAL";
     this.saveCampaign();
     if (stageBoundary && this.mode === "CAMPAIGN") this.saveStageCheckpoint();
+  }
+
+  private retryCurrentChallenge(): void {
+    if (this.phase !== "GAME_OVER" || this.mode === "CAMPAIGN") return;
+
+    if (this.mode === "TUTORIAL") {
+      const tutorialPuzzle = getTutorialPuzzle(this.tutorialStep);
+      if (!tutorialPuzzle) {
+        this.phase = "MENU";
+        this.banner = "TRAINING COMPLETE";
+        this.input.clear();
+        return;
+      }
+      this.loadPuzzle(tutorialPuzzle, true);
+      this.phase = "TUTORIAL";
+      this.phaseTimer = 0;
+      this.hint = tutorialHint(this.tutorialStep);
+      this.banner = `TRAINING ${this.tutorialStep + 1}/${TUTORIAL_STAGE_COUNT}`;
+      this.input.clear();
+      return;
+    }
+
+    this.loadPuzzle(this.currentPuzzle, true);
+    this.phase = "STAGE_INTRO";
+    this.phaseTimer = 0;
+    this.banner =
+      this.mode === "DUEL"
+        ? `DUEL // PLAYER ${this.duelTurn + 1} // RETRY`
+        : this.mode === "CREATE"
+          ? "CUSTOM ORDEAL // RETRY"
+          : `STAGE ${this.currentPuzzle.stage} // RETRY`;
+    this.input.clear();
   }
 
   private advanceDuel(): void {
@@ -1048,6 +1088,10 @@ export class GameWorld {
       ["PUZZLE_RESULT", "WAVE_RESULT", "STAGE_RESULT"].includes(this.phase)
     ) {
       this.advanceAfterResult();
+      return;
+    }
+    if (command.type === "retry") {
+      this.retryCurrentChallenge();
       return;
     }
     if (command.type === "rewind" && this.mode === "PRACTICE") {
