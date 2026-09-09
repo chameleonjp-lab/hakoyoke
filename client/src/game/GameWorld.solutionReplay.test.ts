@@ -301,6 +301,7 @@ function replay(puzzle: PuzzleDescriptor): {
       snapshot.stats.misses === 0 &&
       requiredCaptured(snapshot) ===
         puzzle.layout.filter(cube => cube.type !== "void").length &&
+      snapshot.stats.captureRotations === puzzle.requiredRolls &&
       snapshot.cubes.every(cube => cube.captured || cube.falling)
         ? "ok"
         : "final state did not meet puzzle invariants",

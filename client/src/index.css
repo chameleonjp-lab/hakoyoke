@@ -908,6 +908,17 @@ h2 {
 .result-grid .hud-stat b {
   color: #5ee0ff;
 }
+.score-breakdown {
+  margin: -8px 0 18px;
+  color: #9bb7c4;
+  font:
+    10px/1.55 "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.02em;
+}
+.ranking-blocked {
+  color: #ffd0f3;
+}
 .player-name-gate,
 .pending-ranking-notice,
 .result-sharing,

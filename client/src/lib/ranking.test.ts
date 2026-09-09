@@ -783,6 +783,125 @@ describe("ranking integration contract", () => {
     ).toHaveLength(2);
   });
 
+  it("keeps pending and completed records from an older client version", async () => {
+    const storage = memoryStorage();
+    const legacyVersion = "hakoyoke-20250101-legacy";
+    storage.setItem(
+      RANKING_STORAGE_KEYS.pending,
+      JSON.stringify([
+        {
+          version: 1,
+          submissionId: SUBMISSION_ID,
+          playId: PLAY_ID,
+          displayName: "山田 太郎",
+          gameSlug: RANKING_CONFIG.gameSlug,
+          clientVersion: legacyVersion,
+          resultType: "game_over",
+          reachedStage: 3,
+          score: 4200,
+          createdAt: new Date().toISOString(),
+          attemptCount: 1,
+          state: "retryable_failed",
+        },
+      ])
+    );
+    storage.setItem(
+      RANKING_STORAGE_KEYS.completed,
+      JSON.stringify([
+        {
+          version: 1,
+          submissionId: SECOND_SUBMISSION_ID,
+          playId: SECOND_PLAY_ID,
+          displayName: "旧プレイヤー",
+          gameSlug: RANKING_CONFIG.gameSlug,
+          clientVersion: legacyVersion,
+          resultType: "clear",
+          reachedStage: 9,
+          score: 9000,
+          completedAt: new Date().toISOString(),
+        },
+      ])
+    );
+
+    const client = createRankingClient({
+      storage,
+      fetchImpl: async (input, init) => {
+        const rpc = String(input).split("/").at(-1);
+        const payload = JSON.parse(String(init?.body)) as Record<
+          string,
+          unknown
+        >;
+        if (rpc === RANKING_CONFIG.finishRpc) {
+          return response({
+            accepted: true,
+            duplicate: true,
+            play_id: payload.p_play_id,
+            game_slug: payload.p_game_slug,
+            result_type: payload.p_result_type,
+            reached_wave: payload.p_reached_wave,
+            score: payload.p_score,
+          });
+        }
+        return response([
+          {
+            accepted: true,
+            result_submission_id: payload.p_submission_id,
+            result_play_id: payload.p_play_id,
+            result_normalized_name: payload.p_display_name,
+            result_display_name: payload.p_display_name,
+            result_first_score: payload.p_score,
+            result_best_score: payload.p_score,
+            result_play_count: 1,
+            is_first_play: false,
+            is_new_best: false,
+            was_duplicate: true,
+          },
+        ]);
+      },
+    });
+
+    await expect(client.retryPendingCampaignResult()).resolves.toMatchObject({
+      state: "submitted",
+    });
+    expect(
+      JSON.parse(storage.getItem(RANKING_STORAGE_KEYS.completed) ?? "[]")
+    ).toHaveLength(2);
+    expect(client.hasRetryablePendingCampaignResult()).toBe(false);
+
+    storage.setItem(
+      RANKING_STORAGE_KEYS.session,
+      JSON.stringify({
+        version: 1,
+        startId: START_ID,
+        playId: SECOND_PLAY_ID,
+        displayName: "旧プレイヤー",
+        gameSlug: RANKING_CONFIG.gameSlug,
+        clientVersion: legacyVersion,
+        status: "active",
+        createdAt: new Date().toISOString(),
+      })
+    );
+    const noNetwork = vi.fn(async () => {
+      throw new Error("completed receipt should avoid a network call");
+    });
+    const reloaded = createRankingClient({
+      storage,
+      fetchImpl: noNetwork,
+    });
+    await expect(
+      reloaded.startCampaignPlay("旧プレイヤー")
+    ).resolves.toMatchObject({ resumed: true, playId: SECOND_PLAY_ID });
+    await expect(
+      reloaded.finishAndSubmitCampaignResult({
+        displayName: "旧プレイヤー",
+        resultType: "clear",
+        reachedStage: 9,
+        score: 9000,
+      })
+    ).resolves.toMatchObject({ state: "submitted" });
+    expect(noNetwork).not.toHaveBeenCalled();
+  });
+
   it("turns an interrupted submitting entry into a retry after reload", async () => {
     const storage = memoryStorage();
     storage.setItem(

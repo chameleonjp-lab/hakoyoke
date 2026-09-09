@@ -70,6 +70,7 @@ type WorldInternals = {
   tutorialStep: number;
   duelTurn: number;
   duelScore: [number, number];
+  rankingEligibility: "eligible" | "debug-intervened" | "non-campaign";
   isRolling: boolean;
   rollElapsed: number;
   settleElapsed: number;
@@ -83,6 +84,7 @@ type WorldInternals = {
   fallFromPlatform: () => void;
   losePlatformRow: (reason: string, preserveMisses?: boolean) => boolean;
   advanceAfterResult: () => void;
+  completePuzzle: () => void;
 };
 
 const puzzle = (
@@ -146,6 +148,7 @@ function internals(world: GameWorld): WorldInternals {
 describe("GameWorld state invariants", () => {
   beforeEach(() => {
     storage.clear();
+    windowStub.location.search = "";
     installBrowserStubs();
   });
 
@@ -311,6 +314,134 @@ describe("GameWorld state invariants", () => {
     expect(state.tutorialStep).toBe(8);
     expect(state.phase).toBe("PUZZLE_RESULT");
     expect(state.banner).toBe("PERFECT // TRAINING COMPLETE");
+    world.dispose();
+  });
+
+  it("evaluates PERFECT from capture rotations, not VOID drain rotations", () => {
+    const world = new GameWorld(
+      [
+        puzzle({
+          requiredRolls: 1,
+          layout: [
+            { x: 1, z: 0, type: "normal" },
+            { x: 2, z: 1, type: "void" },
+          ],
+        }),
+      ],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.player = { x: 1, z: 0, heading: 0 };
+    state.marker = { x: 1, z: 0 };
+    state.cubes = [
+      { id: "normal", type: "normal", x: 1, z: 0, previousZ: 0 },
+      { id: "void", type: "void", x: 2, z: 1, previousZ: 1 },
+    ];
+
+    state.markOrCapture();
+    expect(state.stats.captureRotations).toBe(0);
+    expect(state.stats.scoreBreakdown.manualCapture).toBe(100);
+
+    state.phase = "PLAYING";
+    for (let index = 0; index < 2; index += 1) {
+      state.settleElapsed = DIFFICULTIES.NORMAL.settleSeconds;
+      state.updateRoll(0, false);
+      state.updateRoll(DIFFICULTIES.NORMAL.rollSeconds, false);
+      if (state.phase === "PUZZLE_RESULT") break;
+    }
+
+    expect(state.phase).toBe("PUZZLE_RESULT");
+    expect(state.stats.rotations).toBe(2);
+    expect(state.stats.captureRotations).toBe(0);
+    expect(state.stats.scoreBreakdown.perfectBonus).toBe(10_000);
+    expect(state.stats.score).toBe(10_100);
+    expect(state.banner).toBe("TRUE PERFECT");
+    world.dispose();
+  });
+
+  it("starts capture evaluation at the first capture after an early roll", () => {
+    const world = new GameWorld(
+      [
+        puzzle({
+          requiredRolls: 1,
+          layout: [
+            { x: 1, z: 0, type: "normal" },
+            { x: 2, z: 0, type: "normal" },
+          ],
+        }),
+      ],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.stats.rotations = 2;
+    state.player = { x: 1, z: 0, heading: 0 };
+    state.cubes = [
+      { id: "first", type: "normal", x: 1, z: 0, previousZ: 0 },
+      { id: "second", type: "normal", x: 2, z: 0, previousZ: 0 },
+    ];
+
+    state.marker = { x: 1, z: 0 };
+    state.markOrCapture();
+    expect(state.stats.captureRotations).toBe(0);
+
+    state.phase = "PLAYING";
+    state.stats.rotations = 1;
+    state.marker = { x: 2, z: 0 };
+    state.markOrCapture();
+    expect(state.stats.captureRotations).toBe(1);
+    world.dispose();
+  });
+
+  it("keeps a campaign out of ranking after debug is turned off", () => {
+    windowStub.location.search = "?debug=1";
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+
+    command({
+      type: "start",
+      mode: "CAMPAIGN",
+      difficulty: "NORMAL",
+      stage: 1,
+      wave: 1,
+      ordinal: 1,
+    });
+    expect(state.rankingEligibility).toBe("debug-intervened");
+
+    command({ type: "set-debug", active: false });
+    expect(state.rankingEligibility).toBe("debug-intervened");
+    windowStub.location.search = "";
+    world.dispose();
+  });
+
+  it("archives an incompatible campaign save before starting fresh", () => {
+    storage.setItem(
+      "cubic-ordeal-campaign-v1",
+      JSON.stringify({ version: 3, snapshot: { phase: "FINAL_RESULT" } })
+    );
+
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const archived = JSON.parse(
+      storage.getItem("cubic-ordeal-campaign-legacy-v1") ?? "[]"
+    ) as Array<{ reason?: string; raw?: string }>;
+
+    expect(archived).toHaveLength(1);
+    expect(archived[0]?.reason).toBe("save-version-3");
+    expect(archived[0]?.raw).toContain('"version":3');
+    expect(storage.getItem("cubic-ordeal-campaign-v1")).toBeNull();
     world.dispose();
   });
 
