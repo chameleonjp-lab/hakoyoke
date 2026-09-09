@@ -1,3 +1,9 @@
+import {
+  MOVEMENT_MODEL,
+  PUZZLE_CONTENT_VERSION,
+  SCORE_RULE_VERSION,
+} from "../game/types";
+
 export const RANKING_CONFIG = Object.freeze({
   gameId: "hakoyoke",
   gameSlug: "hakoyoke",
@@ -24,6 +30,9 @@ export const RANKING_CONFIG = Object.freeze({
   scoreDecimals: 0,
   scoreMin: 0,
   scoreMax: 100_000_000,
+  movementModel: MOVEMENT_MODEL,
+  scoreRuleVersion: SCORE_RULE_VERSION,
+  puzzleContentVersion: PUZZLE_CONTENT_VERSION,
 });
 
 const SESSION_STORAGE_KEY = "chameleonjp_hakoyoke_ranking_session_v1";
@@ -63,6 +72,9 @@ interface RankingSession {
   clientVersion: string;
   status: "starting" | "active" | "finished";
   createdAt: string;
+  movementModel?: string;
+  scoreRuleVersion?: string;
+  puzzleContentVersion?: string;
 }
 
 interface PendingSubmission {
@@ -78,6 +90,9 @@ interface PendingSubmission {
   createdAt: string;
   attemptCount: number;
   state: RankingSubmissionState;
+  movementModel?: string;
+  scoreRuleVersion?: string;
+  puzzleContentVersion?: string;
 }
 
 interface DeferredCampaignResult {
@@ -92,6 +107,9 @@ interface DeferredCampaignResult {
   score: number;
   createdAt: string;
   attemptCount: number;
+  movementModel?: string;
+  scoreRuleVersion?: string;
+  puzzleContentVersion?: string;
 }
 
 interface CompletedSubmission {
@@ -105,6 +123,9 @@ interface CompletedSubmission {
   reachedStage: number;
   score: number;
   completedAt: string;
+  movementModel?: string;
+  scoreRuleVersion?: string;
+  puzzleContentVersion?: string;
 }
 
 export interface SubmissionOutcome {
@@ -234,7 +255,8 @@ function isSession(value: unknown): value is RankingSession {
     name?.ok === true &&
     name.name === value.displayName &&
     value.gameSlug === RANKING_CONFIG.gameSlug &&
-    value.clientVersion === RANKING_CONFIG.clientVersion &&
+    typeof value.clientVersion === "string" &&
+    value.clientVersion.length > 0 &&
     ["starting", "active", "finished"].includes(String(value.status)) &&
     typeof value.createdAt === "string"
   );
@@ -253,7 +275,8 @@ function isPending(value: unknown): value is PendingSubmission {
     name?.ok === true &&
     name.name === value.displayName &&
     value.gameSlug === RANKING_CONFIG.gameSlug &&
-    value.clientVersion === RANKING_CONFIG.clientVersion &&
+    typeof value.clientVersion === "string" &&
+    value.clientVersion.length > 0 &&
     (value.resultType === "clear" || value.resultType === "game_over") &&
     Number.isInteger(value.reachedStage) &&
     Number(value.reachedStage) >= 1 &&
@@ -287,7 +310,8 @@ function isDeferred(value: unknown): value is DeferredCampaignResult {
     name?.ok === true &&
     name.name === value.displayName &&
     value.gameSlug === RANKING_CONFIG.gameSlug &&
-    value.clientVersion === RANKING_CONFIG.clientVersion &&
+    typeof value.clientVersion === "string" &&
+    value.clientVersion.length > 0 &&
     (value.resultType === "clear" || value.resultType === "game_over") &&
     Number.isInteger(value.reachedStage) &&
     Number(value.reachedStage) >= 1 &&
@@ -314,7 +338,8 @@ function isCompleted(value: unknown): value is CompletedSubmission {
     name?.ok === true &&
     name.name === value.displayName &&
     value.gameSlug === RANKING_CONFIG.gameSlug &&
-    value.clientVersion === RANKING_CONFIG.clientVersion &&
+    typeof value.clientVersion === "string" &&
+    value.clientVersion.length > 0 &&
     (value.resultType === "clear" || value.resultType === "game_over") &&
     Number.isInteger(value.reachedStage) &&
     Number(value.reachedStage) >= 1 &&
@@ -745,6 +770,9 @@ export function createRankingClient(options: RankingClientOptions = {}) {
       displayName: pending.displayName,
       gameSlug: pending.gameSlug,
       clientVersion: pending.clientVersion,
+      movementModel: pending.movementModel,
+      scoreRuleVersion: pending.scoreRuleVersion,
+      puzzleContentVersion: pending.puzzleContentVersion,
       resultType: pending.resultType,
       reachedStage: pending.reachedStage,
       score: pending.score,
@@ -938,6 +966,9 @@ export function createRankingClient(options: RankingClientOptions = {}) {
               displayName: validation.name,
               gameSlug: RANKING_CONFIG.gameSlug,
               clientVersion: RANKING_CONFIG.clientVersion,
+              movementModel: RANKING_CONFIG.movementModel,
+              scoreRuleVersion: RANKING_CONFIG.scoreRuleVersion,
+              puzzleContentVersion: RANKING_CONFIG.puzzleContentVersion,
               status: "starting",
               createdAt: now().toISOString(),
             };
@@ -1167,6 +1198,9 @@ export function createRankingClient(options: RankingClientOptions = {}) {
               displayName: name.name,
               gameSlug: RANKING_CONFIG.gameSlug,
               clientVersion: RANKING_CONFIG.clientVersion,
+              movementModel: RANKING_CONFIG.movementModel,
+              scoreRuleVersion: RANKING_CONFIG.scoreRuleVersion,
+              puzzleContentVersion: RANKING_CONFIG.puzzleContentVersion,
               resultType: result.resultType,
               reachedStage,
               score,
@@ -1271,7 +1305,15 @@ export function createRankingClient(options: RankingClientOptions = {}) {
       playId: activeSession.playId,
       displayName: name.name,
       gameSlug: RANKING_CONFIG.gameSlug,
-      clientVersion: RANKING_CONFIG.clientVersion,
+      clientVersion:
+        matchingDeferred?.clientVersion ?? activeSession.clientVersion,
+      movementModel:
+        matchingDeferred?.movementModel ?? activeSession.movementModel,
+      scoreRuleVersion:
+        matchingDeferred?.scoreRuleVersion ?? activeSession.scoreRuleVersion,
+      puzzleContentVersion:
+        matchingDeferred?.puzzleContentVersion ??
+        activeSession.puzzleContentVersion,
       resultType: result.resultType,
       reachedStage,
       score,

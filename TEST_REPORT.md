@@ -11,7 +11,7 @@
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 137件            |
+| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 142件            |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
 | ブラウザ操作   | `pnpm test:e2e`            | Chromium 26件、WebKit 26件                            | 最新CIを正とする — 52件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
@@ -60,6 +60,10 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - FAST中も着地待ち時間を短縮しない回転進行
 - NORMAL/VEIL取り逃し、VOID捕獲、足場増減
 - PERFECTの3得点帯、通常捕獲、AREA捕獲、MIND INDEX
+- VOID排出待ちを含む実GameWorld再生で、捕獲評価回転と排出進行回転が混同されないこと
+- 最初の捕獲前に先行回転しても、捕獲評価の起点を最初の捕獲へ正規化すること
+- 結果内訳、加点済み識別子、デバッグ介入後のランキング対象外判定
+- 版不一致のCampaign保存のlegacy退避、旧client versionの送信待ち・完了receiptの継続読取
 - Stage Plan、PRACTICEの問題番号、DUELの同問再試行
 - TUTORIALの8ゲート順序、操作ロック、GameWorldでの全ゲート達成
 - TUTORIAL最終PERFECTの複数回失敗後の局所リトライ、非Campaign GAME_OVERの各モード復帰

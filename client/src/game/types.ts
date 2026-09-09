@@ -2,6 +2,14 @@
 export type CubeType = "normal" | "veil" | "void";
 export type Difficulty = "BEGINNER" | "EASY" | "NORMAL" | "HARD" | "EXTREME";
 export type GameMode = "TUTORIAL" | "CAMPAIGN" | "PRACTICE" | "CREATE" | "DUEL";
+/** Compatibility tags persisted with runs and result receipts. */
+export const MOVEMENT_MODEL = "free-movement-v1" as const;
+export const SCORE_RULE_VERSION = "score-v1" as const;
+export const PUZZLE_CONTENT_VERSION = "puzzle-archive-v1" as const;
+export type RankingEligibility =
+  | "eligible"
+  | "debug-intervened"
+  | "non-campaign";
 export type GamePhase =
   | "BOOT"
   | "TITLE"
@@ -76,6 +84,8 @@ export interface PuzzleDescriptor {
 export interface RunStats {
   score: number;
   rotations: number;
+  /** Rotations between the first and last required-cube capture. */
+  captureRotations: number;
   requiredRolls: number;
   misses: number;
   missLimit: number;
@@ -85,6 +95,15 @@ export interface RunStats {
   normalCaptured: number;
   veilCaptured: number;
   voidCaptured: number;
+  scoreBreakdown: ScoreBreakdown;
+}
+
+export interface ScoreBreakdown {
+  manualCapture: number;
+  areaCapture: number;
+  perfectBonus: number;
+  stageBonus: number;
+  finalBonus: number;
 }
 
 export interface GameSnapshot {
@@ -121,6 +140,13 @@ export interface GameSnapshot {
   elapsed?: number;
   puzzleId?: string;
   completionAwardedForPuzzle?: string | null;
+  captureRotationStart?: number | null;
+  captureRotationEnd?: number | null;
+  scoreAwardIds?: string[];
+  movementModel?: typeof MOVEMENT_MODEL;
+  scoreRuleVersion?: typeof SCORE_RULE_VERSION;
+  puzzleContentVersion?: typeof PUZZLE_CONTENT_VERSION;
+  rankingEligibility?: RankingEligibility;
 }
 
 export interface DifficultyConfig {
@@ -174,6 +200,7 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
 export const initialStats = (width: number): RunStats => ({
   score: 0,
   rotations: 0,
+  captureRotations: 0,
   requiredRolls: 0,
   misses: 0,
   missLimit: Math.max(1, width - 1),
@@ -183,4 +210,11 @@ export const initialStats = (width: number): RunStats => ({
   normalCaptured: 0,
   veilCaptured: 0,
   voidCaptured: 0,
+  scoreBreakdown: {
+    manualCapture: 0,
+    areaCapture: 0,
+    perfectBonus: 0,
+    stageBonus: 0,
+    finalBonus: 0,
+  },
 });

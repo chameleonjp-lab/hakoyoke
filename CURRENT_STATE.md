@@ -41,28 +41,34 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 - 88問すべての手設計導入（Stage 1全12問: AREAなし→AREA導入→ルート読解、Stage 2全12問: ルート読解→AREA連鎖、Stage 3全12問: 幅5列のルート読解→AREA連鎖、Stage 4全8問: 奥行7〜8列の長いAREA連鎖、Stage 5全12問: 幅6列と奥行7列の長いAREA連鎖、Stage 6全8問: 奥行8〜9列の長いAREA連鎖、Stage 7全12問: 幅7列・奥行7〜8列のAREA連鎖、Stage 8全8問: 幅7列・奥行8〜9列のAREA連鎖、Final全4問: 外周レーンの左右切替）
 - TUTORIALの8段階手設計ゲート（操作ごとの入力ロック、NORMAL取り逃しのLOSS実演、最終PERFECT失敗後の局所リトライ）
 - 非CampaignのGAME_OVERは、同じ問題のRETRYとメニュー復帰を画面上から選択でき、ランキングRPCを呼び出さない
+- `requiredRolls`と結果の捕獲評価は、最初から最後のNORMAL/VEIL捕獲までの回転だけを測定し、VOID排出待ちの回転は別の排出進行として表示する
+- 結果画面に手動捕獲、AREA捕獲、PERFECT、ステージ・最終進行のスコア内訳を表示し、各加点に識別子を付けて保存・復帰時の二重加点を防ぐ
 - 辺支点の回転、回転中の通過体積判定、盤外落下
 - MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
 - FASTは回転区間だけを加速し、着地待ち・捕獲停止時間は維持
 - プレイ中のカメラ固定と、画面方向に統一したタッチ移動
 - Campaignのversioned snapshot保存・復帰
+- 保存・チェックポイント・ランキング結果に、移動方式（`free-movement-v1`）、得点規則（`score-v1`）、問題内容（`puzzle-archive-v1`）の版タグを付ける。互換しないCampaign/チェックポイントは削除せず、legacy保管へ退避する
 - キーボード、ゲームパッド、縦横モバイル操作
 - 初期UIとBabylon.jsランタイムの遅延境界
 - 匿名RUMのローカル計測・保存・表示（外部送信なし）
 - CREATEの検査、保存、JSON入出力、左右反転
 - CAMPAIGNだけの表示名必須化、正式URL固定のゲーム・結果共有
 - CAMPAIGNの開始・終了記録、冪等スコア送信、再読込後も同じIDを使う手動再送
+- 旧client versionの送信待ち結果と完了receiptも形式が有効なら読み取り、再送・二重送信防止を継続する
 - サーバーの`rank_no`を使うベストスコア上位10件表示
 
 ## ランキング連携
 
-ランキング対象はCAMPAIGNの`clear`と`game_over`だけです。TUTORIAL、PRACTICE、CREATE、DUELおよび途中結果は送信しません。
+ランキング対象は、デバッグ介入のないCAMPAIGNの`clear`と`game_over`だけです。TUTORIAL、PRACTICE、CREATE、DUEL、デバッグ介入済みCampaignおよび途中結果は送信しません。
 
 表示名はCAMPAIGN開始時だけ検証・保存し、TUTORIAL、PRACTICE、CREATE、DUELは名前なしで開始できます。これらのモードではランキングRPCを呼び出しません。
 
 1プレイにつきブラウザ生成の`start_id`を1つ保存し、`start_game_play_v1`が返す`play_id`を終了まで使います。結果確定時は通信前に`submission_id`と確定結果を保存し、`finish_game_play_v1`、`submit_score_idempotent_v1`の順に自動送信します。開始RPCの通信断・時間切れ・HTTP 408/425/429/5xxではローカルプレイを止めず、開始IDと結果を保存して結果画面またはメニューから再試行します。通信断・時間切れ・HTTP 408/425/429/5xxは同じ内容で再送でき、恒久エラーでは再送ボタンを出しません。成功応答の内容を検査した後だけpendingを削除し、submission_id別の完了receipt（集約表示は最新50件）で再読込時の二重送信を防ぎます。複数タブのreceipt更新はfresh mergeし、別保存の完了情報を上書きしません。複数の未送信結果は同じ導線で順番に再送し、送信中断の`submitting`は再読込時に再送可能へ復元します。ランキング通信の失敗は結果、共有、再戦、メニュー導線を塞ぎません。
 
 正式URL、公開版、ゲーム識別子、名前保存キー、RPC名、8秒の時間切れは`ranking-manifest.json`と`client/src/lib/ranking.ts`で一致させます。公開SupabaseキーはブラウザRPC呼出しに限って使用し、secret/service-roleキーは含めません。
+
+結果保存には、移動方式・得点規則・問題内容のタグを併記します。過去版のclient versionも、結果の識別子・数値・状態が検証できる限り読み取り対象から除外しません。デバッグ操作（自動解法、強制回転、足場行変更）は一度でも使うと、表示をOFFへ戻してもそのCampaignをランキング対象へ戻しません。
 
 公開受入には未完了の外部確認があります。現行のSupabase `public.games`登録値とmanifest（説明、シェア文、スコア範囲）の一致、およびGitHub Pagesの`/hakoyoke/`配下でのVite asset参照を確認する必要があります。PR01では、CI成功前にPagesへ公開しないよう、CIが作成した同一コミットのPages成果物を、成功した`workflow_run`から受け取って公開する構成へ変更します。公開・`is_active`変更は受入担当の明示承認後に行います。
 

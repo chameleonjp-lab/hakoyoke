@@ -8,7 +8,13 @@ import {
   shouldAwardStageCompletion,
   stageCompletionBonus,
 } from "./campaignLifecycle";
-import { CAMPAIGN_SAVE_VERSION, CAMPAIGN_STORAGE_KEY } from "./campaignStorage";
+import {
+  archiveCampaignStorage,
+  CAMPAIGN_LEGACY_STORAGE_KEY,
+  CAMPAIGN_SAVE_VERSION,
+  CAMPAIGN_STORAGE_KEY,
+  CHECKPOINT_LEGACY_STORAGE_KEY,
+} from "./campaignStorage";
 import {
   createRuntimePuzzleCubes,
   platformRowsForStage,
@@ -23,6 +29,7 @@ import {
   markerProtectsRollSweep,
   markerTarget,
   nearestGridCell,
+  perfectBonus,
   unresolvedCubeCount,
 } from "./rules";
 import {
@@ -42,8 +49,12 @@ import {
   type GamePhase,
   type GameSnapshot,
   type GridPosition,
+  MOVEMENT_MODEL,
+  PUZZLE_CONTENT_VERSION,
   type PuzzleDescriptor,
+  type RankingEligibility,
   type RunStats,
+  SCORE_RULE_VERSION,
 } from "./types";
 
 const FIXED_STEP = 1 / 30;
@@ -135,6 +146,9 @@ export class GameWorld {
   private demoElapsed = 0;
   private tutorialStep = 0;
   private tutorialProtectionObserved = false;
+  private captureRotationStart: number | null = null;
+  private captureRotationEnd: number | null = null;
+  private readonly scoreAwardIds = new Set<string>();
   private duelTurn = 0;
   private duelScore: [number, number] = [0, 0];
   private currentPuzzle: PuzzleDescriptor;
@@ -152,6 +166,10 @@ export class GameWorld {
   private hint = "進路を読み、MARKを置け。";
   private debug =
     new URLSearchParams(window.location.search).get("debug") === "1";
+  private debugIntervened = this.debug;
+  private rankingEligibility: RankingEligibility = this.debug
+    ? "debug-intervened"
+    : "non-campaign";
   private demo = new URLSearchParams(window.location.search).has("demo");
 
   constructor(
@@ -475,6 +493,28 @@ export class GameWorld {
     this.onSignal("mark");
   }
 
+  private recordCaptureRotation(): void {
+    const rotation = this.stats.rotations;
+    this.captureRotationStart ??= rotation;
+    this.captureRotationEnd = rotation;
+    this.stats.captureRotations = Math.max(
+      0,
+      this.captureRotationEnd - this.captureRotationStart
+    );
+  }
+
+  private awardScore(
+    id: string,
+    amount: number,
+    bucket: keyof RunStats["scoreBreakdown"]
+  ): boolean {
+    if (amount <= 0 || this.scoreAwardIds.has(id)) return false;
+    this.scoreAwardIds.add(id);
+    this.stats.score += amount;
+    this.stats.scoreBreakdown[bucket] += amount;
+    return true;
+  }
+
   private addAreaAnchor(cube: CubeState): void {
     const area: AreaMark = {
       id: `area-${cube.id}`,
@@ -511,7 +551,12 @@ export class GameWorld {
       this.hasScoringStarted = true;
       this.stats.rotations = 0;
     }
-    this.stats.score += source === "area" ? 200 : 100;
+    this.recordCaptureRotation();
+    this.awardScore(
+      `capture:${this.currentPuzzle.id}:${cube.id}`,
+      source === "area" ? 200 : 100,
+      source === "area" ? "areaCapture" : "manualCapture"
+    );
     if (cube.type === "normal") this.stats.normalCaptured += 1;
     if (cube.type === "veil") {
       this.stats.veilCaptured += 1;
@@ -626,10 +671,19 @@ export class GameWorld {
     this.completionAwardedForPuzzle = this.currentPuzzle.id;
     const allRequiredCaptured =
       this.stats.misses === 0 && this.stats.voidCaptured === 0;
-    const rollDiff = this.stats.rotations - this.currentPuzzle.requiredRolls;
+    const rollDiff =
+      this.stats.captureRotations - this.currentPuzzle.requiredRolls;
     if (allRequiredCaptured && this.stats.perfect) {
       this.stats.platformRows += 1;
-      this.stats.score += rollDiff < 0 ? 10000 : rollDiff === 0 ? 5000 : 1000;
+      const perfectAward = perfectBonus(
+        this.stats.captureRotations,
+        this.currentPuzzle.requiredRolls
+      );
+      this.awardScore(
+        `perfect:${this.currentPuzzle.id}`,
+        perfectAward,
+        "perfectBonus"
+      );
       this.banner =
         rollDiff < 0
           ? "TRUE PERFECT"
@@ -774,11 +828,19 @@ export class GameWorld {
       next
     );
     if (stageBoundary) {
-      this.stats.score += stageCompletionBonus(this.stats.platformRows);
+      this.awardScore(
+        `stage:${this.currentPuzzle.stage}:completion`,
+        stageCompletionBonus(this.stats.platformRows),
+        "stageBonus"
+      );
     }
     if (!next) {
-      this.stats.score += this.stats.platformRows * 1000;
-      this.saveHighScore();
+      this.awardScore(
+        `campaign:${this.currentPuzzle.id}:final`,
+        this.stats.platformRows * 1000,
+        "finalBonus"
+      );
+      if (this.rankingEligibility === "eligible") this.saveHighScore();
       this.phase = "FINAL_RESULT";
       this.banner = `MIND INDEX ${this.mindIndex}`;
       this.input.clear();
@@ -886,11 +948,16 @@ export class GameWorld {
       ? platformRowsForStage(puzzle.stage, puzzle.depth)
       : this.stats.platformRows;
     const retainedScore = resetPlatform ? 0 : this.stats.score;
+    const retainedBreakdown = resetPlatform
+      ? initialStats(puzzle.width).scoreBreakdown
+      : { ...this.stats.scoreBreakdown };
+    if (resetPlatform && this.mode !== "CAMPAIGN") this.scoreAwardIds.clear();
     this.stats = {
       ...initialStats(puzzle.width),
       platformRows,
       score: retainedScore,
       requiredRolls: puzzle.requiredRolls,
+      scoreBreakdown: retainedBreakdown,
     };
     if (carriedState) {
       this.stats.misses = Math.min(carriedState.misses, this.stats.missLimit);
@@ -904,6 +971,8 @@ export class GameWorld {
       heading: 0,
     };
     this.hasScoringStarted = false;
+    this.captureRotationStart = null;
+    this.captureRotationEnd = null;
     this.isRolling = false;
     this.rollElapsed = 0;
     this.settleElapsed = 0;
@@ -926,6 +995,7 @@ export class GameWorld {
     resumeCampaign = true
   ): void {
     this.customPuzzle = null;
+    this.scoreAwardIds.clear();
     if (mode === "CAMPAIGN" && stage === 1 && wave === 1 && ordinal === 1) {
       const restored = this.readCampaign();
       if (resumeCampaign && restored && !TERMINAL_PHASES.has(restored.phase)) {
@@ -948,6 +1018,12 @@ export class GameWorld {
 
     this.mode = mode;
     this.difficulty = difficulty;
+    this.rankingEligibility =
+      mode === "CAMPAIGN" && !this.debugIntervened
+        ? "eligible"
+        : mode === "CAMPAIGN"
+          ? "debug-intervened"
+          : "non-campaign";
     const puzzle =
       mode === "TUTORIAL"
         ? getTutorialPuzzle(0)
@@ -1118,6 +1194,11 @@ export class GameWorld {
       command.type === "step-roll" &&
       (this.mode === "PRACTICE" || this.debug)
     ) {
+      if (this.debug) {
+        this.debugIntervened = true;
+        if (this.mode === "CAMPAIGN")
+          this.rankingEligibility = "debug-intervened";
+      }
       this.isRolling = true;
       this.rollElapsed = DIFFICULTIES[this.difficulty].rollSeconds;
       this.finishRotation();
@@ -1156,9 +1237,17 @@ export class GameWorld {
     }
     if (command.type === "set-debug") {
       this.debug = command.active;
+      if (command.active) {
+        this.debugIntervened = true;
+        if (this.mode === "CAMPAIGN")
+          this.rankingEligibility = "debug-intervened";
+      }
       return;
     }
     if (command.type === "debug-platform" && this.debug) {
+      this.debugIntervened = true;
+      if (this.mode === "CAMPAIGN")
+        this.rankingEligibility = "debug-intervened";
       this.stats.platformRows = Math.max(
         this.currentPuzzle.depth + 2,
         command.rows
@@ -1166,6 +1255,9 @@ export class GameWorld {
       return;
     }
     if (command.type === "auto-solve" && this.debug) {
+      this.debugIntervened = true;
+      if (this.mode === "CAMPAIGN")
+        this.rankingEligibility = "debug-intervened";
       this.cubes
         .filter(cube => cube.type !== "void" && !cube.captured)
         .forEach(cube => this.captureCube(cube, "manual", { batch: true }));
@@ -1223,7 +1315,23 @@ export class GameWorld {
     this.cubes = snapshot.cubes.map(cube => ({ ...cube }));
     this.marker = snapshot.marker ? { ...snapshot.marker } : null;
     this.areas = snapshot.areas.map(area => ({ ...area }));
-    this.stats = { ...snapshot.stats };
+    const defaultStats = initialStats(snapshot.boardWidth);
+    const savedBreakdown = snapshot.stats.scoreBreakdown;
+    this.stats = {
+      ...defaultStats,
+      ...snapshot.stats,
+      captureRotations:
+        Number.isSafeInteger(snapshot.stats.captureRotations) &&
+        snapshot.stats.captureRotations >= 0
+          ? snapshot.stats.captureRotations
+          : snapshot.stats.rotations,
+      scoreBreakdown: {
+        ...defaultStats.scoreBreakdown,
+        ...(savedBreakdown && typeof savedBreakdown === "object"
+          ? savedBreakdown
+          : {}),
+      },
+    };
     const restoredIndex = snapshot.puzzleId
       ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
       : snapshot.puzzleIndex;
@@ -1261,6 +1369,23 @@ export class GameWorld {
         : null);
     this.completionAwardedForPuzzle =
       snapshot.completionAwardedForPuzzle ?? null;
+    this.captureRotationStart = snapshot.captureRotationStart ?? null;
+    this.captureRotationEnd = snapshot.captureRotationEnd ?? null;
+    this.scoreAwardIds.clear();
+    snapshot.scoreAwardIds?.forEach(id => {
+      if (typeof id === "string" && id.length <= 200)
+        this.scoreAwardIds.add(id);
+    });
+    this.debugIntervened =
+      this.debugIntervened ||
+      snapshot.debug ||
+      snapshot.rankingEligibility === "debug-intervened";
+    this.rankingEligibility =
+      this.mode !== "CAMPAIGN"
+        ? "non-campaign"
+        : this.debugIntervened
+          ? "debug-intervened"
+          : (snapshot.rankingEligibility ?? "eligible");
   }
 
   private saveStageCheckpoint(): void {
@@ -1275,11 +1400,47 @@ export class GameWorld {
     }
   }
 
+  private isCompatibleSnapshot(snapshot: GameSnapshot): boolean {
+    return (
+      (!snapshot.movementModel || snapshot.movementModel === MOVEMENT_MODEL) &&
+      (!snapshot.scoreRuleVersion ||
+        snapshot.scoreRuleVersion === SCORE_RULE_VERSION) &&
+      (!snapshot.puzzleContentVersion ||
+        snapshot.puzzleContentVersion === PUZZLE_CONTENT_VERSION)
+    );
+  }
+
   private readStageCheckpoint(): GameSnapshot | null {
+    let raw: string | null = null;
     try {
-      const raw = localStorage.getItem(CHECKPOINT_KEY);
-      return raw ? (JSON.parse(raw) as GameSnapshot) : null;
+      raw = localStorage.getItem(CHECKPOINT_KEY);
+      if (!raw) return null;
+      const snapshot = JSON.parse(raw) as GameSnapshot;
+      if (
+        !snapshot ||
+        !snapshot.stats ||
+        !Array.isArray(snapshot.cubes) ||
+        !this.isCompatibleSnapshot(snapshot)
+      ) {
+        archiveCampaignStorage(
+          CHECKPOINT_KEY,
+          CHECKPOINT_LEGACY_STORAGE_KEY,
+          "checkpoint",
+          raw,
+          "incompatible-or-malformed"
+        );
+        return null;
+      }
+      return snapshot;
     } catch {
+      if (raw)
+        archiveCampaignStorage(
+          CHECKPOINT_KEY,
+          CHECKPOINT_LEGACY_STORAGE_KEY,
+          "checkpoint",
+          raw,
+          "invalid-json"
+        );
       return null;
     }
   }
@@ -1309,13 +1470,24 @@ export class GameWorld {
   }
 
   private readCampaign(): GameSnapshot | null {
+    let raw: string | null = null;
     try {
-      const raw = localStorage.getItem(CAMPAIGN_STORAGE_KEY);
+      raw = localStorage.getItem(CAMPAIGN_STORAGE_KEY);
+      if (!raw) return null;
       const saved = raw
         ? (JSON.parse(raw) as { version?: number; snapshot?: GameSnapshot })
         : null;
       const snapshot = saved?.snapshot;
-      if (saved?.version !== CAMPAIGN_SAVE_VERSION || !snapshot) return null;
+      if (saved?.version !== CAMPAIGN_SAVE_VERSION || !snapshot) {
+        archiveCampaignStorage(
+          CAMPAIGN_STORAGE_KEY,
+          CAMPAIGN_LEGACY_STORAGE_KEY,
+          "campaign",
+          raw,
+          `save-version-${String(saved?.version ?? "unknown")}`
+        );
+        return null;
+      }
       const index = snapshot.puzzleId
         ? this.puzzles.findIndex(puzzle => puzzle.id === snapshot.puzzleId)
         : snapshot.puzzleIndex;
@@ -1325,12 +1497,28 @@ export class GameWorld {
         !this.puzzles[index] ||
         (snapshot.puzzleId && this.puzzles[index].id !== snapshot.puzzleId) ||
         !snapshot.stats ||
-        !Array.isArray(snapshot.cubes)
-      )
+        !Array.isArray(snapshot.cubes) ||
+        !this.isCompatibleSnapshot(snapshot)
+      ) {
+        archiveCampaignStorage(
+          CAMPAIGN_STORAGE_KEY,
+          CAMPAIGN_LEGACY_STORAGE_KEY,
+          "campaign",
+          raw,
+          "incompatible-or-malformed"
+        );
         return null;
+      }
       return snapshot;
     } catch {
-      // Invalid or obsolete data starts a fresh campaign.
+      if (raw)
+        archiveCampaignStorage(
+          CAMPAIGN_STORAGE_KEY,
+          CAMPAIGN_LEGACY_STORAGE_KEY,
+          "campaign",
+          raw,
+          "invalid-json"
+        );
     }
     return null;
   }
@@ -1384,6 +1572,13 @@ export class GameWorld {
       elapsed: this.elapsed,
       puzzleId: this.currentPuzzle.id,
       completionAwardedForPuzzle: this.completionAwardedForPuzzle,
+      captureRotationStart: this.captureRotationStart,
+      captureRotationEnd: this.captureRotationEnd,
+      scoreAwardIds: Array.from(this.scoreAwardIds),
+      movementModel: MOVEMENT_MODEL,
+      scoreRuleVersion: SCORE_RULE_VERSION,
+      puzzleContentVersion: PUZZLE_CONTENT_VERSION,
+      rankingEligibility: this.rankingEligibility,
       captureProgress:
         this.phase === "CAPTURE_PAUSE"
           ? Math.max(

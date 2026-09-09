@@ -1157,7 +1157,7 @@ function Hud({ snapshot, onMenu }: { snapshot: GameSnapshot; onMenu(): void }) {
       <aside className="hud-right">
         <Metric
           label="ROLL"
-          value={`${snapshot.stats.rotations} / ${snapshot.stats.requiredRolls}`}
+          value={`${snapshot.stats.captureRotations ?? snapshot.stats.rotations} / ${snapshot.stats.requiredRolls}`}
         />
         <Metric
           label="LOSS"
@@ -1275,7 +1275,12 @@ function ResultOverlay({
 }) {
   const final = snapshot.phase === "FINAL_RESULT";
   const gameOver = snapshot.phase === "GAME_OVER";
-  const ranked = snapshot.mode === "CAMPAIGN" && (final || gameOver);
+  const rankingBlockedByDebug =
+    snapshot.rankingEligibility === "debug-intervened";
+  const ranked =
+    snapshot.mode === "CAMPAIGN" &&
+    (final || gameOver) &&
+    !rankingBlockedByDebug;
   const [shareStatus, setShareStatus] = useState("");
   const [submissionState, setSubmissionState] =
     useState<RankingSubmissionState>(ranked ? "submitting" : "idle");
@@ -1296,6 +1301,16 @@ function ResultOverlay({
   );
   const validatedName = validatePlayerName(playerName);
   const displayName = validatedName.ok ? validatedName.name : "ななし";
+  const captureRotations = Number.isSafeInteger(snapshot.stats.captureRotations)
+    ? snapshot.stats.captureRotations
+    : snapshot.stats.rotations;
+  const scoreBreakdown = snapshot.stats.scoreBreakdown ?? {
+    manualCapture: 0,
+    areaCapture: 0,
+    perfectBonus: 0,
+    stageBonus: 0,
+    finalBonus: 0,
+  };
   const shareText = `${displayName}さんのCUBIC ORDEAL結果：${formatRankingScore(snapshot.stats.score)}、ステージ${snapshot.stage}、足場${snapshot.stats.platformRows}列、MIND INDEX ${mindIndex}。\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
 
   useEffect(() => {
@@ -1408,6 +1423,14 @@ function ResultOverlay({
         />
         <Metric label="ROWS" value={String(snapshot.stats.platformRows)} />
       </div>
+      <p className="score-breakdown" aria-label="スコア内訳">
+        捕獲 {scoreBreakdown.manualCapture + scoreBreakdown.areaCapture}点
+        （手動 {scoreBreakdown.manualCapture} / AREA{" "}
+        {scoreBreakdown.areaCapture}） ・PERFECT {scoreBreakdown.perfectBonus}点
+        ・進行 {scoreBreakdown.stageBonus + scoreBreakdown.finalBonus}点
+        ・捕獲評価 {captureRotations} / {snapshot.stats.requiredRolls}
+        ・排出進行 {Math.max(0, snapshot.stats.rotations - captureRotations)}回
+      </p>
       <p>
         {gameOver
           ? snapshot.banner === "FALL INTO VOID"
@@ -1417,6 +1440,11 @@ function ResultOverlay({
             ? "すべての観測対象を通過しました。"
             : "次の解析結果を待機しています。"}
       </p>
+      {rankingBlockedByDebug && (
+        <p className="platform-status ranking-blocked" role="status">
+          デバッグ操作を使ったプレイはランキング対象外です。この結果は端末内の確認だけに使われます。
+        </p>
+      )}
       {ranked && (
         <>
           <section
