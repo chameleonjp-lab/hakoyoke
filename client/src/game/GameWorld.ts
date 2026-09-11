@@ -22,6 +22,21 @@ import {
 } from "./platformProgression";
 import { retainRunState, shouldCarryRunState } from "./runStateProgression";
 import {
+  GRID_STEP_TICKS,
+  GRID_REPEAT_DELAY_TICKS,
+  GRID_REPEAT_INTERVAL_TICKS,
+  beginPlayerStep,
+  completePlayerStep,
+  createPlayerStep,
+  directionVector,
+  isCellInBounds,
+  isPlayerMoving,
+  playerPosition,
+  queuePlayerDirection,
+  tickPlayerStep,
+  type Direction,
+} from "./gridMovement";
+import {
   advanceOneCell,
   areaTargets,
   calculateMindIndex,
@@ -43,6 +58,7 @@ import {
   DIFFICULTIES,
   initialStats,
   type AreaMark,
+  type Cell,
   type CubeState,
   type Difficulty,
   type GameMode,
@@ -54,6 +70,7 @@ import {
   type PuzzleDescriptor,
   type RankingEligibility,
   type RunStats,
+  type PlayerStepState,
   SCORE_RULE_VERSION,
 } from "./types";
 
@@ -110,6 +127,13 @@ const TERMINAL_PHASES = new Set<GamePhase>(["GAME_OVER", "FINAL_RESULT"]);
 const isPausablePhase = (phase: GamePhase): boolean =>
   PAUSABLE_PHASES.has(phase);
 
+const isDirectionOrNull = (value: unknown): value is Direction | null =>
+  value === null ||
+  value === "up" ||
+  value === "down" ||
+  value === "left" ||
+  value === "right";
+
 export class GameWorld {
   private readonly input = new InputManager();
   private readonly history: GameSnapshot[] = [];
@@ -157,6 +181,10 @@ export class GameWorld {
   private difficulty: Difficulty = "NORMAL";
   private phase: GamePhase = "TITLE";
   private player = { x: 1.5, z: 10, heading: 0 };
+  private playerCell: Cell = { x: 0, z: 0 };
+  private playerStep: PlayerStepState = createPlayerStep(this.playerCell);
+  private pendingMarker: GridPosition | null = null;
+  private pendingAction: "capture" | "area" | null = null;
   private cubes: CubeState[] = [];
   private marker: GridPosition | null = null;
   private areas: AreaMark[] = [];
@@ -222,7 +250,9 @@ export class GameWorld {
     this.elapsed += dt;
     if (this.demo) this.runDemo(dt);
     const input = this.input.sample(
-      this.phase === "PLAYING" || this.phase === "TUTORIAL"
+      this.phase === "PLAYING" ||
+        this.phase === "TUTORIAL" ||
+        this.phase === "CAPTURE_PAUSE"
     );
     if (input.pause) this.togglePause();
     if (
@@ -262,7 +292,26 @@ export class GameWorld {
     }
 
     if (this.phase === "CAPTURE_PAUSE") {
-      if (!this.movePlayer(input.moveX, input.moveZ, dt)) return;
+      if (
+        input.clearMarker &&
+        (this.mode !== "TUTORIAL" ||
+          tutorialActionEnabled(this.tutorialStep, "clear"))
+      )
+        this.clearMarker();
+      if (
+        input.mark &&
+        (this.mode !== "TUTORIAL" ||
+          tutorialActionEnabled(this.tutorialStep, "mark"))
+      )
+        this.requestMarkAction();
+      if (
+        input.area &&
+        (this.mode !== "TUTORIAL" ||
+          tutorialActionEnabled(this.tutorialStep, "area"))
+      )
+        this.requestAreaAction();
+      if (!this.movePlayer(input.moveDirection, input.movePressed)) return;
+      this.commitPendingMarker();
       this.phaseTimer -= dt;
       if (this.phaseTimer <= 0) {
         this.phase = this.mode === "TUTORIAL" ? "TUTORIAL" : "PLAYING";
@@ -292,7 +341,8 @@ export class GameWorld {
     }
 
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
-    if (!this.movePlayer(input.moveX, input.moveZ, dt)) return;
+    this.flushPendingAction();
+    if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
     if (
       input.clearMarker &&
       (this.mode !== "TUTORIAL" ||
@@ -304,16 +354,20 @@ export class GameWorld {
       (this.mode !== "TUTORIAL" ||
         tutorialActionEnabled(this.tutorialStep, "mark"))
     )
-      this.markOrCapture();
+      this.requestMarkAction();
     if (
       input.area &&
       (this.mode !== "TUTORIAL" ||
         tutorialActionEnabled(this.tutorialStep, "area"))
     )
-      this.activateAreas();
+      this.requestAreaAction();
+    if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
+    if (!this.movePlayer(input.moveDirection, input.movePressed)) return;
     this.updateTutorial(input.moveX, input.moveZ);
     if (this.phase === "PLAYING" || this.phase === "TUTORIAL")
       this.updateRoll(dt, input.fast);
+    if (this.phase === "PLAYING" || this.phase === "TUTORIAL")
+      this.commitPendingMarker();
     if (
       this.mode === "PRACTICE" &&
       Math.floor(this.elapsed * 4) !== Math.floor((this.elapsed - dt) * 4)
@@ -321,24 +375,217 @@ export class GameWorld {
       this.recordHistory();
   }
 
-  private movePlayer(moveX: number, moveZ: number, dt: number): boolean {
-    if (!moveX && !moveZ) return true;
-    const config = DIFFICULTIES[this.difficulty];
-    const length = Math.hypot(moveX, moveZ) || 1;
-    this.player.x += (moveX / length) * config.playerSpeed * dt;
-    this.player.z += (moveZ / length) * config.playerSpeed * dt;
-    this.player.heading = Math.atan2(moveX, moveZ);
+  /**
+   * Advances the authoritative player state by one fixed update. Input is a
+   * cardinal direction and an optional edge (the first press or a direction
+   * change). The edge starts/queues exactly one cell; holding the direction
+   * only enables the deterministic repeat schedule.
+   */
+  private movePlayer(
+    direction: Direction | null,
+    pressed: Direction | null
+  ): boolean {
+    const step = this.playerStep;
+
+    if (direction) {
+      if (step.heldDirection === direction) step.heldTicks += 1;
+      else {
+        step.heldDirection = direction;
+        step.heldTicks = 1;
+        step.nextRepeatTick = GRID_REPEAT_DELAY_TICKS;
+      }
+    } else {
+      step.heldDirection = null;
+      step.heldTicks = 0;
+      step.nextRepeatTick = null;
+    }
+
+    if (!isPlayerMoving(step) && !pressed && step.queuedDirection) {
+      const queued = step.queuedDirection;
+      step.queuedDirection = null;
+      if (
+        beginPlayerStep(step, queued, cell => this.canEnterPlayerCell(cell))
+      ) {
+        step.nextRepeatTick = step.heldDirection
+          ? step.heldTicks + GRID_REPEAT_INTERVAL_TICKS
+          : null;
+        this.setPlayerHeading(queued);
+      }
+    }
+
+    if (pressed) {
+      if (isPlayerMoving(step)) queuePlayerDirection(step, pressed);
+      else if (
+        beginPlayerStep(step, pressed, cell => this.canEnterPlayerCell(cell))
+      ) {
+        step.queuedDirection = null;
+        step.nextRepeatTick = direction ? GRID_REPEAT_DELAY_TICKS : null;
+        this.setPlayerHeading(pressed);
+      }
+    }
+
+    if (isPlayerMoving(step)) {
+      const completed = tickPlayerStep(step);
+      this.syncPlayerFromStep();
+      if (!completed) return true;
+
+      completePlayerStep(step);
+      this.playerCell = { ...step.from };
+      this.syncPlayerFromStep();
+
+      const queued = step.queuedDirection;
+      if (
+        !queued &&
+        step.heldDirection &&
+        step.nextRepeatTick !== null &&
+        step.heldTicks >= step.nextRepeatTick
+      ) {
+        step.queuedDirection = step.heldDirection;
+      }
+      return true;
+    }
+
     if (
+      step.heldDirection &&
+      step.nextRepeatTick !== null &&
+      step.heldTicks >= step.nextRepeatTick
+    ) {
+      const repeated = step.heldDirection;
+      if (
+        beginPlayerStep(step, repeated, cell => this.canEnterPlayerCell(cell))
+      ) {
+        step.nextRepeatTick = step.heldTicks + GRID_REPEAT_INTERVAL_TICKS;
+        this.setPlayerHeading(repeated);
+        this.syncPlayerFromStep();
+      } else {
+        // Keep the boundary check deterministic without turning a held key at
+        // the edge of the board into a fall or an unbounded retry loop.
+        step.nextRepeatTick = step.heldTicks + GRID_REPEAT_INTERVAL_TICKS;
+      }
+    }
+    return true;
+  }
+
+  private canEnterPlayerCell(cell: Cell): boolean {
+    return isCellInBounds(
+      cell,
+      this.currentPuzzle.width,
+      this.stats.platformRows
+    );
+  }
+
+  private setPlayerHeading(direction: Direction): void {
+    const vector = directionVector(direction);
+    this.player.heading = Math.atan2(vector.x, vector.z);
+  }
+
+  private syncPlayerFromStep(): void {
+    const position = playerPosition(this.playerStep);
+    this.player.x = position.x;
+    this.player.z = position.z;
+  }
+
+  /** Preserve an in-flight step, but require a fresh input for the next one. */
+  private clearMovementIntent(): void {
+    this.playerStep.queuedDirection = null;
+    this.playerStep.heldDirection = null;
+    this.playerStep.heldTicks = 0;
+    this.playerStep.nextRepeatTick = null;
+  }
+
+  /** Reconcile an in-flight step immediately after the playable floor shrinks. */
+  private reconcilePlayerAfterPlatformLoss(): boolean {
+    const step = this.playerStep;
+    const fromValid = isCellInBounds(
+      step.from,
+      this.currentPuzzle.width,
+      this.stats.platformRows
+    );
+    const toValid =
+      !step.to ||
+      isCellInBounds(
+        step.to,
+        this.currentPuzzle.width,
+        this.stats.platformRows
+      );
+
+    if (step.to && fromValid && !toValid) {
+      // The current cell still supports the player. Cancel the invalid
+      // arrival instead of completing a step onto a removed row.
+      step.to = null;
+      step.elapsedTicks = 0;
+      this.playerCell = { ...step.from };
+      this.pendingMarker = null;
+      this.clearMovementIntent();
+      this.syncPlayerFromStep();
+      return true;
+    }
+
+    // A step that already crossed from a removed source into a surviving
+    // destination is allowed to finish; the next completed cell becomes the
+    // new authoritative player position.
+    if (step.to && !fromValid && toValid) return true;
+
+    if (
+      !fromValid ||
       !isPositionOnPlatform(
         this.player,
         this.currentPuzzle.width,
         this.stats.platformRows
       )
     ) {
-      this.fallFromPlatform();
+      this.enterGameOver("FALL INTO VOID");
       return false;
     }
     return true;
+  }
+
+  private requestMarkAction(): void {
+    if (this.phase !== "CAPTURE_PAUSE") {
+      this.markOrCapture();
+      return;
+    }
+    if (!this.marker) {
+      this.pendingAction = null;
+      this.markOrCapture();
+      return;
+    }
+    this.pendingAction = "capture";
+    this.banner = "CAPTURE QUEUED";
+  }
+
+  private requestAreaAction(): void {
+    if (this.phase !== "CAPTURE_PAUSE") {
+      this.activateAreas();
+      return;
+    }
+    if (!this.areas.length) {
+      this.banner = "NO VEIL ANCHORS";
+      return;
+    }
+    this.pendingAction = "area";
+    this.banner = "AREA QUEUED";
+  }
+
+  private commitPendingMarker(): void {
+    const pending = this.pendingMarker;
+    if (!pending || this.playerStep.to) return;
+    if (pending.x !== this.playerCell.x || pending.z !== this.playerCell.z) {
+      this.pendingMarker = null;
+      return;
+    }
+    this.pendingMarker = null;
+    if (this.marker) return;
+    this.marker = { ...pending };
+    this.banner = "MARK SET";
+    this.onSignal("mark");
+  }
+
+  private flushPendingAction(): void {
+    const pending = this.pendingAction;
+    this.pendingAction = null;
+    if (pending === "capture" && this.marker) this.markOrCapture();
+    if (pending === "area") this.activateAreas();
   }
 
   private updateRoll(dt: number, fast: boolean): void {
@@ -349,7 +596,15 @@ export class GameWorld {
       // settle window and capture pause readable so holding FAST does not
       // silently remove the time needed to make a decision.
       this.settleElapsed += dt;
-      if (this.settleElapsed >= config.settleSeconds) {
+      // A grid route may span the board before the next roll. The lead is
+      // derived from the same fixed seven-tick cell duration, so larger
+      // boards remain playable without giving any difficulty a different
+      // movement speed.
+      const gridTravelLead =
+        Math.max(0, this.currentPuzzle.width - 4) *
+        GRID_STEP_TICKS *
+        FIXED_STEP;
+      if (this.settleElapsed >= config.settleSeconds + gridTravelLead) {
         this.isRolling = true;
         this.rollElapsed = 0;
         this.settleElapsed = 0;
@@ -396,7 +651,9 @@ export class GameWorld {
         playerIntersectsRollSweep(cube, this.player, previousProgress, progress)
       );
     });
-    if (crushing) this.crush();
+    if (crushing) {
+      this.crush();
+    }
   }
 
   private finishRotation(): void {
@@ -439,6 +696,8 @@ export class GameWorld {
 
   private enterGameOver(banner: string): void {
     this.phase = "GAME_OVER";
+    this.pendingMarker = null;
+    this.clearMovementIntent();
     this.banner = banner;
     this.input.clear();
     // GAME_OVER is a terminal campaign state. Save it synchronously so a
@@ -454,12 +713,20 @@ export class GameWorld {
     )
       return;
     if (!this.marker) {
-      this.marker = nearestGridCell(
-        this.player,
-        this.currentPuzzle.width,
-        this.stats.platformRows
-      );
-      this.banner = "MARK SET";
+      if (this.pendingMarker) {
+        this.banner = "MARK QUEUED // ARRIVAL";
+        return;
+      }
+      // MARK during a step reserves the destination cell. This keeps the
+      // action deterministic even when the input edge and the visual arrival
+      // happen on different fixed updates.
+      if (this.playerStep.to) {
+        this.pendingMarker = { ...this.playerStep.to };
+        this.banner = "MARK QUEUED // ARRIVAL";
+      } else {
+        this.marker = { ...this.playerCell };
+        this.banner = "MARK SET";
+      }
       this.onSignal("mark");
       if (this.mode === "TUTORIAL" && this.tutorialStep === 1)
         this.completeTutorialGate("MARK SET");
@@ -487,8 +754,10 @@ export class GameWorld {
       !tutorialActionEnabled(this.tutorialStep, "clear")
     )
       return;
-    if (!this.marker) return;
+    if (!this.marker && !this.pendingMarker) return;
     this.marker = null;
+    this.pendingMarker = null;
+    if (this.pendingAction === "capture") this.pendingAction = null;
     this.banner = "MARK CLEARED";
     this.onSignal("mark");
   }
@@ -654,6 +923,9 @@ export class GameWorld {
     )
       return;
 
+    this.pendingMarker = null;
+    this.clearMovementIntent();
+
     if (this.mode === "TUTORIAL" && this.tutorialStep === 7) {
       const perfectClear =
         this.stats.misses === 0 &&
@@ -711,6 +983,8 @@ export class GameWorld {
       this.tutorialStep >= TUTORIAL_STAGE_COUNT
     )
       return;
+    this.pendingMarker = null;
+    this.clearMovementIntent();
     this.tutorialStep += 1;
     this.hint = tutorialHint(this.tutorialStep);
     this.banner = banner;
@@ -721,13 +995,12 @@ export class GameWorld {
 
   private losePlatformRow(reason: string, preserveMisses = false): boolean {
     this.stats.platformRows -= 1;
+    this.pendingMarker = null;
     if (!preserveMisses) this.stats.misses = 0;
     this.banner = reason;
     this.onSignal("collapse");
-    if (
-      this.player.z >= this.stats.platformRows ||
-      this.stats.platformRows < this.currentPuzzle.depth + 2
-    ) {
+    if (!this.reconcilePlayerAfterPlatformLoss()) return true;
+    if (this.stats.platformRows < this.currentPuzzle.depth + 2) {
       this.enterGameOver("OBSERVATORY LOST");
       return true;
     }
@@ -736,6 +1009,8 @@ export class GameWorld {
 
   private crush(): void {
     if (this.phase !== "PLAYING" && this.phase !== "TUTORIAL") return;
+    this.pendingMarker = null;
+    this.clearMovementIntent();
     const escaped = unresolvedCubeCount(this.cubes);
     this.cubes.forEach(cube => {
       if (!cube.captured) cube.falling = true;
@@ -926,6 +1201,9 @@ export class GameWorld {
   }
 
   private loadPuzzle(puzzle: PuzzleDescriptor, resetPlatform: boolean): void {
+    // A new puzzle must not inherit a held key, touch pointer, or gamepad
+    // edge from the result/intro screen that preceded it.
+    this.input.clear();
     const previousPuzzle = this.currentPuzzle;
     const carriedState = shouldCarryRunState(
       previousPuzzle,
@@ -943,6 +1221,8 @@ export class GameWorld {
     );
     this.currentPuzzle = puzzle;
     this.marker = null;
+    this.pendingMarker = null;
+    this.pendingAction = null;
     this.areas = carriedState?.areas ?? [];
     const platformRows = resetRows
       ? platformRowsForStage(puzzle.stage, puzzle.depth)
@@ -965,9 +1245,14 @@ export class GameWorld {
       this.stats.perfect = this.stats.misses === 0;
     }
     this.cubes = createRuntimePuzzleCubes(puzzle, this.stats.platformRows);
+    this.playerCell = {
+      x: Math.floor(puzzle.width / 2),
+      z: 0,
+    };
+    this.playerStep = createPlayerStep(this.playerCell);
     this.player = {
-      x: Math.min(puzzle.width - 0.5, Math.max(0.5, puzzle.width / 2)),
-      z: 0.7,
+      x: this.playerCell.x,
+      z: this.playerCell.z,
       heading: 0,
     };
     this.hasScoringStarted = false;
@@ -994,6 +1279,7 @@ export class GameWorld {
     ordinal = 1,
     resumeCampaign = true
   ): void {
+    this.input.clear();
     this.customPuzzle = null;
     this.scoreAwardIds.clear();
     if (mode === "CAMPAIGN" && stage === 1 && wave === 1 && ordinal === 1) {
@@ -1060,6 +1346,9 @@ export class GameWorld {
     this.pausedFromPhase = this.phase;
     this.phase = "PAUSED";
     this.banner = reason;
+    this.pendingMarker = null;
+    this.pendingAction = null;
+    this.clearMovementIntent();
     this.input.clear();
   }
 
@@ -1302,13 +1591,25 @@ export class GameWorld {
   }
 
   private restoreHistory(): void {
-    const snapshot = this.history[Math.max(0, this.history.length - 40)];
-    if (snapshot) this.restore(snapshot);
+    const snapshot = this.history[0];
+    if (!snapshot) {
+      this.banner = "NO REWIND AVAILABLE";
+      return;
+    }
+    this.restore(snapshot);
+    // A rewind changes the timeline. Do not let a later STEP or MARK revisit
+    // states that belonged to the discarded future.
+    this.history.length = 0;
     this.banner = "10 SECONDS REWOUND";
   }
 
   private restore(snapshot: GameSnapshot): void {
+    // Saved state restores the in-flight step, not a physical key/finger
+    // that may no longer exist when the screen is resumed.
+    this.input.clear();
     this.phase = snapshot.phase;
+    this.pendingMarker = null;
+    this.pendingAction = null;
     this.mode = snapshot.mode;
     this.difficulty = snapshot.difficulty;
     this.player = { ...snapshot.player };
@@ -1343,6 +1644,7 @@ export class GameWorld {
       this.puzzleIndex = -1;
       this.currentPuzzle = customPuzzle;
     }
+    this.restorePlayerStep(snapshot);
     this.banner = snapshot.banner;
     this.hint = snapshot.hint;
     this.duelTurn = snapshot.duelTurn;
@@ -1388,6 +1690,70 @@ export class GameWorld {
           : (snapshot.rankingEligibility ?? "eligible");
   }
 
+  private restorePlayerStep(snapshot: GameSnapshot): void {
+    const fallbackCell: Cell = nearestGridCell(
+      snapshot.player,
+      this.currentPuzzle.width,
+      this.stats.platformRows
+    );
+    const raw = snapshot.playerStep;
+    const validRaw =
+      raw &&
+      isCellInBounds(
+        raw.from,
+        this.currentPuzzle.width,
+        this.stats.platformRows
+      ) &&
+      (!raw.to ||
+        isCellInBounds(
+          raw.to,
+          this.currentPuzzle.width,
+          this.stats.platformRows
+        )) &&
+      (!raw.to ||
+        Math.abs(raw.to.x - raw.from.x) + Math.abs(raw.to.z - raw.from.z) ===
+          1) &&
+      Number.isInteger(raw.elapsedTicks) &&
+      raw.elapsedTicks >= 0 &&
+      raw.elapsedTicks <= raw.stepTicks &&
+      Number.isInteger(raw.stepTicks) &&
+      raw.stepTicks > 0 &&
+      raw.stepTicks <= 60 &&
+      isDirectionOrNull(raw.queuedDirection) &&
+      isDirectionOrNull(raw.heldDirection) &&
+      Number.isInteger(raw.heldTicks) &&
+      raw.heldTicks >= 0 &&
+      (raw.nextRepeatTick === null ||
+        (Number.isInteger(raw.nextRepeatTick) && raw.nextRepeatTick >= 0));
+    this.playerStep = validRaw
+      ? {
+          from: { ...raw.from },
+          to: raw.to ? { ...raw.to } : null,
+          elapsedTicks: raw.elapsedTicks,
+          stepTicks: raw.stepTicks,
+          queuedDirection: raw.queuedDirection ?? null,
+          heldDirection: raw.heldDirection ?? null,
+          heldTicks: raw.heldTicks,
+          nextRepeatTick: raw.nextRepeatTick,
+        }
+      : createPlayerStep(fallbackCell);
+    if (validRaw) this.clearMovementIntent();
+    this.playerCell = validRaw
+      ? { ...this.playerStep.from }
+      : snapshot.playerCell
+        ? { ...snapshot.playerCell }
+        : { ...this.playerStep.from };
+    if (
+      !isCellInBounds(
+        this.playerCell,
+        this.currentPuzzle.width,
+        this.stats.platformRows
+      )
+    )
+      this.playerCell = { ...this.playerStep.from };
+    this.syncPlayerFromStep();
+  }
+
   private saveStageCheckpoint(): void {
     if (this.mode !== "CAMPAIGN") return;
     try {
@@ -1402,11 +1768,9 @@ export class GameWorld {
 
   private isCompatibleSnapshot(snapshot: GameSnapshot): boolean {
     return (
-      (!snapshot.movementModel || snapshot.movementModel === MOVEMENT_MODEL) &&
-      (!snapshot.scoreRuleVersion ||
-        snapshot.scoreRuleVersion === SCORE_RULE_VERSION) &&
-      (!snapshot.puzzleContentVersion ||
-        snapshot.puzzleContentVersion === PUZZLE_CONTENT_VERSION)
+      snapshot.movementModel === MOVEMENT_MODEL &&
+      snapshot.scoreRuleVersion === SCORE_RULE_VERSION &&
+      snapshot.puzzleContentVersion === PUZZLE_CONTENT_VERSION
     );
   }
 
@@ -1546,6 +1910,13 @@ export class GameWorld {
       mode: this.mode,
       difficulty: this.difficulty,
       player: { ...this.player },
+      playerCell: { ...this.playerCell },
+      pendingMarker: this.pendingMarker ? { ...this.pendingMarker } : null,
+      playerStep: {
+        ...this.playerStep,
+        from: { ...this.playerStep.from },
+        to: this.playerStep.to ? { ...this.playerStep.to } : null,
+      },
       cubes: this.cubes.map(cube => ({ ...cube })),
       marker: this.marker ? { ...this.marker } : null,
       areas: this.areas.map(area => ({ ...area })),
@@ -1575,6 +1946,8 @@ export class GameWorld {
       captureRotationStart: this.captureRotationStart,
       captureRotationEnd: this.captureRotationEnd,
       scoreAwardIds: Array.from(this.scoreAwardIds),
+      quickSaveAvailable: this.quickSave !== null,
+      rewindAvailable: this.history.length > 0,
       movementModel: MOVEMENT_MODEL,
       scoreRuleVersion: SCORE_RULE_VERSION,
       puzzleContentVersion: PUZZLE_CONTENT_VERSION,

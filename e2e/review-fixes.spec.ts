@@ -135,11 +135,21 @@ test("PRACTICEは各Waveに存在する問題番号だけを表示する", async
   await page.getByRole("button", { name: /CAMPAIGN/ }).click();
   await page.getByRole("button", { name: /PRACTICE/ }).click();
   await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  const preview = page.getByRole("region", { name: "選択した問題の概要" });
+  await expect(preview).toContainText("STAGE-1-W1-P01");
+  await expect(preview).toContainText("4 × 2 セル");
+  await expect(preview).toContainText("VOID 4");
+  await expect(
+    page.getByRole("button", { name: "EXTREME", exact: true })
+  ).toBeVisible();
   const selects = page.locator(".select-grid select");
   await selects.nth(0).selectOption("9");
   await expect(selects.nth(2).locator("option")).toHaveCount(1);
   await selects.nth(0).selectOption("4");
   await expect(selects.nth(2).locator("option")).toHaveCount(2);
+  await selects.nth(1).selectOption("4");
+  await expect(preview).toContainText("STAGE-4-W4-P01");
+  await expect(preview).toContainText("5 × 8 セル");
 });
 
 test("モバイル操作ボタンはPointer Eventsの一経路でMARKを一度だけ処理する", async ({
@@ -222,7 +232,7 @@ test("縦画面の移動領域は下半分に限定され、pause中は入力面
   await expect(zone).toBeVisible();
 });
 
-test("移動中の解除イベントが画面側へ届いてもプレイヤーが停止する", async ({
+test("移動中の解除イベントが画面側へ届いても1マスだけで停止する", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
@@ -271,16 +281,39 @@ test("移動中の解除イベントが画面側へ届いてもプレイヤー�
       new PointerEvent("pointerup", { pointerId: 121, pointerType: "touch" })
     );
   });
-  const stoppedAt = await page.evaluate(
-    () =>
-      (window as Window & { latestSnapshot?: { player: { z: number } } })
-        .latestSnapshot?.player.z ?? 0
-  );
+  const stoppedAt = await page.evaluate(() => {
+    const snapshot = (
+      window as Window & {
+        latestSnapshot?: {
+          player: { x: number; z: number };
+          playerCell: { x: number; z: number };
+          playerStep?: { to: { x: number; z: number } | null };
+        };
+      }
+    ).latestSnapshot;
+    return {
+      cell: snapshot?.playerCell ?? {
+        x: Math.round(snapshot?.player.x ?? 0),
+        z: Math.round(snapshot?.player.z ?? 0),
+      },
+      inFlightTarget: snapshot?.playerStep?.to ?? null,
+    };
+  });
   await page.waitForTimeout(240);
-  const afterRelease = await page.evaluate(
-    () =>
-      (window as Window & { latestSnapshot?: { player: { z: number } } })
-        .latestSnapshot?.player.z ?? 0
-  );
-  expect(Math.abs(afterRelease - stoppedAt)).toBeLessThan(0.08);
+  const afterRelease = await page.evaluate(() => {
+    const snapshot = (
+      window as Window & {
+        latestSnapshot?: {
+          playerCell: { x: number; z: number };
+          playerStep?: { to: { x: number; z: number } | null };
+        };
+      }
+    ).latestSnapshot;
+    return {
+      cell: snapshot?.playerCell ?? null,
+      inFlight: snapshot?.playerStep?.to ?? null,
+    };
+  });
+  expect(afterRelease.cell).toEqual(stoppedAt.inFlightTarget ?? stoppedAt.cell);
+  expect(afterRelease.inFlight).toBeNull();
 });

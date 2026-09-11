@@ -1,5 +1,9 @@
 /** Structural and gameplay validation for generated and custom puzzle descriptors. */
 import { EXPECTED_PUZZLE_COUNT, wavePlan } from "./stagePlan";
+import {
+  auditRepresentativePuzzles,
+  type PuzzleQualityAudit,
+} from "./puzzleQuality";
 import type { PuzzleDescriptor } from "./types";
 import { simulatePuzzleSolution } from "./solutionSimulation";
 
@@ -17,12 +21,18 @@ export interface PuzzleArchiveValidationResult {
   valid: boolean;
   issues: string[];
   results: PuzzleValidationResult[];
+  quality: PuzzleQualityAudit;
 }
 
 export interface PuzzleDescriptorParseResult {
   valid: boolean;
   reason: string;
   puzzle?: PuzzleDescriptor;
+}
+
+export interface PuzzleArchiveValidationOptions {
+  /** Build-time CI enables the expensive representative replay gate. */
+  quality?: boolean;
 }
 
 const CUBE_TYPES = new Set(["normal", "veil", "void"]);
@@ -351,7 +361,8 @@ function gameplayFingerprint(puzzle: PuzzleDescriptor): string {
 }
 
 export function validatePuzzleArchive(
-  puzzles: PuzzleDescriptor[]
+  puzzles: PuzzleDescriptor[],
+  options: PuzzleArchiveValidationOptions = {}
 ): PuzzleArchiveValidationResult {
   const issues: string[] = [];
   if (puzzles.length !== EXPECTED_PUZZLE_COUNT)
@@ -383,5 +394,14 @@ export function validatePuzzleArchive(
     if (!result.valid)
       issues.push(`${puzzles[index]?.id ?? index}: ${result.reason}`);
   });
-  return { valid: issues.length === 0, issues, results };
+  const quality =
+    options.quality === false
+      ? emptyQualityAudit()
+      : auditRepresentativePuzzles(puzzles, results);
+  quality.issues.forEach(issue => issues.push(`quality: ${issue}`));
+  return { valid: issues.length === 0, issues, results, quality };
+}
+
+function emptyQualityAudit(): PuzzleQualityAudit {
+  return { valid: true, issues: [], results: [] };
 }

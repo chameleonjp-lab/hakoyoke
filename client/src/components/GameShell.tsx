@@ -11,9 +11,16 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { parsePuzzleDescriptor, validatePuzzle } from "@/game/puzzleValidation";
+import {
+  findPracticePuzzle,
+  parsePracticeCatalog,
+  practiceFocus,
+  type PracticePuzzleSummary,
+} from "@/game/practiceCatalog";
 import { deriveDirectSolution } from "@/game/solutionSimulation";
 import { areaTargets, calculateMindIndex, markerTarget } from "@/game/rules";
 import { puzzleCountFor } from "@/game/stagePlan";
+import { summarizeResult } from "@/game/resultSummary";
 import { TUTORIAL_STAGE_COUNT, tutorialActionEnabled } from "@/game/tutorial";
 import type { CubicCommand } from "@/game/GameWorld";
 import {
@@ -30,6 +37,7 @@ import {
 } from "@/lib/ranking";
 import type {
   Difficulty,
+  Direction,
   GameMode,
   GameSnapshot,
   PuzzleDescriptor,
@@ -64,6 +72,45 @@ function setting(key: "quality" | "audio", value: string): void {
 
 function homeShareMessage(): string {
   return `${RANKING_CONFIG.shareText}\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
+}
+
+function usePracticeCatalog(enabled: boolean): {
+  catalog: PracticePuzzleSummary[];
+  status: string;
+} {
+  const [catalog, setCatalog] = useState<PracticePuzzleSummary[]>([]);
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    if (!enabled || catalog.length > 0) return;
+    let active = true;
+    setStatus("問題情報を読み込み中…");
+    void fetch(`${import.meta.env.BASE_URL}data/puzzles.json`, {
+      cache: "no-cache",
+    })
+      .then(response => {
+        if (!response.ok) throw new Error("practice catalog unavailable");
+        return response.json() as Promise<unknown>;
+      })
+      .then(payload => {
+        const next = parsePracticeCatalog(payload);
+        if (!next.length) throw new Error("practice catalog is empty");
+        if (!active) return;
+        setCatalog(next);
+        setStatus("");
+      })
+      .catch(() => {
+        if (active)
+          setStatus(
+            "問題情報を読み込めませんでした。選択した問題は開始できます。"
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [catalog.length, enabled]);
+
+  return { catalog, status };
 }
 
 async function shareOrCopy(
@@ -228,6 +275,9 @@ export default function GameShell({
             / {TUTORIAL_STAGE_COUNT}
           </span>
           <p>{snapshot.hint}</p>
+          <small className="tutorial-grid-note">
+            1マスずつ移動 / 1マス = 7 tick
+          </small>
         </aside>
       )}
       {snapshot?.debug && <DebugPanel snapshot={snapshot} />}
@@ -323,6 +373,8 @@ function MenuPanel({
   }) => void;
   onTest(puzzle: PuzzleDescriptor): void;
 }) {
+  const practiceCatalogState = usePracticeCatalog(panel === "practice");
+
   return (
     <section className="title-shell">
       <div className="title-rail">
@@ -379,6 +431,8 @@ function MenuPanel({
             setDifficulty={setDifficulty}
             practice={practice}
             setPractice={setPractice}
+            catalog={practiceCatalogState.catalog}
+            catalogStatus={practiceCatalogState.status}
             onStart={() => execute("PRACTICE")}
             onBack={() => setPanel("mode")}
           />
@@ -645,6 +699,8 @@ function PracticeActions({
   setDifficulty,
   practice,
   setPractice,
+  catalog,
+  catalogStatus,
   onStart,
   onBack,
 }: {
@@ -652,10 +708,18 @@ function PracticeActions({
   setDifficulty(value: Difficulty): void;
   practice: { stage: number; wave: number; ordinal: number };
   setPractice(value: { stage: number; wave: number; ordinal: number }): void;
+  catalog: readonly PracticePuzzleSummary[];
+  catalogStatus: string;
   onStart(): void;
   onBack(): void;
 }) {
   const maxPuzzle = puzzleCountFor(practice.stage, practice.wave);
+  const selectedPuzzle = findPracticePuzzle(
+    catalog,
+    practice.stage,
+    practice.wave,
+    practice.ordinal
+  );
   const update = (next: Partial<typeof practice>) => {
     const merged = { ...practice, ...next };
     const count = puzzleCountFor(merged.stage, merged.wave);
@@ -692,8 +756,9 @@ function PracticeActions({
         />
       </div>
       <div className="difficulty-row compact">
-        {difficulties.slice(0, 4).map(item => (
+        {difficulties.map(item => (
           <button
+            type="button"
             onClick={() => setDifficulty(item)}
             className={difficulty === item ? "active" : ""}
             key={item}
@@ -702,8 +767,52 @@ function PracticeActions({
           </button>
         ))}
       </div>
+      <section
+        className="practice-preview"
+        aria-label="選択した問題の概要"
+        aria-live="polite"
+      >
+        {selectedPuzzle ? (
+          <>
+            <div className="practice-preview-heading">
+              <span className="eyebrow">SELECTED SIGNAL</span>
+              <b>{selectedPuzzle.id}</b>
+            </div>
+            <dl className="practice-preview-grid">
+              <div>
+                <dt>BOARD</dt>
+                <dd>
+                  {selectedPuzzle.width} × {selectedPuzzle.depth} セル
+                </dd>
+              </div>
+              <div>
+                <dt>TARGET</dt>
+                <dd>
+                  {selectedPuzzle.normal + selectedPuzzle.veil} 個 / VOID{" "}
+                  {selectedPuzzle.void}
+                </dd>
+              </div>
+              <div>
+                <dt>ROLL GOAL</dt>
+                <dd>{selectedPuzzle.requiredRolls} 回転</dd>
+              </div>
+              <div>
+                <dt>FOCUS</dt>
+                <dd>{practiceFocus(selectedPuzzle.difficultyTag)}</dd>
+              </div>
+            </dl>
+            <p className="practice-preview-intent">
+              <span>狙い</span> {selectedPuzzle.designIntent}
+            </p>
+          </>
+        ) : (
+          <p className="platform-status">
+            {catalogStatus || "問題情報を準備しています…"}
+          </p>
+        )}
+      </section>
       <p className="menu-lead">
-        存在する問題番号だけを選択できます。一手送り、10秒巻き戻し、クイックセーブを使用できます。
+        1マスずつ移動してルートを確認できます。STEPで一手送り、REWINDで直近10秒を戻し、SAVE／LOADで基準位置を作れます。
       </p>
       <div className="action-row">
         <Action label="BACK" note="MODE" onClick={onBack} />
@@ -1176,7 +1285,7 @@ function Hud({ snapshot, onMenu }: { snapshot: GameSnapshot; onMenu(): void }) {
           <button onClick={onMenu}>MENU</button>
         </footer>
       )}
-      {snapshot.mode === "PRACTICE" && <PracticeTools />}
+      {snapshot.mode === "PRACTICE" && <PracticeTools snapshot={snapshot} />}
     </>
   );
 }
@@ -1197,17 +1306,53 @@ function Metric({
     </div>
   );
 }
-function PracticeTools() {
+function PracticeTools({ snapshot }: { snapshot: GameSnapshot }) {
+  const cell = snapshot.playerCell ?? {
+    x: Math.round(snapshot.player.x),
+    z: Math.round(snapshot.player.z),
+  };
+  const step = snapshot.playerStep;
+  const stepStatus = step?.to
+    ? `STEP ${step.elapsedTicks}/${step.stepTicks}`
+    : "CELL READY";
   return (
-    <div className="practice-tools">
-      <button onClick={() => command({ type: "rewind" })}>
+    <div className="practice-tools" aria-label="練習操作">
+      <div className="practice-tools-status" aria-live="polite">
+        <span>
+          CELL {cell.x}:{cell.z}
+        </span>
+        <span>{stepStatus} // 7 TICK</span>
+      </div>
+      <button
+        type="button"
+        onClick={() => command({ type: "rewind" })}
+        disabled={snapshot.rewindAvailable === false}
+        title="直近10秒へ戻す"
+      >
         REWIND
         <br />
         <span>10 SEC</span>
       </button>
-      <button onClick={() => command({ type: "quick-save" })}>SAVE</button>
-      <button onClick={() => command({ type: "quick-load" })}>LOAD</button>
-      <button onClick={() => command({ type: "step-roll" })}>
+      <button
+        type="button"
+        onClick={() => command({ type: "quick-save" })}
+        title="現在位置を保存"
+      >
+        SAVE
+      </button>
+      <button
+        type="button"
+        onClick={() => command({ type: "quick-load" })}
+        disabled={snapshot.quickSaveAvailable === false}
+        title="保存位置へ戻す"
+      >
+        LOAD
+      </button>
+      <button
+        type="button"
+        onClick={() => command({ type: "step-roll" })}
+        title="キューブを1回転進める"
+      >
         STEP
         <br />
         <span>ROLL</span>
@@ -1293,25 +1438,17 @@ function ResultOverlay({
   const [ranking, setRanking] = useState<RankingRow[]>([]);
   const [replayMessage, setReplayMessage] = useState("");
   const [startingReplay, setStartingReplay] = useState(false);
+  const summary = summarizeResult(snapshot);
   const mindIndex = calculateMindIndex(
-    snapshot.stats.score,
+    summary.score,
     snapshot.stage,
-    snapshot.stats.platformRows,
-    snapshot.stats.misses
+    summary.rows,
+    summary.misses
   );
   const validatedName = validatePlayerName(playerName);
   const displayName = validatedName.ok ? validatedName.name : "ななし";
-  const captureRotations = Number.isSafeInteger(snapshot.stats.captureRotations)
-    ? snapshot.stats.captureRotations
-    : snapshot.stats.rotations;
-  const scoreBreakdown = snapshot.stats.scoreBreakdown ?? {
-    manualCapture: 0,
-    areaCapture: 0,
-    perfectBonus: 0,
-    stageBonus: 0,
-    finalBonus: 0,
-  };
-  const shareText = `${displayName}さんのCUBIC ORDEAL結果：${formatRankingScore(snapshot.stats.score)}、ステージ${snapshot.stage}、足場${snapshot.stats.platformRows}列、MIND INDEX ${mindIndex}。\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
+  const scoreBreakdown = summary.scoreBreakdown;
+  const shareText = `${displayName}さんのCUBIC ORDEAL結果：${formatRankingScore(summary.score)}、ステージ${snapshot.stage}、足場${summary.rows}列、MIND INDEX ${mindIndex}。\n${RANKING_CONFIG.canonicalUrl}\n#CUBICORDEAL #ミニゲーム`;
 
   useEffect(() => {
     if (!ranked) return;
@@ -1325,7 +1462,7 @@ function ResultOverlay({
         displayName,
         resultType: final ? "clear" : "game_over",
         reachedStage: snapshot.stage,
-        score: snapshot.stats.score,
+        score: summary.score,
       });
       if (active) {
         setSubmissionState(outcome.state);
@@ -1348,7 +1485,7 @@ function ResultOverlay({
     return () => {
       active = false;
     };
-  }, [displayName, final, ranked, snapshot.stage, snapshot.stats.score]);
+  }, [displayName, final, ranked, snapshot.stage, summary.score]);
 
   const retrySubmission = async () => {
     setSubmissionState("submitting");
@@ -1393,53 +1530,65 @@ function ResultOverlay({
   return (
     <div
       className="overlay-panel result"
+      data-result-phase={snapshot.phase}
       role="dialog"
       aria-modal="true"
       aria-labelledby="cubic-result-title"
     >
-      <span className="eyebrow">
-        {gameOver
-          ? "CONTACT LOST"
-          : final
-            ? "OBSERVATION COMPLETE"
-            : "ORDEAL ANALYSIS"}
-      </span>
-      <h2 id="cubic-result-title">{snapshot.banner}</h2>
+      <span className="eyebrow">{summary.phaseLabel}</span>
+      <h2 id="cubic-result-title">{summary.headline}</h2>
       <div className="result-grid">
-        <Metric
-          label="SCORE"
-          value={formatRankingScore(snapshot.stats.score)}
-        />
+        <Metric label="SCORE" value={formatRankingScore(summary.score)} />
         <Metric
           label="MIND INDEX"
           value={String(
             calculateMindIndex(
-              snapshot.stats.score,
+              summary.score,
               snapshot.stage,
-              snapshot.stats.platformRows,
-              snapshot.stats.misses
+              summary.rows,
+              summary.misses
             )
           ).padStart(3, "0")}
         />
-        <Metric label="ROWS" value={String(snapshot.stats.platformRows)} />
+        <Metric label="ROWS" value={String(summary.rows)} />
       </div>
+      <dl className="result-ledger" aria-label="プレイ結果の内訳">
+        <div>
+          <dt>CAPTURE</dt>
+          <dd>
+            {summary.captured}{" "}
+            <small>
+              （NORMAL {summary.normalCaptured} / VEIL {summary.veilCaptured}）
+            </small>
+          </dd>
+        </div>
+        <div>
+          <dt>MISS</dt>
+          <dd>
+            {summary.misses} / {summary.missLimit}
+          </dd>
+        </div>
+        <div>
+          <dt>ROLL</dt>
+          <dd>
+            {summary.captureRotations} / {summary.requiredRolls}
+          </dd>
+        </div>
+        <div>
+          <dt>AREA SCORE</dt>
+          <dd>{scoreBreakdown.areaCapture}</dd>
+        </div>
+      </dl>
       <p className="score-breakdown" aria-label="スコア内訳">
         捕獲 {scoreBreakdown.manualCapture + scoreBreakdown.areaCapture}点
         （手動 {scoreBreakdown.manualCapture} / AREA{" "}
         {scoreBreakdown.areaCapture}） ・PERFECT {scoreBreakdown.perfectBonus}点
         ・進行 {scoreBreakdown.stageBonus + scoreBreakdown.finalBonus}点
-        ・捕獲評価 {captureRotations} / {snapshot.stats.requiredRolls}
-        ・排出進行 {Math.max(0, snapshot.stats.rotations - captureRotations)}回
+        ・捕獲評価 {summary.captureRotations} / {summary.requiredRolls}
+        ・排出進行 {Math.max(0, summary.rotations - summary.captureRotations)}回
       </p>
-      <p>
-        {gameOver
-          ? snapshot.banner === "FALL INTO VOID"
-            ? "プレイヤーが足場の外へ出ました。安全なマスで止まってください。"
-            : "足場が必要な奥行を失いました。別の進路を試してください。"
-          : final
-            ? "すべての観測対象を通過しました。"
-            : "次の解析結果を待機しています。"}
-      </p>
+      <p>{summary.detail}</p>
+      <p className="result-next-step">{summary.nextStep}</p>
       {rankingBlockedByDebug && (
         <p className="platform-status ranking-blocked" role="status">
           デバッグ操作を使ったプレイはランキング対象外です。この結果は端末内の確認だけに使われます。
@@ -1619,22 +1768,11 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
       if (activePointer.current !== event.pointerId) return;
       clearMovement();
     };
-    const releaseMovementOnTouchEnd = () => {
-      if (activePointer.current !== null) clearMovement();
-    };
     window.addEventListener("pointerup", releaseMovementOnWindow);
     window.addEventListener("pointercancel", releaseMovementOnWindow);
-    window.addEventListener("touchend", releaseMovementOnTouchEnd, {
-      passive: true,
-    });
-    window.addEventListener("touchcancel", releaseMovementOnTouchEnd, {
-      passive: true,
-    });
     return () => {
       window.removeEventListener("pointerup", releaseMovementOnWindow);
       window.removeEventListener("pointercancel", releaseMovementOnWindow);
-      window.removeEventListener("touchend", releaseMovementOnTouchEnd);
-      window.removeEventListener("touchcancel", releaseMovementOnTouchEnd);
     };
   }, [clearMovement]);
   const markerTargetCube = snapshot.marker
@@ -1652,11 +1790,13 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     !tutorialMode || tutorialActionEnabled(snapshot.tutorialStep, "clear");
   const areaEnabled =
     !tutorialMode || tutorialActionEnabled(snapshot.tutorialStep, "area");
-  const markAction = !snapshot.marker
-    ? "MARK"
-    : markerTargetCube
-      ? "CAPTURE"
-      : "WAIT";
+  const markAction = snapshot.pendingMarker
+    ? "QUEUED"
+    : !snapshot.marker
+      ? "MARK"
+      : markerTargetCube
+        ? "CAPTURE"
+        : "WAIT";
   const areaTargetsReady = areaTargets(
     snapshot.cubes,
     snapshot.areas,
@@ -1665,8 +1805,45 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     snapshot.isRolling ?? false
   );
   const areaWarning = areaTargetsReady.some(cube => cube.type === "void");
+  const dpadDirections: Array<{
+    direction: Direction;
+    label: string;
+    symbol: string;
+  }> = [
+    { direction: "up", label: "上へ1マス", symbol: "▲" },
+    { direction: "left", label: "左へ1マス", symbol: "◀" },
+    { direction: "down", label: "下へ1マス", symbol: "▼" },
+    { direction: "right", label: "右へ1マス", symbol: "▶" },
+  ];
+  const beginDirection = (
+    event: PointerEvent<HTMLButtonElement>,
+    direction: Direction
+  ) => {
+    if (activePointer.current !== null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    activePointer.current = event.pointerId;
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      /* synthetic test events */
+    }
+    const vectors: Record<Direction, { x: number; z: number }> = {
+      up: { x: 0, z: 1 },
+      down: { x: 0, z: -1 },
+      left: { x: -1, z: 0 },
+      right: { x: 1, z: 0 },
+    };
+    command({ type: "touch-move", ...vectors[direction] });
+  };
+  const endDirection = (event: PointerEvent<HTMLButtonElement>) => {
+    if (activePointer.current !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    clearMovement();
+  };
   const begin = (event: PointerEvent<HTMLDivElement>) => {
-    if (activePointer.current !== null || !event.isPrimary) return;
+    if (activePointer.current !== null) return;
     activePointer.current = event.pointerId;
     try {
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -1700,7 +1877,6 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     event: PointerEvent<HTMLButtonElement>,
     action: "mark" | "clear" | "area"
   ) => {
-    if (!event.isPrimary) return;
     event.preventDefault();
     event.stopPropagation();
     try {
@@ -1720,7 +1896,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     }
   };
   const beginFast = (event: PointerEvent<HTMLButtonElement>) => {
-    if (!event.isPrimary || activeFastPointer.current !== null) return;
+    if (activeFastPointer.current !== null) return;
     activeFastPointer.current = event.pointerId;
     event.preventDefault();
     event.stopPropagation();
@@ -1744,9 +1920,27 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
       aria-label="タッチ操作"
       onContextMenu={event => event.preventDefault()}
     >
+      <div className="grid-dpad" aria-label="1マス移動">
+        <span className="grid-dpad-caption">MOVE // 1 CELL</span>
+        {dpadDirections.map(({ direction, label, symbol }) => (
+          <button
+            key={direction}
+            type="button"
+            className={`grid-dpad-button ${direction}`}
+            aria-label={label}
+            onPointerDown={event => beginDirection(event, direction)}
+            onPointerUp={endDirection}
+            onPointerCancel={endDirection}
+            onPointerLeave={endDirection}
+            onLostPointerCapture={endDirection}
+          >
+            {symbol}
+          </button>
+        ))}
+      </div>
       <div
         className="touch-zone"
-        aria-label="画面下半分のフローティング移動キー"
+        aria-label="スワイプで1マス移動"
         onPointerDown={begin}
         onPointerMove={update}
         onPointerUp={release}
@@ -1767,7 +1961,7 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
             />
           </div>
         )}
-        <span className="touch-zone-label">MOVE // TAP ORIGIN</span>
+        <span className="touch-zone-label">SWIPE // 1 CELL</span>
       </div>
       <div className="touch-actions">
         <button
@@ -1803,7 +1997,9 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
         <button
           className="mark"
           aria-label={markAction}
-          disabled={!markEnabled || markAction === "WAIT"}
+          disabled={
+            !markEnabled || markAction === "WAIT" || markAction === "QUEUED"
+          }
           data-tutorial-locked={!markEnabled ? "yes" : "no"}
           onPointerDown={event => pressAction(event, "mark")}
           onKeyDown={event => keyAction(event, "mark")}
@@ -1813,17 +2009,21 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
           <span>
             {markAction === "MARK"
               ? "SET TRAP"
-              : markAction === "CAPTURE"
-                ? markerTargetCube?.type === "void"
-                  ? "VOID: DO NOT CAPTURE"
-                  : "ON SIGNAL"
-                : "WAIT FOR CUBE"}
+              : markAction === "QUEUED"
+                ? "ON ARRIVAL"
+                : markAction === "CAPTURE"
+                  ? markerTargetCube?.type === "void"
+                    ? "VOID: DO NOT CAPTURE"
+                    : "ON SIGNAL"
+                  : "WAIT FOR CUBE"}
           </span>
         </button>
         <button
           className="clear"
           aria-label="CLEAR"
-          disabled={!snapshot.marker || !clearEnabled}
+          disabled={
+            (!snapshot.marker && !snapshot.pendingMarker) || !clearEnabled
+          }
           onPointerDown={event => pressAction(event, "clear")}
           onKeyDown={event => keyAction(event, "clear")}
         >

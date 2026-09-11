@@ -14,7 +14,7 @@ export async function buildPuzzleArtifacts() {
   const { generatePuzzles, validatePuzzleArchive } =
     await loadPuzzleImplementation();
   const puzzles = generatePuzzles();
-  const validation = validatePuzzleArchive(puzzles);
+  const validation = validatePuzzleArchive(puzzles, { quality: true });
 
   if (!validation.valid) {
     throw new Error(
@@ -25,7 +25,11 @@ export async function buildPuzzleArtifacts() {
   return {
     puzzles,
     archive: `${JSON.stringify(puzzles, null, 2)}\n`,
-    report: renderValidationReport(puzzles, validation.results),
+    report: renderValidationReport(
+      puzzles,
+      validation.results,
+      validation.quality
+    ),
   };
 }
 
@@ -102,7 +106,7 @@ async function loadPuzzleImplementation() {
   return import(dataUrl);
 }
 
-function renderValidationReport(puzzles, results) {
+function renderValidationReport(puzzles, results, quality) {
   const areaPuzzleCount = results.filter(result => result.areaUses > 0).length;
   const chainPuzzleCount = results.filter(
     result => result.areaUses >= 2
@@ -136,6 +140,21 @@ function renderValidationReport(puzzles, results) {
 - AREAを2回以上使用する連鎖問題: ${chainPuzzleCount}
 - 検査内容: 問題数、ID・seedの一意性、Stage Plan、全マス形成、配置範囲、保存件数、MARK到達性、AREAの一回使用と再生成、必要キューブ全回収、VOID非捕獲、規定回転数
 - 結果: **PASS**
+
+## 代表問題の品質ゲート
+
+- 対象: ${quality.results.length}問（Stage 1〜9の学習曲線から選定）
+- 検査内容: 手設計タグ・盤面サイズ・AREA回数、5難易度の30Hz解法再生、入力遅延予算を差し引いた操作猶予
+- 結果: **${quality.valid ? "PASS" : "FAIL"}**
+
+| ID | Focus | Size | Tag | AREA uses | BEGINNER | EASY | NORMAL | HARD | EXTREME | Gate |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+${quality.results
+  .map(result => {
+    const margins = result.minimumMarginByDifficulty;
+    return `| ${result.id} | ${result.label} | ${result.width}×${result.depth} | ${result.difficultyTag} | ${result.areaUses} | ${margins.BEGINNER} | ${margins.EASY} | ${margins.NORMAL} | ${margins.HARD} | ${margins.EXTREME} | ${result.valid ? "PASS" : "FAIL"} |`;
+  })
+  .join("\n")}
 
 | ID | Stage | Wave | Size | Required rolls | Tag | Seed | Required | VOID | AREA uses | Validation |
 | --- | --- | ---: | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |

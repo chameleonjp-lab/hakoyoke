@@ -165,4 +165,11 @@ describe("custom puzzle descriptor boundary", () => {
       )
     ).toEqual([]);
   });
+
+  it("can skip the expensive quality replay for runtime archive loading", () => {
+    const result = validatePuzzleArchive(generatePuzzles(), { quality: false });
+
+    expect(result.valid).toBe(true);
+    expect(result.quality).toEqual({ valid: true, issues: [], results: [] });
+  });
 });

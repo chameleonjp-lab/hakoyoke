@@ -140,11 +140,12 @@ export async function createGameScene(engine: Engine): Promise<GameHandle> {
 
   scene.onBeforeRenderObservable.add(() => {
     if (!world) return;
-    world.update(scene.getEngine().getDeltaTime() / 1000);
+    const deltaSeconds = scene.getEngine().getDeltaTime() / 1000;
+    world.update(deltaSeconds);
     if (!latest) return;
     platform.sync(latest, material.tile);
     markers.sync(latest);
-    syncPlayer(player, latest);
+    syncPlayer(player, latest, deltaSeconds);
     syncCubes(scene, cubes, latest, material, shadows);
     effects.sync(latest);
     const boardCenter = new Vector3(
@@ -363,6 +364,8 @@ class PlatformRenderer {
 
 class MarkerRenderer {
   private marker: Mesh;
+  private pendingMarker: Mesh;
+  private arrivalCell: Mesh;
   private areaMeshes = new Map<string, Mesh>();
   constructor(
     scene: Scene,
@@ -377,6 +380,23 @@ class MarkerRenderer {
     this.marker.material = markerMaterial;
     this.marker.rotation.x = Math.PI / 2;
     this.marker.isVisible = false;
+    this.pendingMarker = MeshBuilder.CreateTorus(
+      "pending-mark",
+      { diameter: 0.58, thickness: 0.022, tessellation: 4 },
+      scene
+    );
+    this.pendingMarker.material = areaMaterial;
+    this.pendingMarker.rotation.x = Math.PI / 2;
+    this.pendingMarker.isVisible = false;
+    this.arrivalCell = MeshBuilder.CreateTorus(
+      "arrival-cell",
+      { diameter: 0.88, thickness: 0.014, tessellation: 4 },
+      scene
+    );
+    this.arrivalCell.material = markerMaterial;
+    this.arrivalCell.visibility = 0.56;
+    this.arrivalCell.rotation.x = Math.PI / 2;
+    this.arrivalCell.isVisible = false;
   }
   sync(snapshot: GameSnapshot): void {
     if (snapshot.marker) {
@@ -384,6 +404,24 @@ class MarkerRenderer {
       this.marker.position.set(snapshot.marker.x, 0.03, snapshot.marker.z);
       this.marker.rotation.z += 0.025;
     } else this.marker.isVisible = false;
+    if (snapshot.pendingMarker) {
+      this.pendingMarker.isVisible = true;
+      this.pendingMarker.position.set(
+        snapshot.pendingMarker.x,
+        0.035,
+        snapshot.pendingMarker.z
+      );
+      this.pendingMarker.rotation.z += 0.04;
+    } else this.pendingMarker.isVisible = false;
+    if (snapshot.playerStep?.to) {
+      this.arrivalCell.isVisible = true;
+      this.arrivalCell.position.set(
+        snapshot.playerStep.to.x,
+        0.022,
+        snapshot.playerStep.to.z
+      );
+      this.arrivalCell.rotation.z += 0.015;
+    } else this.arrivalCell.isVisible = false;
     const active = new Set(snapshot.areas.map(area => area.id));
     for (const area of snapshot.areas) {
       if (!this.areaMeshes.has(area.id)) {
@@ -412,6 +450,8 @@ class MarkerRenderer {
   }
   dispose(): void {
     this.marker.dispose();
+    this.pendingMarker.dispose();
+    this.arrivalCell.dispose();
     this.areaMeshes.forEach(mesh => mesh.dispose());
     this.areaMeshes.clear();
   }
@@ -458,11 +498,23 @@ function createPlayer(scene: Scene, material: StandardMaterial): TransformNode {
   return root;
 }
 
-function syncPlayer(player: TransformNode, snapshot: GameSnapshot): void {
-  player.position.set(snapshot.player.x, 0.01, snapshot.player.z);
+function syncPlayer(
+  player: TransformNode,
+  snapshot: GameSnapshot,
+  deltaSeconds: number
+): void {
+  const interpolation = Math.min(
+    1,
+    deltaSeconds * (snapshot.playerStep?.to ? 24 : 36)
+  );
+  player.position.x = lerp(player.position.x, snapshot.player.x, interpolation);
+  player.position.z = lerp(player.position.z, snapshot.player.z, interpolation);
+  player.position.y = lerp(player.position.y, 0.01, interpolation);
   player.rotation.y = snapshot.player.heading;
   const running = snapshot.phase === "PLAYING" || snapshot.phase === "TUTORIAL";
-  player.position.y = running ? Math.sin(performance.now() * 0.012) * 0.025 : 0;
+  player.position.y += running
+    ? Math.sin(performance.now() * 0.012) * 0.025
+    : 0;
   if (snapshot.phase === "CRUSHED") player.rotation.z = Math.PI * 0.47;
 }
 

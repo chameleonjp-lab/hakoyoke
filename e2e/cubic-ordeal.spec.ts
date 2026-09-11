@@ -504,21 +504,40 @@ test("PRACTICE開始後のSAVE、LOAD、STEP、REWINDはCampaign記録と独立�
   ).toBeVisible();
 });
 
-test("プレイヤーが足場外へ出ると即座にゲームオーバーになる", async ({
-  page,
-}) => {
+test("プレイヤーが境界を越える入力を受けても落下しない", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /TUTORIAL/ }).click();
   await expect(page.getByText("ORDEAL ACTIVE", { exact: true })).toBeVisible();
   await completeTutorialMovementGate(page);
+  await page.evaluate(() => {
+    window.addEventListener("cubic:snapshot", event => {
+      (window as Window & { latestSnapshot?: unknown }).latestSnapshot = (
+        event as CustomEvent
+      ).detail;
+    });
+  });
   await page.keyboard.down("a");
-  try {
-    await expect(
-      page.getByRole("heading", { name: "FALL INTO VOID" })
-    ).toBeVisible();
-  } finally {
-    await page.keyboard.up("a");
-  }
+  await page.waitForTimeout(500);
+  await page.keyboard.up("a");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as Window & {
+              latestSnapshot?: { phase?: string; player?: { x: number } };
+            }
+          ).latestSnapshot
+      )
+    )
+    .toMatchObject({ phase: expect.not.stringMatching(/GAME_OVER|CRUSHED/) });
+  expect(
+    await page.evaluate(
+      () =>
+        (window as Window & { latestSnapshot?: { player?: { x: number } } })
+          .latestSnapshot?.player?.x ?? -1
+    )
+  ).toBeGreaterThanOrEqual(0);
 });
 
 test("スマートフォン縦画面でタップ地点に移動キーが出現し、画面上方向へ前進できる", async ({
