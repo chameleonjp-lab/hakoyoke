@@ -8,6 +8,8 @@
 main.tsx
   └─ App.tsx
       ├─ GameShell.tsx        常時表示するメニュー・HUD・タッチ操作
+      │   ├─ practiceCatalog.ts 選択前の問題メタデータ（静的JSON）
+      │   └─ resultSummary.ts   旧／部分結果の表示用正規化
       └─ RuntimeBoundary
           └─ GameCanvas.tsx   プレイ開始時だけ遅延読込
               └─ scene.ts    Babylon Sceneと描画同期
@@ -32,8 +34,11 @@ main.tsx
 | `game/rollPhysics.ts` | 辺支点回転と通過体積の純粋計算 |
 | `game/solutionSimulation.ts` | 登録解法の決定的なヘッドレス再生 |
 | `game/puzzleValidation.ts` | 1問・88問アーカイブの構造と解法検査 |
+| `game/puzzleQuality.ts` | 代表12問の手設計・5難易度再生・操作猶予の品質ゲート |
 | `game/stagePlan.ts` | Stage/Wave/サイズ/問題数の正本 |
 | `game/puzzles.ts` | 問題生成規則と実行時JSONローダー |
+| `game/practiceCatalog.ts` | PRACTICE選択画面の問題概要を抽出・整列する純粋処理 |
+| `game/resultSummary.ts` | 結果画面の数値既定値、失敗理由、次アクションを正規化 |
 | `lib/rum.ts` | 匿名性能指標の収集、ローカル保存、任意送信 |
 | `server/index.ts` | 静的配信、SPA fallback、storage proxy |
 
@@ -45,6 +50,8 @@ main.tsx
 
 - `client/public/data/puzzles.json`: ゲームが開始時に読み込む88問
 - `LEVEL_VALIDATION_REPORT.md`: 問題ごとの検査結果
+
+`pnpm puzzles:check`では、通常の88問検査に加えて、学習曲線を代表する12問を5難易度で30Hz再生し、グリッド移動の入力遅延予算を差し引いた操作猶予を確認します。この品質ゲートは生成・CI時だけ実行し、ゲーム起動時は構造検査だけに限定してメインスレッドの負荷を増やしません。
 
 `pnpm puzzles:check`は生成し直した内容との完全一致を確認するため、JSONだけ、レポートだけ、または旧スクリプトだけが変わる状態をCIで拒否します。
 

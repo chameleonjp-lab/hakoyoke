@@ -1,17 +1,17 @@
 # TEST REPORT
 
-検査項目の正本です。件数は2026-08-31のランキング連携候補を基準にし、合否は常に対象コミットの最新GitHub Actions runを優先します。
+検査項目の正本です。件数は2026-09-11のPR07ローカル検証を反映し、合否は常に対象コミットの最新GitHub Actions runを優先します。
 
 ## 自動検査
 
 | 区分           | コマンド                   | 検査範囲                                              | 直前の成功実績          |
 | -------------- | -------------------------- | ----------------------------------------------------- | ----------------------- |
 | リポジトリ衛生 | `pnpm repo:check`          | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | PASS                    |
-| 問題生成物     | `pnpm puzzles:check`       | TS正本とJSON・レポートの完全一致、全88問の再生検証    | PASS — 88問             |
+| 問題生成物     | `pnpm puzzles:check`       | TS正本とJSON・レポートの完全一致、全88問＋代表12問×5難易度の再生検証 | PASS — 88問＋品質ゲート |
 | ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
 | 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
 | 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 16ファイル                                            | PASS — 142件            |
+| 単体・問題検査 | `pnpm test`                | 21ファイル                                            | PASS — 172件（PR07ローカル） |
 | 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
 | ブラウザ操作   | `pnpm test:e2e`            | Chromium 26件、WebKit 26件                            | 最新CIを正とする — 52件 |
 | 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
@@ -25,10 +25,10 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 
 | 出力             |         raw |      gzip |
 | ---------------- | ----------: | --------: |
-| `index.html`     |   368.11 kB | 105.84 kB |
-| 初期CSS          |    34.69 kB |   8.23 kB |
-| 初期JS           |   277.05 kB |  84.55 kB |
-| 遅延`GameCanvas` | 1,256.26 kB | 309.59 kB |
+| `index.html`     |   368.08 kB | 105.82 kB |
+| 初期CSS          |    39.16 kB |   9.07 kB |
+| 初期JS           |   301.41 kB |  91.51 kB |
+| 遅延`GameCanvas` | 1,276.44 kB | 312.68 kB |
 
 `client/public/data/puzzles.json`はJSへ重複同梱せず、ゲーム開始時に読む静的データです。
 
@@ -47,6 +47,9 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - 登録済み規定回転数とヘッドレス再生結果の一致
 - Stage 1全12問（AREAなし→AREA導入→6つの手設計ルート）、Stage 2全12問（AREAなしルート→3回連鎖するAREA局面）、Stage 3全12問（幅5列ルート→幅5列AREA連鎖）、Stage 4全8問（奥行7〜8列の長いAREA連鎖）、Stage 5全12問（幅6列・奥行7列の長いAREA連鎖）、Stage 6全8問（奥行8〜9列の長いAREA連鎖）、Stage 7全12問（幅7列・奥行7〜8列のAREA連鎖）、Stage 8全8問（幅7列・奥行8〜9列のAREA連鎖）、Final全4問（外周レーンの左右切替）、88問すべての手設計タグ
 - JSONと検証レポートが正本から生成した内容と完全一致
+- PRACTICE選択用メタデータが全88問から復元でき、破損エントリを表示へ混入させないこと
+
+代表問題の品質ゲートは、Stage 1のAREA導入・ルート読解からFinalの外周切替まで12問を固定し、タグ・サイズ・AREA回数、BEGINNER〜EXTREMEの解法再生、入力遅延2 tick後の最小操作猶予を検査します。これは`pnpm puzzles:check`（生成・CI）で実行し、ゲーム起動時の構造検査では再生を省略します。
 
 問題ごとの値は[LEVEL_VALIDATION_REPORT.md](./LEVEL_VALIDATION_REPORT.md)に自動出力します。
 
@@ -68,11 +71,14 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - TUTORIALの8ゲート順序、操作ロック、GameWorldでの全ゲート達成
 - TUTORIAL最終PERFECTの複数回失敗後の局所リトライ、非Campaign GAME_OVERの各モード復帰
 - 88問すべての登録解法、移動可能性、全回収、VOID非捕獲
+- 88問×5難易度のセル移動猶予、入力遅延2 tickを差し引いた目標余裕、EXTREMEを含む2 tick遅延の実GameWorld再生（詳細は[タイミング計測レポート](./TIMING_MARGIN_REPORT.md)）
 - 表示名の前後空白・Unicode文字数・制御文字・20文字上限
 - 同じ`start_id`の開始再送、開始ボタン連打の単一化
 - 開始RPC障害時の結果保存、再読込後の開始再送、同じ`submission_id`への移行
 - 同じ`submission_id`による通信断・再読込後の冪等再送
 - RPC応答値の一致検査と、サーバー`rank_no`による同率順位
+- リザルトの旧／部分スナップショットに対する数値フォールバック（`undefined`を表示しない）
+- PRACTICEの巻き戻し後に未来側の履歴を破棄し、保存・巻き戻し可能状態をスナップショットへ反映すること
 
 ## ブラウザ検査の対象
 
@@ -107,3 +113,7 @@ production E2Eはcanvas、HUD、タッチ操作、ページ例外なしに加え
 ## 手動確認
 
 過去にデスクトップ・縦画面・横画面の`?demo`で、盤面、キューブ、プレイヤー、HUD、タッチ操作を確認しています。ただし手動確認は最新CIの代替ではなく、視覚変更時に追加する確認です。
+
+## PR06/PR07ローカル検証の環境差
+
+2026-09-11のPR06/PR07作業ブランチでは、Playwright 52件（Chromium 26件、WebKit 26件）を起動しましたが、実行環境に`chromium_headless_shell`とWebKit実行ファイルが存在せず、全件がブラウザ起動前に終了しました。コード assertion の失敗ではありません。CIまたはブラウザ実体をインストールした環境で再実行するまで、ブラウザ検査は未確定として扱います。

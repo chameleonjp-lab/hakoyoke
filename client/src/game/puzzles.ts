@@ -27,7 +27,10 @@ export async function loadPuzzles(): Promise<PuzzleDescriptor[]> {
   }
 
   const puzzles = parsed.map(result => result.puzzle as PuzzleDescriptor);
-  const validation = validatePuzzleArchive(puzzles);
+  // Structural validation is enough for a runtime load. The representative
+  // five-difficulty replay gate runs in CI/build tooling so loading the menu
+  // never spends extra time simulating authored encounters on the main thread.
+  const validation = validatePuzzleArchive(puzzles, { quality: false });
   if (!validation.valid) {
     throw new Error(
       `Puzzle archive failed validation: ${validation.issues[0] ?? "unknown error"}`

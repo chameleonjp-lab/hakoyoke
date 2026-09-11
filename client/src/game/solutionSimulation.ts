@@ -1,9 +1,14 @@
-/** Deterministic replay of the same projected grid state used by GameWorld. */
+/**
+ * Renderer-free archive timing validation. The runtime publish gate uses the
+ * actual 30Hz grid-input GameWorld replay; this projection stays lightweight
+ * for editor feedback and legacy solution metadata checks.
+ */
 import {
   createRuntimePuzzleCubes,
   platformRowsForStage,
   puzzleSourceStart,
 } from "./platformProgression";
+import { GRID_STEP_TICKS } from "./gridMovement";
 import {
   advanceOneCell,
   areaTargets,
@@ -343,7 +348,12 @@ function updateRoll(state: ReplayState): void {
   const config = DIFFICULTIES[state.difficulty];
   if (!state.isRolling) {
     state.settleElapsed += FIXED_STEP;
-    if (state.settleElapsed >= config.settleSeconds) {
+    // Keep the renderer-free validator on the same schedule as GameWorld:
+    // wider boards reserve the fixed seven-tick cost of the extra lateral
+    // cells before starting the next dangerous roll.
+    const gridTravelLead =
+      Math.max(0, state.puzzle.width - 4) * GRID_STEP_TICKS * FIXED_STEP;
+    if (state.settleElapsed >= config.settleSeconds + gridTravelLead) {
       state.isRolling = true;
       state.rollElapsed = 0;
       state.settleElapsed = 0;

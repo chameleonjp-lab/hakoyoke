@@ -10,6 +10,27 @@
 - 検査内容: 問題数、ID・seedの一意性、Stage Plan、全マス形成、配置範囲、保存件数、MARK到達性、AREAの一回使用と再生成、必要キューブ全回収、VOID非捕獲、規定回転数
 - 結果: **PASS**
 
+## 代表問題の品質ゲート
+
+- 対象: 12問（Stage 1〜9の学習曲線から選定）
+- 検査内容: 手設計タグ・盤面サイズ・AREA回数、5難易度の30Hz解法再生、入力遅延予算を差し引いた操作猶予
+- 結果: **PASS**
+
+| ID | Focus | Size | Tag | AREA uses | BEGINNER | EASY | NORMAL | HARD | EXTREME | Gate |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| STAGE-1-W1-P01 | first route read | 4×2 | intro-read | 0 | 30 | 25 | 21 | 17 | 16 | PASS |
+| STAGE-1-W2-P01 | AREA introduction | 4×2 | area-intro-range | 1 | 30 | 25 | 21 | 17 | 15 | PASS |
+| STAGE-1-W4-P01 | braided route | 4×4 | read-braid | 0 | 30 | 25 | 18 | 10 | 8 | PASS |
+| STAGE-2-W1-P01 | route pressure | 4×5 | route-stagger | 0 | 30 | 25 | 21 | 17 | 15 | PASS |
+| STAGE-2-W3-P01 | first AREA chain | 4×6 | area-ribbon | 3 | 30 | 25 | 21 | 17 | 15 | PASS |
+| STAGE-3-W1-P01 | wide route read | 5×4 | wide-center | 0 | 37 | 32 | 25 | 17 | 15 | PASS |
+| STAGE-4-W1-P01 | long chain | 5×7 | long-chain-ribbon | 4 | 37 | 32 | 25 | 17 | 15 | PASS |
+| STAGE-5-W1-P01 | six-column chain | 6×6 | six-chain-ribbon | 3 | 44 | 39 | 32 | 24 | 22 | PASS |
+| STAGE-6-W3-P01 | deep chain | 6×9 | six-deep-long-ribbon | 5 | 44 | 39 | 32 | 24 | 22 | PASS |
+| STAGE-7-W1-P01 | seven-column chain | 7×7 | seven-wide-ribbon | 4 | 48 | 39 | 32 | 24 | 22 | PASS |
+| STAGE-8-W3-P01 | late gate | 7×9 | eight-wide-gate | 5 | 48 | 39 | 32 | 24 | 22 | PASS |
+| FINAL-W4-P01 | Final return | 7×9 | final-return-pulse | 5 | 34 | 25 | 18 | 10 | 8 | PASS |
+
 | ID | Stage | Wave | Size | Required rolls | Tag | Seed | Required | VOID | AREA uses | Validation |
 | --- | --- | ---: | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |
 | STAGE-1-W1-P01 | Stage 1 | 1 | 4×2 | 1 | intro-read | 101017 | 4 | 4 | 0 | PASS |

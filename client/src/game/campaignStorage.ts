@@ -1,5 +1,6 @@
 export const CAMPAIGN_STORAGE_KEY = "cubic-ordeal-campaign-v1";
-export const CAMPAIGN_SAVE_VERSION = 4;
+/** Grid movement changed the replay contract; v4 free-movement saves archive. */
+export const CAMPAIGN_SAVE_VERSION = 5;
 export const CAMPAIGN_LEGACY_STORAGE_KEY = "cubic-ordeal-campaign-legacy-v1";
 export const CHECKPOINT_LEGACY_STORAGE_KEY =
   "cubic-ordeal-stage-checkpoint-legacy-v1";

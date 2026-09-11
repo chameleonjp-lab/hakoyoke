@@ -3,7 +3,7 @@ export type CubeType = "normal" | "veil" | "void";
 export type Difficulty = "BEGINNER" | "EASY" | "NORMAL" | "HARD" | "EXTREME";
 export type GameMode = "TUTORIAL" | "CAMPAIGN" | "PRACTICE" | "CREATE" | "DUEL";
 /** Compatibility tags persisted with runs and result receipts. */
-export const MOVEMENT_MODEL = "free-movement-v1" as const;
+export const MOVEMENT_MODEL = "grid-movement-v1" as const;
 export const SCORE_RULE_VERSION = "score-v1" as const;
 export const PUZZLE_CONTENT_VERSION = "puzzle-archive-v1" as const;
 export type RankingEligibility =
@@ -31,6 +31,21 @@ export type GamePhase =
 export interface GridPosition {
   x: number;
   z: number;
+}
+
+export type Cell = GridPosition;
+
+export type Direction = "up" | "down" | "left" | "right";
+
+export interface PlayerStepState {
+  from: GridPosition;
+  to: GridPosition | null;
+  elapsedTicks: number;
+  stepTicks: number;
+  queuedDirection: Direction | null;
+  heldDirection: Direction | null;
+  heldTicks: number;
+  nextRepeatTick: number | null;
 }
 
 export interface CubeState extends GridPosition {
@@ -111,6 +126,10 @@ export interface GameSnapshot {
   mode: GameMode;
   difficulty: Difficulty;
   player: { x: number; z: number; heading: number };
+  playerCell?: GridPosition;
+  playerStep?: PlayerStepState;
+  /** MARK requested during a step; it becomes active only on arrival. */
+  pendingMarker?: GridPosition | null;
   cubes: CubeState[];
   marker: GridPosition | null;
   areas: AreaMark[];
@@ -143,6 +162,9 @@ export interface GameSnapshot {
   captureRotationStart?: number | null;
   captureRotationEnd?: number | null;
   scoreAwardIds?: string[];
+  /** Practice-only affordances; omitted by older saved snapshots. */
+  quickSaveAvailable?: boolean;
+  rewindAvailable?: boolean;
   movementModel?: typeof MOVEMENT_MODEL;
   scoreRuleVersion?: typeof SCORE_RULE_VERSION;
   puzzleContentVersion?: typeof PUZZLE_CONTENT_VERSION;
@@ -190,8 +212,8 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
   },
   EXTREME: {
     rollSeconds: 0.44,
-    settleSeconds: 0.54,
-    captureSeconds: 0.38,
+    settleSeconds: 0.58,
+    captureSeconds: 0.42,
     playerSpeed: PLAYER_SPEED,
     assistance: "low",
   },

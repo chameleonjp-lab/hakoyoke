@@ -109,4 +109,18 @@ describe("projected runtime solution replay", () => {
       expect(results.every(result => result.valid)).toBe(true);
     }
   );
+
+  it("shares the wide-board travel lead with the runtime at high difficulty", () => {
+    const representative = generatePuzzles().find(
+      candidate => candidate.id === "STAGE-7-W1-P01"
+    );
+    if (!representative) throw new Error("wide representative is missing");
+
+    expect(
+      simulatePuzzleSolution(representative, { difficulty: "HARD" })
+    ).toMatchObject({ valid: true });
+    expect(
+      simulatePuzzleSolution(representative, { difficulty: "EXTREME" })
+    ).toMatchObject({ valid: true });
+  });
 });

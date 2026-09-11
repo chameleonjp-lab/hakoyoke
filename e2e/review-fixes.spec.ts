@@ -135,11 +135,21 @@ test("PRACTICEは各Waveに存在する問題番号だけを表示する", async
   await page.getByRole("button", { name: /CAMPAIGN/ }).click();
   await page.getByRole("button", { name: /PRACTICE/ }).click();
   await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  const preview = page.getByRole("region", { name: "選択した問題の概要" });
+  await expect(preview).toContainText("STAGE-1-W1-P01");
+  await expect(preview).toContainText("4 × 2 セル");
+  await expect(preview).toContainText("VOID 4");
+  await expect(
+    page.getByRole("button", { name: "EXTREME", exact: true })
+  ).toBeVisible();
   const selects = page.locator(".select-grid select");
   await selects.nth(0).selectOption("9");
   await expect(selects.nth(2).locator("option")).toHaveCount(1);
   await selects.nth(0).selectOption("4");
   await expect(selects.nth(2).locator("option")).toHaveCount(2);
+  await selects.nth(1).selectOption("4");
+  await expect(preview).toContainText("FINAL-W4-P01");
+  await expect(preview).toContainText("7 × 9 セル");
 });
 
 test("モバイル操作ボタンはPointer Eventsの一経路でMARKを一度だけ処理する", async ({

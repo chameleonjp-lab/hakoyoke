@@ -11,7 +11,7 @@
 | Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                                        |
 | 問題生成規則           | `client/src/game/puzzles.ts`      | 88問すべてを手設計し、`pnpm puzzles:write`で決定的に生成。 |
 | 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                                 |
-| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証から作る。手編集禁止                                       |
+| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証・代表12問の品質ゲートから作る。手編集禁止                 |
 | ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査            |
 | 現行の検査結果         | GitHub Actionsの`CI`              | `TEST_REPORT.md`に検査範囲を記録                                               |
 
@@ -39,16 +39,22 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 - NORMAL、VEIL、VOID、MARK、対象捕獲時だけ消費するAREA、MARK上VOID保護
 - 9 Stage、4 Wave、合計88問
 - 88問すべての手設計導入（Stage 1全12問: AREAなし→AREA導入→ルート読解、Stage 2全12問: ルート読解→AREA連鎖、Stage 3全12問: 幅5列のルート読解→AREA連鎖、Stage 4全8問: 奥行7〜8列の長いAREA連鎖、Stage 5全12問: 幅6列と奥行7列の長いAREA連鎖、Stage 6全8問: 奥行8〜9列の長いAREA連鎖、Stage 7全12問: 幅7列・奥行7〜8列のAREA連鎖、Stage 8全8問: 幅7列・奥行8〜9列のAREA連鎖、Final全4問: 外周レーンの左右切替）
+- 学習曲線から選んだ代表12問を、5難易度の30Hz解法再生と入力遅延予算後の操作猶予まで検査する品質ゲート（`puzzleQuality.ts`）。
 - TUTORIALの8段階手設計ゲート（操作ごとの入力ロック、NORMAL取り逃しのLOSS実演、最終PERFECT失敗後の局所リトライ）
+- PRACTICE選択画面の問題プレビュー（盤面サイズ、対象／VOID数、必要回転数、設計意図）と全5難易度の選択
+- PRACTICE HUDのセル座標・1マス7 tick表示、保存／巻き戻し可能状態の明示。巻き戻し後は未来側の履歴を破棄する
+- 結果画面のCAPTURE／MISS／ROLL／AREA内訳カードと、失敗・継続・メニュー復帰の次アクション案内
 - 非CampaignのGAME_OVERは、同じ問題のRETRYとメニュー復帰を画面上から選択でき、ランキングRPCを呼び出さない
 - `requiredRolls`と結果の捕獲評価は、最初から最後のNORMAL/VEIL捕獲までの回転だけを測定し、VOID排出待ちの回転は別の排出進行として表示する
 - 結果画面に手動捕獲、AREA捕獲、PERFECT、ステージ・最終進行のスコア内訳を表示し、各加点に識別子を付けて保存・復帰時の二重加点を防ぐ
 - 辺支点の回転、回転中の通過体積判定、盤外落下
+- プレイヤーは整数セルを1マスずつ移動し、1マス7 tickの補間表示を行う。入力は30Hzで方向へ正規化し、境界では落下せず、連続入力は決められた間隔で次の1マスを予約する
 - MARK対象不在時の待機、専用CLEAR、盤面内セルスナップ
 - FASTは回転区間だけを加速し、着地待ち・捕獲停止時間は維持
 - プレイ中のカメラ固定と、画面方向に統一したタッチ移動
 - Campaignのversioned snapshot保存・復帰
-- 保存・チェックポイント・ランキング結果に、移動方式（`free-movement-v1`）、得点規則（`score-v1`）、問題内容（`puzzle-archive-v1`）の版タグを付ける。互換しないCampaign/チェックポイントは削除せず、legacy保管へ退避する
+- 保存・チェックポイント・ランキング結果に、移動方式（`grid-movement-v1`）、得点規則（`score-v1`）、問題内容（`puzzle-archive-v1`）の版タグを付ける。互換しないCampaign/チェックポイントは削除せず、legacy保管へ退避する
+- 難易度はプレイヤーのセル移動速度を変えず、キューブの回転・着地待ち・捕獲停止で圧力を調整する。EXTREMEは着地待ち0.58秒、捕獲停止0.42秒へ調整し、[PR05操作猶予計測](./TIMING_MARGIN_REPORT.md)で全440組の解法を検査する
 - キーボード、ゲームパッド、縦横モバイル操作
 - 初期UIとBabylon.jsランタイムの遅延境界
 - 匿名RUMのローカル計測・保存・表示（外部送信なし）
@@ -92,7 +98,7 @@ PRを更新するたび、次を同じCIで通します。
 
 1. `pnpm install --frozen-lockfile`
 2. `pnpm repo:check`
-3. `pnpm puzzles:check`
+3. `pnpm puzzles:check`（代表12問の品質ゲートを含む）
 4. `pnpm ranking:check`
 5. `pnpm format:check`
 6. `pnpm check`
@@ -104,7 +110,7 @@ PRを更新するたび、次を同じCIで通します。
 
 ローカル検証だけでは完了扱いにせず、PR更新後は常に最新CIを正とします。現行の件数と検査対象は`TEST_REPORT.md`を参照してください。
 
-2026-08-31の候補ビルドの主要出力は、初期HTML 368.11 kB（gzip 105.84 kB）、CSS 34.69 kB（gzip 8.23 kB）、初期JS 277.05 kB（gzip 84.55 kB）、遅延`GameCanvas` 1,256.26 kB（gzip 309.59 kB）です。88問JSONは静的データとして別に配信します。
+2026-09-11のPR07ローカルビルドの主要出力は、初期HTML 368.08 kB（gzip 105.82 kB）、CSS 39.16 kB（gzip 9.07 kB）、初期JS 301.41 kB（gzip 91.51 kB）、遅延`GameCanvas` 1,276.44 kB（gzip 312.68 kB）です。PR07では起動時の構造検査へ代表再生を混ぜず、品質ゲートを生成・CI側へ限定しています。88問JSONは静的データとして別に配信します。UIプレビューと結果内訳の追加で初期CSS／JSは増加しているため、公開前にCIのサイズ基準を再確認します。
 
 ## 本番E2Eの環境差
 
@@ -116,6 +122,7 @@ PRを更新するたび、次を同じCIで通します。
 - `LEVEL_VALIDATION_REPORT.md`: 自動生成された現行証跡
 - `REQUIREMENTS_GAP_AUDIT.md`: 修正前の履歴監査
 - `BUNDLE_OPTIMIZATION.md`、`RUNTIME_PERFORMANCE_PLAN.md`: 方針と過去計測の記録
+- `TIMING_MARGIN_REPORT.md`: grid移動の難易度別操作猶予と遅延再生の現行証跡
 - `PLAN.md`、`QUALITY_RECOVERY_REPORT.md`など: 判断経緯の記録
 
 PRのマージ、`main`への直接反映、公開・デプロイは、明示的な承認と公開前受入確認なしには行いません。

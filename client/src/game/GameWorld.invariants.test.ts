@@ -62,7 +62,21 @@ type WorldInternals = {
   currentPuzzle: PuzzleDescriptor;
   puzzleIndex: number;
   player: { x: number; z: number; heading: number };
+  playerCell: { x: number; z: number };
+  playerStep: {
+    from: { x: number; z: number };
+    to: { x: number; z: number } | null;
+    elapsedTicks: number;
+    stepTicks: number;
+    queuedDirection: "up" | "down" | "left" | "right" | null;
+    heldDirection: "up" | "down" | "left" | "right" | null;
+    heldTicks: number;
+    nextRepeatTick: number | null;
+  };
+  pendingMarker: { x: number; z: number } | null;
+  pendingAction: "capture" | "area" | null;
   cubes: CubeState[];
+  history: GameSnapshot[];
   quickSave: GameSnapshot | null;
   marker: { x: number; z: number } | null;
   areas: Array<{ id: string; x: number; z: number; armed: boolean }>;
@@ -85,6 +99,8 @@ type WorldInternals = {
   losePlatformRow: (reason: string, preserveMisses?: boolean) => boolean;
   advanceAfterResult: () => void;
   completePuzzle: () => void;
+  recordHistory: () => void;
+  restoreHistory: () => void;
 };
 
 const puzzle = (
@@ -876,6 +892,29 @@ describe("GameWorld state invariants", () => {
     world.dispose();
   });
 
+  it("crushes an unprotected cube when its rolling sweep reaches the player cell", () => {
+    const world = new GameWorld(
+      [puzzle({ layout: [{ x: 2, z: 1, type: "normal" }] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.player = { x: 2, z: 0, heading: 0 };
+    state.playerCell = { x: 2, z: 0 };
+    state.cubes = [
+      { id: "incoming", type: "normal", x: 2, z: 1, previousZ: 1 },
+    ];
+    state.isRolling = true;
+
+    state.checkRollCollision(0.4, 0.6);
+
+    expect(state.phase).toBe("CRUSHED");
+    expect(state.banner).toBe("CRUSHED — AGAIN");
+    world.dispose();
+  });
+
   it("takes a practice quick-save from the current authoritative state", () => {
     const world = new GameWorld(
       [puzzle()],
@@ -916,7 +955,35 @@ describe("GameWorld state invariants", () => {
 
     expect(published.at(-1)?.cubes[0]?.z).toBe(10);
     expect(published.at(-1)?.banner).toBe("QUICK SAVE RESTORED");
+    expect(published.at(-1)?.quickSaveAvailable).toBe(true);
+    expect(published.at(-1)?.rewindAvailable).toBe(false);
     expect(state.cubes[0]?.z).toBe(10);
+    world.dispose();
+  });
+
+  it("discards the future timeline after a practice rewind", () => {
+    const world = new GameWorld(
+      [puzzle()],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.cubes = [
+      { id: "timeline", type: "normal", x: 1, z: 10, previousZ: 10 },
+    ];
+
+    state.recordHistory();
+    state.cubes[0]!.z = 9;
+    state.recordHistory();
+    state.cubes[0]!.z = 7;
+
+    state.restoreHistory();
+
+    expect(state.cubes[0]?.z).toBe(10);
+    expect(state.history).toHaveLength(0);
+    expect(state.banner).toBe("10 SECONDS REWOUND");
     world.dispose();
   });
 
@@ -1067,7 +1134,7 @@ describe("GameWorld state invariants", () => {
     const saved = JSON.parse(
       storage.getItem("cubic-ordeal-campaign-v1") ?? "{}"
     );
-    expect(saved.version).toBe(4);
+    expect(saved.version).toBe(5);
     expect(saved.snapshot.phase).toBe("FINAL_RESULT");
     expect(saved.snapshot.puzzleId).toBe("TEST-PUZZLE");
 
@@ -1102,5 +1169,276 @@ describe("GameWorld state invariants", () => {
     );
     expect(freshSave.snapshot.phase).toBe("STAGE_INTRO");
     restoredWorld.dispose();
+  });
+
+  it("moves one cell per press and ignores an out-of-board destination", () => {
+    const world = new GameWorld(
+      [puzzle({ width: 4, layout: [] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+
+    expect(state.playerCell).toEqual({ x: 2, z: 0 });
+    command({ type: "touch-move", x: 1, z: 0 });
+    world.update(1 / 30);
+    expect(state.playerStep.to).toEqual({ x: 3, z: 0 });
+    expect(state.player.x).toBeCloseTo(2 + 1 / 7);
+
+    command({ type: "touch-move", x: 0, z: 0 });
+    for (let tick = 0; tick < 6; tick += 1) world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 3, z: 0 });
+    expect(state.player).toMatchObject({ x: 3, z: 0 });
+
+    command({ type: "touch-move", x: 1, z: 0 });
+    world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 3, z: 0 });
+    expect(state.playerStep.to).toBeNull();
+    expect(state.phase).toBe("PLAYING");
+    world.dispose();
+  });
+
+  it("freezes an in-flight step on pause and requires fresh input for the next step", () => {
+    const world = new GameWorld(
+      [puzzle({ width: 4, layout: [] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+
+    command({ type: "touch-move", x: 1, z: 0 });
+    world.update(1 / 30);
+    expect(state.playerStep.elapsedTicks).toBe(1);
+
+    command({ type: "pause" });
+    expect(state.phase).toBe("PAUSED");
+    expect(state.playerStep.heldDirection).toBeNull();
+    expect(state.playerStep.queuedDirection).toBeNull();
+    expect(state.playerStep.elapsedTicks).toBe(1);
+
+    command({ type: "resume" });
+    for (let tick = 0; tick < 6; tick += 1) world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 3, z: 0 });
+    expect(state.playerStep.to).toBeNull();
+    world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 3, z: 0 });
+    expect(state.playerStep.to).toBeNull();
+    world.dispose();
+  });
+
+  it("cancels an in-flight step when only its arrival row disappears", () => {
+    const world = new GameWorld(
+      [puzzle({ width: 4, depth: 2, layout: [] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.stats.platformRows = 5;
+    state.playerCell = { x: 2, z: 3 };
+    state.playerStep = {
+      from: { x: 2, z: 3 },
+      to: { x: 2, z: 4 },
+      elapsedTicks: 3,
+      stepTicks: 7,
+      queuedDirection: null,
+      heldDirection: "up",
+      heldTicks: 3,
+      nextRepeatTick: 10,
+    };
+    state.player = { x: 2, z: 3.43, heading: 0 };
+
+    expect(state.losePlatformRow("ROW LOST")).toBe(false);
+    expect(state.stats.platformRows).toBe(4);
+    expect(state.phase).toBe("PLAYING");
+    expect(state.playerStep.to).toBeNull();
+    expect(state.playerCell).toEqual({ x: 2, z: 3 });
+    expect(state.player).toMatchObject({ x: 2, z: 3 });
+    expect(state.playerStep.heldDirection).toBeNull();
+    world.dispose();
+  });
+
+  it("lets a step finish when its source row disappears but its arrival survives", () => {
+    const world = new GameWorld(
+      [puzzle({ width: 4, depth: 2, layout: [] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.stats.platformRows = 5;
+    state.playerCell = { x: 2, z: 4 };
+    state.playerStep = {
+      from: { x: 2, z: 4 },
+      to: { x: 2, z: 3 },
+      elapsedTicks: 3,
+      stepTicks: 7,
+      queuedDirection: null,
+      heldDirection: null,
+      heldTicks: 0,
+      nextRepeatTick: null,
+    };
+    state.player = { x: 2, z: 3.57, heading: 0 };
+
+    expect(state.losePlatformRow("ROW LOST")).toBe(false);
+    expect(state.stats.platformRows).toBe(4);
+    expect(state.phase).toBe("PLAYING");
+    expect(state.playerStep.to).toEqual({ x: 2, z: 3 });
+    world.dispose();
+  });
+
+  it("queues one direction during a step and reserves MARK at its destination", () => {
+    const world = new GameWorld(
+      [puzzle({ width: 4, layout: [] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+
+    command({ type: "touch-move", x: -1, z: 0 });
+    world.update(1 / 30);
+    command({ type: "touch-move", x: 0, z: 1 });
+    command({ type: "touch-press", action: "mark" });
+    world.update(1 / 30);
+    expect(state.playerStep.queuedDirection).toBe("up");
+    expect(state.marker).toBeNull();
+    expect(state.pendingMarker).toEqual({ x: 1, z: 0 });
+
+    command({ type: "touch-move", x: 0, z: 0 });
+    for (let tick = 0; tick < 6; tick += 1) world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 1, z: 0 });
+    expect(state.playerStep.to).toEqual({ x: 1, z: 1 });
+    for (let tick = 0; tick < 7; tick += 1) world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 1, z: 1 });
+    expect(state.pendingMarker).toBeNull();
+    expect(state.marker).toEqual({ x: 1, z: 0 });
+    world.dispose();
+  });
+
+  it("does not let an arrival MARK protect the player before the step completes", () => {
+    const world = new GameWorld(
+      [puzzle({ layout: [{ x: 2, z: 1, type: "normal" }] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.cubes = [
+      { id: "incoming", type: "normal", x: 2, z: 1, previousZ: 1 },
+    ];
+
+    command({ type: "touch-move", x: 1, z: 0 });
+    world.update(1 / 30);
+    command({ type: "touch-press", action: "mark" });
+    world.update(1 / 30);
+
+    expect(state.playerStep.to).toEqual({ x: 3, z: 0 });
+    expect(state.marker).toBeNull();
+    expect(state.pendingMarker).toEqual({ x: 3, z: 0 });
+
+    state.isRolling = true;
+    state.checkRollCollision(0.4, 0.6);
+    expect(state.phase).toBe("CRUSHED");
+    world.dispose();
+  });
+
+  it("restores an in-flight cell transition from quick save", () => {
+    const world = new GameWorld(
+      [puzzle({ width: 4, layout: [] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    command({ type: "touch-move", x: 1, z: 0 });
+    world.update(1 / 30);
+    command({ type: "quick-save" });
+    for (let tick = 0; tick < 6; tick += 1) world.update(1 / 30);
+    expect(state.playerCell).toEqual({ x: 3, z: 0 });
+
+    command({ type: "quick-load" });
+    expect(state.playerCell).toEqual({ x: 2, z: 0 });
+    expect(state.playerStep.to).toEqual({ x: 3, z: 0 });
+    expect(state.playerStep.elapsedTicks).toBe(1);
+    world.dispose();
+  });
+
+  it("keeps moving and accepts CLEAR while capture pause is active", () => {
+    const world = new GameWorld(
+      [
+        puzzle({
+          layout: [
+            { x: 2, z: 0, type: "normal" },
+            { x: 1, z: 4, type: "normal" },
+          ],
+        }),
+      ],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "PLAYING";
+    state.marker = { x: 2, z: 0 };
+    state.cubes = [
+      { id: "target", type: "normal", x: 2, z: 0, previousZ: 0 },
+      { id: "far", type: "normal", x: 1, z: 4, previousZ: 4 },
+    ];
+
+    state.markOrCapture();
+    expect(state.phase).toBe("CAPTURE_PAUSE");
+    state.marker = { x: 2, z: 0 };
+
+    command({ type: "touch-move", x: 1, z: 0 });
+    command({ type: "touch-press", action: "clear" });
+    world.update(1 / 30);
+
+    expect(state.playerStep.to).toEqual({ x: 3, z: 0 });
+    expect(state.marker).toBeNull();
+    expect(state.phase).toBe("CAPTURE_PAUSE");
+    world.dispose();
+  });
+
+  it("queues a capture during pause and executes it on the next playable update", () => {
+    const world = new GameWorld(
+      [puzzle({ layout: [{ x: 2, z: 0, type: "normal" }] })],
+      () => undefined,
+      () => undefined
+    );
+    const state = internals(world);
+    state.mode = "PRACTICE";
+    state.phase = "CAPTURE_PAUSE";
+    state.phaseTimer = DIFFICULTIES.NORMAL.captureSeconds;
+    state.marker = { x: 3, z: 0 };
+    state.cubes = [
+      { id: "target", type: "normal", x: 3, z: 0, previousZ: 0 },
+      { id: "far", type: "normal", x: 1, z: 4, previousZ: 4 },
+    ];
+
+    command({ type: "touch-press", action: "mark" });
+    world.update(1 / 30);
+    expect(state.pendingAction).toBe("capture");
+    expect(state.cubes[0]?.captured).toBeUndefined();
+
+    while (state.phase === "CAPTURE_PAUSE") world.update(1 / 30);
+    expect(state.phase).toBe("PLAYING");
+    expect(state.pendingAction).toBe("capture");
+    expect(state.cubes[0]?.captured).toBeUndefined();
+
+    world.update(1 / 30);
+    expect(state.pendingAction).toBeNull();
+    expect(state.cubes[0]?.captured).toBe(true);
+    expect(state.phase).toBe("CAPTURE_PAUSE");
+    world.dispose();
   });
 });

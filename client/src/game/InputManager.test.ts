@@ -76,6 +76,34 @@ describe("InputManager directional invariants", () => {
     manager.dispose();
   });
 
+  it("emits one cardinal touch edge and keeps the held direction until release", () => {
+    const manager = new InputManager();
+
+    manager.setTouchMove(0.9, 0.8);
+    expect(manager.sample(false)).toMatchObject({
+      moveDirection: "right",
+      movePressed: "right",
+      moveX: 1,
+      moveZ: 0,
+    });
+    expect(manager.sample(false)).toMatchObject({
+      moveDirection: "right",
+      movePressed: null,
+      moveX: 1,
+      moveZ: 0,
+    });
+
+    manager.setTouchMove(0, 0);
+    expect(manager.sample(false)).toMatchObject({
+      moveDirection: null,
+      movePressed: null,
+      moveX: 0,
+      moveZ: 0,
+    });
+
+    manager.dispose();
+  });
+
   it("maps the standard gamepad axis and d-pad without mirroring horizontal movement", () => {
     const pad: GamepadState = {
       connected: true,
@@ -100,6 +128,32 @@ describe("InputManager directional invariants", () => {
     manager.dispose();
   });
 
+  it("uses separate engage and release thresholds for an analog stick", () => {
+    const pad: GamepadState = {
+      connected: true,
+      axes: [0.54, 0],
+      buttons: Array.from({ length: 16 }, () => ({ pressed: false })),
+    };
+    gamepads = [pad];
+    const manager = new InputManager();
+
+    expect(manager.sample(false).moveDirection).toBeNull();
+    pad.axes[0] = 0.56;
+    expect(manager.sample(false)).toMatchObject({
+      moveDirection: "right",
+      movePressed: "right",
+    });
+    pad.axes[0] = 0.4;
+    expect(manager.sample(false)).toMatchObject({
+      moveDirection: "right",
+      movePressed: null,
+    });
+    pad.axes[0] = 0.34;
+    expect(manager.sample(false).moveDirection).toBeNull();
+
+    manager.dispose();
+  });
+
   it("clears held touch state and action edges together", () => {
     const manager = new InputManager();
 
@@ -111,6 +165,8 @@ describe("InputManager directional invariants", () => {
     expect(manager.sample()).toEqual({
       moveX: 0,
       moveZ: 0,
+      moveDirection: null,
+      movePressed: null,
       mark: false,
       clearMarker: false,
       area: false,
