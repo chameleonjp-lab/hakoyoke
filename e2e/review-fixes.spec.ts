@@ -149,7 +149,7 @@ test("PRACTICEは各Waveに存在する問題番号だけを表示する", async
   await expect(selects.nth(2).locator("option")).toHaveCount(2);
   await selects.nth(1).selectOption("4");
   await expect(preview).toContainText("STAGE-4-W4-P01");
-  await expect(preview).toContainText("7 × 9 セル");
+  await expect(preview).toContainText("5 × 8 セル");
 });
 
 test("モバイル操作ボタンはPointer Eventsの一経路でMARKを一度だけ処理する", async ({
