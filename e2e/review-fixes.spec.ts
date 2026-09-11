@@ -148,7 +148,7 @@ test("PRACTICEは各Waveに存在する問題番号だけを表示する", async
   await selects.nth(0).selectOption("4");
   await expect(selects.nth(2).locator("option")).toHaveCount(2);
   await selects.nth(1).selectOption("4");
-  await expect(preview).toContainText("FINAL-W4-P01");
+  await expect(preview).toContainText("STAGE-4-W4-P01");
   await expect(preview).toContainText("7 × 9 セル");
 });
 
@@ -232,7 +232,7 @@ test("縦画面の移動領域は下半分に限定され、pause中は入力面
   await expect(zone).toBeVisible();
 });
 
-test("移動中の解除イベントが画面側へ届いてもプレイヤーが停止する", async ({
+test("移動中の解除イベントが画面側へ届いても1マスだけで停止する", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
@@ -281,16 +281,39 @@ test("移動中の解除イベントが画面側へ届いてもプレイヤー�
       new PointerEvent("pointerup", { pointerId: 121, pointerType: "touch" })
     );
   });
-  const stoppedAt = await page.evaluate(
-    () =>
-      (window as Window & { latestSnapshot?: { player: { z: number } } })
-        .latestSnapshot?.player.z ?? 0
-  );
+  const stoppedAt = await page.evaluate(() => {
+    const snapshot = (
+      window as Window & {
+        latestSnapshot?: {
+          player: { x: number; z: number };
+          playerCell: { x: number; z: number };
+          playerStep?: { to: { x: number; z: number } | null };
+        };
+      }
+    ).latestSnapshot;
+    return {
+      cell: snapshot?.playerCell ?? {
+        x: Math.round(snapshot?.player.x ?? 0),
+        z: Math.round(snapshot?.player.z ?? 0),
+      },
+      inFlightTarget: snapshot?.playerStep?.to ?? null,
+    };
+  });
   await page.waitForTimeout(240);
-  const afterRelease = await page.evaluate(
-    () =>
-      (window as Window & { latestSnapshot?: { player: { z: number } } })
-        .latestSnapshot?.player.z ?? 0
-  );
-  expect(Math.abs(afterRelease - stoppedAt)).toBeLessThan(0.08);
+  const afterRelease = await page.evaluate(() => {
+    const snapshot = (
+      window as Window & {
+        latestSnapshot?: {
+          playerCell: { x: number; z: number };
+          playerStep?: { to: { x: number; z: number } | null };
+        };
+      }
+    ).latestSnapshot;
+    return {
+      cell: snapshot?.playerCell ?? null,
+      inFlight: snapshot?.playerStep?.to ?? null,
+    };
+  });
+  expect(afterRelease.cell).toEqual(stoppedAt.inFlightTarget ?? stoppedAt.cell);
+  expect(afterRelease.inFlight).toBeNull();
 });
