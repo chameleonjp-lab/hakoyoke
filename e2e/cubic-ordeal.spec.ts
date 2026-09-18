@@ -843,6 +843,21 @@ test("モバイル入力は複数指とブラウザジェスチャーを無視�
     pointerType: "touch",
     isPrimary: false,
   });
+  await page.evaluate(() => {
+    window.dispatchEvent(
+      new PointerEvent("pointerup", { pointerId: 101, pointerType: "touch" })
+    );
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { touchCommands?: unknown[] }).touchCommands
+      )
+    )
+    .toEqual([
+      { type: "touch-fast", active: true },
+      { type: "touch-fast", active: false },
+    ]);
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   await fast.dispatchEvent("pointerdown", {
     pointerId: 103,

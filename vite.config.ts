@@ -5,6 +5,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import {
+  consumeStorageRateLimit,
+  configuredStorageAssetKeys,
+  isAllowedStorageKey,
+  normalizeStorageKey,
+  pruneStorageRateLimits,
+  type RateLimitState,
+} from "./server/storagePolicy";
+import { resolveStorageAsset } from "./server/storageProxy";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
@@ -154,51 +163,53 @@ function vitePluginStorageProxy(): Plugin {
   return {
     name: "manus-storage-proxy",
     configureServer(server: ViteDevServer) {
+      const storageAllowlist = configuredStorageAssetKeys();
+      const storageRateLimits = new Map<string, RateLimitState>();
       server.middlewares.use("/manus-storage", async (req, res) => {
-        const key = req.url?.replace(/^\//, "");
-        if (!key) {
-          res.writeHead(400, { "Content-Type": "text/plain" });
-          res.end("Missing storage key");
+        if (req.method !== "GET" && req.method !== "HEAD") {
+          res.writeHead(405, { "Content-Type": "text/plain" });
+          res.end("Method not allowed");
           return;
         }
 
-        const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(
-          /\/+$/,
-          ""
-        );
-        const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
+        const identity = req.socket.remoteAddress ?? "unknown";
+        if (storageRateLimits.size > 1_000)
+          pruneStorageRateLimits(storageRateLimits);
+        const rate = consumeStorageRateLimit(storageRateLimits, identity);
+        if (!rate.allowed) {
+          res.writeHead(429, {
+            "Content-Type": "text/plain",
+            "Retry-After": String(rate.retryAfterSeconds),
+          });
+          res.end("Storage asset request limit exceeded");
+          return;
+        }
 
-        if (!forgeBaseUrl || !forgeKey) {
-          res.writeHead(500, { "Content-Type": "text/plain" });
-          res.end("Storage proxy not configured");
+        const requestPath = (req.url ?? "").split("?", 1)[0];
+        const key = normalizeStorageKey(`/manus-storage${requestPath}`);
+        if (!key) {
+          res.writeHead(400, { "Content-Type": "text/plain" });
+          res.end("Invalid storage key");
+          return;
+        }
+        if (!isAllowedStorageKey(key, storageAllowlist)) {
+          res.writeHead(404, { "Content-Type": "text/plain" });
+          res.end("Storage asset not found");
           return;
         }
 
         try {
-          const forgeUrl = new URL(
-            "v1/storage/presign/get",
-            forgeBaseUrl + "/"
-          );
-          forgeUrl.searchParams.set("path", key);
-
-          const forgeResp = await fetch(forgeUrl, {
-            headers: { Authorization: `Bearer ${forgeKey}` },
-          });
-
-          if (!forgeResp.ok) {
-            res.writeHead(502, { "Content-Type": "text/plain" });
-            res.end("Storage backend error");
-            return;
-          }
-
-          const { url } = (await forgeResp.json()) as { url: string };
+          const url = await resolveStorageAsset(key);
           if (!url) {
-            res.writeHead(502, { "Content-Type": "text/plain" });
-            res.end("Empty signed URL");
+            res.writeHead(503, { "Content-Type": "text/plain" });
+            res.end("Storage asset is unavailable");
             return;
           }
 
-          res.writeHead(307, { Location: url, "Cache-Control": "no-store" });
+          res.writeHead(307, {
+            Location: url,
+            "Cache-Control": "no-store",
+          });
           res.end();
         } catch {
           res.writeHead(502, { "Content-Type": "text/plain" });
