@@ -4,16 +4,16 @@
 
 ## 正本と生成物
 
-| 対象                   | 正本                              | 派生物・検査                                                                   |
-| ---------------------- | --------------------------------- | ------------------------------------------------------------------------------ |
-| ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                             |
-| チュートリアルゲート   | `client/src/game/tutorial.ts`     | 8段階の手設計小問と操作ロックをGameWorld／HUDで共有                            |
-| Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                                        |
-| 問題生成規則           | `client/src/game/puzzles.ts`      | 88問すべてを手設計し、`pnpm puzzles:write`で決定的に生成。 |
-| 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                                 |
-| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証・代表12問の品質ゲートから作る。手編集禁止                 |
-| ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査            |
-| 現行の検査結果         | GitHub Actionsの`CI`              | `TEST_REPORT.md`に検査範囲を記録                                               |
+| 対象                   | 正本                              | 派生物・検査                                                        |
+| ---------------------- | --------------------------------- | ------------------------------------------------------------------- |
+| ゲーム規則・状態遷移   | `client/src/game/`                | VitestとPlaywright                                                  |
+| チュートリアルゲート   | `client/src/game/tutorial.ts`     | 8段階の手設計小問と操作ロックをGameWorld／HUDで共有                 |
+| Stage/Wave/問題数      | `client/src/game/stagePlan.ts`    | 9 Stage、88問を自動集計                                             |
+| 問題生成規則           | `client/src/game/puzzles.ts`      | 88問すべてを手設計し、`pnpm puzzles:write`で決定的に生成。          |
+| 実行時の問題アーカイブ | `client/public/data/puzzles.json` | 上記生成器から作る。手編集禁止                                      |
+| 問題検証結果           | `LEVEL_VALIDATION_REPORT.md`      | 上記生成器・再生検証・代表12問の品質ゲートから作る。手編集禁止      |
+| ランキング連携値       | `ranking-manifest.json`           | JSON Schema、HTML、`ranking.ts`との一致を`pnpm ranking:check`で検査 |
+| 現行の検査結果         | GitHub Actionsの`CI`              | `TEST_REPORT.md`に検査範囲を記録                                    |
 
 問題データの流れは次の1本だけです。
 
@@ -115,6 +115,8 @@ PRを更新するたび、次を同じCIで通します。
 ## 本番E2Eの環境差
 
 `/manus-storage/*`はForge資格情報がある環境では署名URLへ`307`、ない環境では安全な`503`を返します。本番E2Eは資格情報の有無に応じて期待値を切り替え、どちらの場合もページ例外と機密情報漏えいがないことを確認します。
+
+互換用のstorage proxyは、明示allowlistにある単一ファイル名だけを受け付け、encoded path traversal・ネストしたパス・不正なキーを拒否します。署名URLの解決は5秒で打ち切り、送信元IPごとの短時間rate limitを設け、redirect先はcredential-freeなHTTPS URLだけに限定します。Express経由の`path-to-regexp` high advisoryは0.1.13へ固定し、CIの本番依存監査をhigh以上で失敗させます。low／moderate advisoryとdirect toolchainの更新は別のセキュリティ作業として残ります。
 
 ## 文書の扱い
 

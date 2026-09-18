@@ -2,31 +2,25 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  consumeStorageRateLimit,
+  configuredStorageAssetKeys,
+  isAllowedStorageKey,
+  normalizeStorageKey,
+  pruneStorageRateLimits,
+  type RateLimitState,
+} from "./storagePolicy";
+import { resolveStorageAsset } from "./storageProxy";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function redirectStorageAsset(key: string): Promise<string | null> {
-  const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(
-    /\/+$/,
-    ""
-  );
-  const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
-  if (!forgeBaseUrl || !forgeKey) return null;
-
-  const forgeUrl = new URL("v1/storage/presign/get", `${forgeBaseUrl}/`);
-  forgeUrl.searchParams.set("path", key);
-  const response = await fetch(forgeUrl, {
-    headers: { Authorization: `Bearer ${forgeKey}` },
-  });
-  if (!response.ok) return null;
-  const payload = (await response.json()) as { url?: string };
-  return payload.url ?? null;
-}
-
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  const storageAllowlist = configuredStorageAssetKeys();
+  const storageRateLimits = new Map<string, RateLimitState>();
+  app.disable("x-powered-by");
 
   // Serve static files from dist/public in production
   const staticPath =
@@ -35,13 +29,29 @@ async function startServer() {
       : path.resolve(__dirname, "..", "dist", "public");
 
   app.get("/manus-storage/*", async (req, res) => {
-    const key = req.path.replace(/^\/manus-storage\/?/, "");
-    if (!key || key.includes("..")) {
+    const identity = req.socket.remoteAddress ?? "unknown";
+    if (storageRateLimits.size > 1_000)
+      pruneStorageRateLimits(storageRateLimits);
+    const rate = consumeStorageRateLimit(storageRateLimits, identity);
+    if (!rate.allowed) {
+      res
+        .status(429)
+        .set("Retry-After", String(rate.retryAfterSeconds))
+        .type("text/plain")
+        .send("Storage asset request limit exceeded");
+      return;
+    }
+    const key = normalizeStorageKey(req.path);
+    if (!key) {
       res.status(400).type("text/plain").send("Invalid storage key");
       return;
     }
+    if (!isAllowedStorageKey(key, storageAllowlist)) {
+      res.status(404).type("text/plain").send("Storage asset not found");
+      return;
+    }
     try {
-      const url = await redirectStorageAsset(key);
+      const url = await resolveStorageAsset(key);
       if (!url) {
         res.status(503).type("text/plain").send("Storage asset is unavailable");
         return;

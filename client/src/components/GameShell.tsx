@@ -1743,11 +1743,15 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     setStick(null);
     command({ type: "touch-move", x: 0, z: 0 });
   }, []);
+  const clearFast = useCallback(() => {
+    const wasActive = activeFastPointer.current !== null;
+    activeFastPointer.current = null;
+    if (wasActive) command({ type: "touch-fast", active: false });
+  }, []);
   const resetInput = useCallback(() => {
     clearMovement();
-    activeFastPointer.current = null;
-    command({ type: "touch-fast", active: false });
-  }, [clearMovement]);
+    clearFast();
+  }, [clearFast, clearMovement]);
   const previousPhase = useRef(snapshot.phase);
   useEffect(() => {
     if (previousPhase.current !== snapshot.phase) resetInput();
@@ -1764,17 +1768,17 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
     };
   }, [resetInput]);
   useEffect(() => {
-    const releaseMovementOnWindow = (event: globalThis.PointerEvent) => {
-      if (activePointer.current !== event.pointerId) return;
-      clearMovement();
+    const releaseInputOnWindow = (event: globalThis.PointerEvent) => {
+      if (activePointer.current === event.pointerId) clearMovement();
+      if (activeFastPointer.current === event.pointerId) clearFast();
     };
-    window.addEventListener("pointerup", releaseMovementOnWindow);
-    window.addEventListener("pointercancel", releaseMovementOnWindow);
+    window.addEventListener("pointerup", releaseInputOnWindow);
+    window.addEventListener("pointercancel", releaseInputOnWindow);
     return () => {
-      window.removeEventListener("pointerup", releaseMovementOnWindow);
-      window.removeEventListener("pointercancel", releaseMovementOnWindow);
+      window.removeEventListener("pointerup", releaseInputOnWindow);
+      window.removeEventListener("pointercancel", releaseInputOnWindow);
     };
-  }, [clearMovement]);
+  }, [clearFast, clearMovement]);
   const markerTargetCube = snapshot.marker
     ? markerTarget(
         snapshot.cubes,
@@ -1909,10 +1913,9 @@ function TouchControls({ snapshot }: { snapshot: GameSnapshot }) {
   };
   const endFast = (event: PointerEvent<HTMLButtonElement>) => {
     if (activeFastPointer.current !== event.pointerId) return;
-    activeFastPointer.current = null;
     event.preventDefault();
     event.stopPropagation();
-    command({ type: "touch-fast", active: false });
+    clearFast();
   };
   return (
     <div

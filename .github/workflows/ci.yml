@@ -76,6 +76,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Dependency audit
+        run: pnpm audit --prod --audit-level=high
+
       - name: Repository hygiene
         run: pnpm repo:check
 

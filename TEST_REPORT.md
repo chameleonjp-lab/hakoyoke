@@ -4,18 +4,19 @@
 
 ## 自動検査
 
-| 区分           | コマンド                   | 検査範囲                                              | 直前の成功実績          |
-| -------------- | -------------------------- | ----------------------------------------------------- | ----------------------- |
-| リポジトリ衛生 | `pnpm repo:check`          | ローカル設定、scaffold snapshot、埋込資格情報の再混入 | PASS                    |
-| 問題生成物     | `pnpm puzzles:check`       | TS正本とJSON・レポートの完全一致、全88問＋代表12問×5難易度の再生検証 | PASS — 88問＋品質ゲート |
-| ランキング契約 | `pnpm ranking:check`       | manifestのJSON Schema、HTML、実装定数の一致           | PASS                    |
-| 書式           | `pnpm format:check`        | client、server、E2E、script、主要設定                 | PASS                    |
-| 型検査         | `pnpm check`               | client、server                                        | PASS                    |
-| 単体・問題検査 | `pnpm test`                | 21ファイル                                            | PASS — 172件（PR07ローカル） |
-| 本番ビルド     | `pnpm build`               | Vite静的出力、Express bundle                          | PASS                    |
-| ブラウザ操作   | `pnpm test:e2e`            | Chromium 26件、WebKit 26件                            | 最新CIを正とする — 52件 |
-| 本番経路       | `pnpm test:e2e:production` | 実ビルド、Express、storage proxy                      | PASS — 1件              |
-| 公開受入       | iPhone Safari + Pages URL  | `/hakoyoke/` asset、manifest、Supabase登録値の突合    | BLOCKED — 外部受入待ち  |
+| 区分           | コマンド                               | 検査範囲                                                             | 直前の成功実績                                   |
+| -------------- | -------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
+| リポジトリ衛生 | `pnpm repo:check`                      | ローカル設定、scaffold snapshot、埋込資格情報の再混入                | PASS                                             |
+| 依存監査       | `pnpm audit --prod --audit-level=high` | 本番依存のhigh以上の既知脆弱性（Express経由を含む）                  | PASS — high 0件（low 2件／moderate 3件は残課題） |
+| 問題生成物     | `pnpm puzzles:check`                   | TS正本とJSON・レポートの完全一致、全88問＋代表12問×5難易度の再生検証 | PASS — 88問＋品質ゲート                          |
+| ランキング契約 | `pnpm ranking:check`                   | manifestのJSON Schema、HTML、実装定数の一致                          | PASS                                             |
+| 書式           | `pnpm format:check`                    | client、server、E2E、script、主要設定                                | PASS                                             |
+| 型検査         | `pnpm check`                           | client、server                                                       | PASS                                             |
+| 単体・問題検査 | `pnpm test`                            | clientのゲーム規則・ランキング、serverの公開資産ポリシー             | PASS — 22ファイル / 176件                        |
+| 本番ビルド     | `pnpm build`                           | Vite静的出力、Express bundle                                         | PASS                                             |
+| ブラウザ操作   | `pnpm test:e2e`                        | Chromium 26件、WebKit 26件                                           | 最新CIを正とする — 52件                          |
+| 本番経路       | `pnpm test:e2e:production`             | 実ビルド、Express、storage proxy                                     | PASS — 1件                                       |
+| 公開受入       | iPhone Safari + Pages URL              | `/hakoyoke/` asset、manifest、Supabase登録値の突合                   | BLOCKED — 外部受入待ち                           |
 
 PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPRではChromium、`main`更新時はChromium＋WebKit＋productionへ分岐します。ローカルの個別成功だけではPRを成功扱いにしません。
 
@@ -79,6 +80,7 @@ PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPR�
 - RPC応答値の一致検査と、サーバー`rank_no`による同率順位
 - リザルトの旧／部分スナップショットに対する数値フォールバック（`undefined`を表示しない）
 - PRACTICEの巻き戻し後に未来側の履歴を破棄し、保存・巻き戻し可能状態をスナップショットへ反映すること
+- 公開資産プロキシのallowlist、encoded path traversal拒否、HTTPS redirect検査、rate limitの境界
 
 ## ブラウザ検査の対象
 

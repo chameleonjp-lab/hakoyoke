@@ -18,9 +18,10 @@
 ## セキュリティ（最優先の後続）
 
 - [ ] 公開Git履歴に露出したForge/JWT等を失効・ローテーションし、利用ログを確認する。
-- [ ] Viteとpnpmを修正版へ更新し、依存監査をCIへ追加する。
+- [x] `pnpm audit --prod --audit-level=high`をCIへ追加し、Expressの`path-to-regexp`高 severity advisoryを0.1.13へ固定する（low／moderate advisoryの解消は別途）。
+- [ ] Viteとpnpmのdirect toolchainを修正版へ更新する（依存監査のhigh gateは完了）。
 - [ ] Manus runtimeを許可された開発・プレビューだけに限定する。
-- [ ] `/manus-storage/*`を公開資産allowlistへ限定し、timeout・rate limit・redirect先検査を追加する。
+- [x] `/manus-storage/*`を公開資産allowlistへ限定し、5秒timeout・IP単位rate limit・HTTPS redirect先検査を追加する。
 - [ ] main保護、必須CI、secret scanning、Actionsのcommit SHA固定を設定する。
 
 ## ゲーム内容の次段階
