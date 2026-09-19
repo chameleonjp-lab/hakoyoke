@@ -12,17 +12,18 @@
 - [x] RPCをモックしたunit/E2Eと、PR向けChromium gateを追加する。
 - [ ] 最新のPR CIを全件成功させる。
 - [ ] 正式URLをiPhone Safariで確認し、候補SHAと公開版を受入記録へ残す。
-- [ ] Supabase登録値とmanifestの差分を解消し、実データを汚さない受入試験を行う。
+- [x] Supabase登録値とmanifestの差分を解消し、実データを増やさない受入試験を行う（`hakoyoke`を有効化済み、既存スコア・プレイ記録0件を確認）。
 - [ ] GitHub Pagesの`/hakoyoke/`配下でVite asset参照を確認し、必要なら公開方式を確定する。
 
 ## セキュリティ（最優先の後続）
 
 - [ ] 公開Git履歴に露出したForge/JWT等を失効・ローテーションし、利用ログを確認する。
 - [x] `pnpm audit --prod --audit-level=high`をCIへ追加し、Expressの`path-to-regexp`高 severity advisoryを0.1.13へ固定する（low／moderate advisoryの解消は別途）。
-- [ ] Viteとpnpmのdirect toolchainを修正版へ更新する（依存監査のhigh gateは完了）。
-- [ ] Manus runtimeを許可された開発・プレビューだけに限定する。
+- [x] Viteとpnpmのdirect toolchainを修正版へ更新する（Vite 7.1.9、pnpm 12.4.2、依存監査のhigh gateは完了）。
+- [x] Manus runtimeを許可された開発・プレビューだけに限定する。本番ビルドには実行時プラグインとデバッグ資産を含めない。
 - [x] `/manus-storage/*`を公開資産allowlistへ限定し、5秒timeout・IP単位rate limit・HTTPS redirect先検査を追加する。
-- [ ] main保護、必須CI、secret scanning、Actionsのcommit SHA固定を設定する。
+- [ ] main保護、必須CI、secret scanningを設定する。
+- [x] GitHub Actionsの使用を固定コミットSHAへ変更する。
 
 ## ゲーム内容の次段階
 

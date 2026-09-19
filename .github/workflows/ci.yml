@@ -18,6 +18,7 @@ on:
       - "e2e/**"
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
       - "playwright*.config.ts"
       - "ranking-manifest.json"
       - "scripts/**"
@@ -38,6 +39,7 @@ on:
       - "e2e/**"
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
       - "playwright*.config.ts"
       - "ranking-manifest.json"
       - "scripts/**"
@@ -62,13 +64,15 @@ jobs:
     timeout-minutes: 35
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 12.4.2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: pnpm
@@ -104,9 +108,12 @@ jobs:
           # production server also serves this build at / for E2E checks.
           VITE_BASE_PATH: /hakoyoke/
 
+      - name: Verify production build excludes Manus runtime assets
+        run: test ! -e dist/public/__manus__
+
       - name: Upload GitHub Pages artifact
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pages-site-${{ github.sha }}
           path: dist/public
