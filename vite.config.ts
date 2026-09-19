@@ -224,8 +224,6 @@ const plugins = [
   react(),
   tailwindcss(),
   jsxLocPlugin(),
-  vitePluginManusRuntime(),
-  vitePluginManusDebugCollector(),
   vitePluginStorageProxy(),
 ];
 
@@ -235,40 +233,76 @@ function resolveBasePath(value: string | undefined): string {
   return `/${configured.replace(/^\/+|\/+$/g, "")}/`;
 }
 
-export default defineConfig({
-  plugins,
-  base: resolveBasePath(process.env.VITE_BASE_PATH),
-  resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+function vitePluginRemoveManusPublicAssets(): Plugin {
+  return {
+    name: "remove-manus-public-assets",
+    closeBundle() {
+      // Keep the path narrow: this only removes generated production output,
+      // never source files or an arbitrary directory.
+      fs.rmSync(
+        path.resolve(import.meta.dirname, "dist", "public", "__manus__"),
+        { recursive: true, force: true }
+      );
     },
-  },
-  envDir: path.resolve(import.meta.dirname),
-  root: path.resolve(import.meta.dirname, "client"),
-  build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
-    emptyOutDir: true,
-    // GameCanvas is already loaded only when an ordeal starts. Keep Babylon's cyclic graph intact rather than splitting it by folders.
-    chunkSizeWarningLimit: 1300,
-  },
-  server: {
-    port: 3000,
-    strictPort: false, // Will find next available port if 3000 is busy
-    host: true,
-    allowedHosts: [
-      ".manuspre.computer",
-      ".manus.computer",
-      ".manus-asia.computer",
-      ".manuscomputer.ai",
-      ".manusvm.computer",
-      "localhost",
-      "127.0.0.1",
-    ],
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
+  };
+}
+
+export default defineConfig(({ command, mode }) => {
+  // The Manus runtime is useful only while developing or previewing locally.
+  // A production build must not ship its runtime or debug collector. Preview
+  // tooling can opt in explicitly without changing the production default.
+  const manusRuntimeEnabled =
+    process.env.MANUS_RUNTIME_ENABLED === "true" ||
+    (process.env.MANUS_RUNTIME_ENABLED !== "false" &&
+      command === "serve" &&
+      mode !== "production");
+  const activePlugins = [...plugins];
+  if (manusRuntimeEnabled) {
+    activePlugins.splice(
+      3,
+      0,
+      vitePluginManusRuntime(),
+      vitePluginManusDebugCollector()
+    );
+  } else {
+    activePlugins.push(vitePluginRemoveManusPublicAssets());
+  }
+
+  return {
+    plugins: activePlugins,
+    base: resolveBasePath(process.env.VITE_BASE_PATH),
+    resolve: {
+      alias: {
+        "@": path.resolve(import.meta.dirname, "client", "src"),
+        "@shared": path.resolve(import.meta.dirname, "shared"),
+        "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+      },
     },
-  },
+    envDir: path.resolve(import.meta.dirname),
+    root: path.resolve(import.meta.dirname, "client"),
+    build: {
+      outDir: path.resolve(import.meta.dirname, "dist/public"),
+      emptyOutDir: true,
+      // GameCanvas is already loaded only when an ordeal starts. Keep Babylon's cyclic graph intact rather than splitting it by folders.
+      chunkSizeWarningLimit: 1300,
+    },
+    server: {
+      port: 3000,
+      strictPort: false, // Will find next available port if 3000 is busy
+      host: true,
+      allowedHosts: [
+        ".manuspre.computer",
+        ".manus.computer",
+        ".manus-asia.computer",
+        ".manuscomputer.ai",
+        ".manusvm.computer",
+        "localhost",
+        "127.0.0.1",
+      ],
+      fs: {
+        strict: true,
+        deny: ["**/.*"],
+      },
+    },
+  };
 });
