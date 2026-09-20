@@ -12,7 +12,7 @@
 - [x] RPCをモックしたunit/E2Eと、PR向けChromium gateを追加する。
 - [x] 最新のPR CIを全件成功させる（PR #55のCI成功を確認）。
 - [ ] 正式URLをiPhone Safariで確認し、候補SHAと公開版を受入記録へ残す。
-- [x] Supabase登録値とmanifestの差分を解消し、実データを増やさない受入試験を行う（`hakoyoke`を有効化済み、既存スコア・プレイ記録0件を確認）。
+- [x] Supabase登録値とmanifestの差分を解消し、実データを増やさない受入試験を行う（`hakoyoke`は未完成のため停止状態、既存スコア・プレイ記録0件を確認）。
 - [ ] GitHub Pagesの`/hakoyoke/`配下でVite asset参照を確認し、必要なら公開方式を確定する。
 
 ## セキュリティ（最優先の後続）

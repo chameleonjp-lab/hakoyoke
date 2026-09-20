@@ -208,7 +208,7 @@ export default function GameShell({
   ) => {
     if (startingPlay) return;
     let resumeCampaign: boolean | undefined;
-    if (mode === "CAMPAIGN") {
+    if (mode === "CAMPAIGN" && RANKING_CONFIG.releaseEnabled) {
       const validation = saveStoredPlayerName(playerName);
       if (!validation.ok) {
         setNameMessage(validation.message);
@@ -391,8 +391,17 @@ function MenuPanel({
           playerName={playerName}
           onChange={setPlayerName}
           message={nameMessage}
-          required={panel === "difficulty" && chosenMode === "CAMPAIGN"}
+          required={
+            RANKING_CONFIG.releaseEnabled &&
+            panel === "difficulty" &&
+            chosenMode === "CAMPAIGN"
+          }
         />
+        {!RANKING_CONFIG.releaseEnabled && (
+          <p className="platform-status ranking-paused" role="status">
+            ランキング公開は準備中です。現在のプレイ結果は送信されません。
+          </p>
+        )}
         <PendingRankingNotice />
         {panel === "title" && (
           <TitleActions
@@ -469,7 +478,8 @@ function PendingRankingNotice() {
     rankingClient.hasRetryablePendingCampaignResult,
     rankingClient.hasRetryablePendingCampaignResult
   );
-  if (!hasRetryable && !message) return null;
+  if (!RANKING_CONFIG.releaseEnabled || (!hasRetryable && !message))
+    return null;
 
   const retry = async () => {
     if (busy) return;
@@ -1423,6 +1433,7 @@ function ResultOverlay({
   const rankingBlockedByDebug =
     snapshot.rankingEligibility === "debug-intervened";
   const ranked =
+    RANKING_CONFIG.releaseEnabled &&
     snapshot.mode === "CAMPAIGN" &&
     (final || gameOver) &&
     !rankingBlockedByDebug;

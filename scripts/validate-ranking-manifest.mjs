@@ -34,6 +34,10 @@ expectSource("gameSlug", manifest.lab.representative_slug);
 expectSource("canonicalUrl", manifest.canonical_url);
 expectSource("shareText", manifest.share_text);
 expectSource("clientVersion", manifest.client_version);
+expectSourceLiteral(
+  "RANKING_MANIFEST_PUBLICATION_STATUS",
+  manifest.publication_status
+);
 expectSource("playerNameStorageKey", manifest.player_name.storage_key);
 expectSource("startRpc", manifest.play_count.rpc);
 expectSource("finishRpc", manifest.submission.finish_rpc);
@@ -97,6 +101,12 @@ console.log("Ranking manifest and implementation values are consistent.");
 
 function expectSource(key, value, format = JSON.stringify) {
   if (!rankingSource.includes(`${key}: ${format(value)}`)) {
+    issues.push(`ranking.ts: ${key} does not match ranking-manifest.json`);
+  }
+}
+
+function expectSourceLiteral(key, value, format = JSON.stringify) {
+  if (!rankingSource.includes(`${key} = ${format(value)}`)) {
     issues.push(`ranking.ts: ${key} does not match ranking-manifest.json`);
   }
 }

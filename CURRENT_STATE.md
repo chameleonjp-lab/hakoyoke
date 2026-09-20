@@ -66,9 +66,9 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 
 ## ランキング連携
 
-ランキング対象は、デバッグ介入のないCAMPAIGNの`clear`と`game_over`だけです。TUTORIAL、PRACTICE、CREATE、DUEL、デバッグ介入済みCampaignおよび途中結果は送信しません。
+ランキング連携の契約対象は、デバッグ介入のないCAMPAIGNの`clear`と`game_over`だけです。ただし現在の公開状態は停止中です。`ranking-manifest.json`の`publication_status`は`paused`で、本番ビルドは公開状態が`active`になり、かつ`VITE_RANKING_ENABLED=true`を明示しない限りランキングUI・RPCを無効化します。TUTORIAL、PRACTICE、CREATE、DUEL、デバッグ介入済みCampaignおよび途中結果は送信しません。
 
-表示名はCAMPAIGN開始時だけ検証・保存し、TUTORIAL、PRACTICE、CREATE、DUELは名前なしで開始できます。これらのモードではランキングRPCを呼び出しません。
+公開が有効なビルドでは表示名をCAMPAIGN開始時だけ検証・保存し、TUTORIAL、PRACTICE、CREATE、DUELは名前なしで開始できます。公開停止中の本番ビルドではCAMPAIGNも名前なしでローカル開始でき、ランキングRPCを呼び出しません。ランキング契約のChromium／WebKit E2Eだけは、ローカルモックを使うため`VITE_RANKING_ENABLED=true`と`VITE_RANKING_E2E=true`で起動します。
 
 1プレイにつきブラウザ生成の`start_id`を1つ保存し、`start_game_play_v1`が返す`play_id`を終了まで使います。結果確定時は通信前に`submission_id`と確定結果を保存し、`finish_game_play_v1`、`submit_score_idempotent_v1`の順に自動送信します。開始RPCの通信断・時間切れ・HTTP 408/425/429/5xxではローカルプレイを止めず、開始IDと結果を保存して結果画面またはメニューから再試行します。通信断・時間切れ・HTTP 408/425/429/5xxは同じ内容で再送でき、恒久エラーでは再送ボタンを出しません。成功応答の内容を検査した後だけpendingを削除し、submission_id別の完了receipt（集約表示は最新50件）で再読込時の二重送信を防ぎます。複数タブのreceipt更新はfresh mergeし、別保存の完了情報を上書きしません。複数の未送信結果は同じ導線で順番に再送し、送信中断の`submitting`は再読込時に再送可能へ復元します。ランキング通信の失敗は結果、共有、再戦、メニュー導線を塞ぎません。
 
@@ -76,7 +76,7 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 
 結果保存には、移動方式・得点規則・問題内容のタグを併記します。過去版のclient versionも、結果の識別子・数値・状態が検証できる限り読み取り対象から除外しません。デバッグ操作（自動解法、強制回転、足場行変更）は一度でも使うと、表示をOFFへ戻してもそのCampaignをランキング対象へ戻しません。
 
-Supabaseの`public.games`にある`hakoyoke`はmanifestの説明、シェア文、スコア範囲、RPC連携対象と一致させ、`is_active=true`へ更新済みです。受入確認ではハコヨケの既存スコア行とプレイ記録が0件で、実データを増やしていません。公開URLはブラウザーでタイトル表示と`/hakoyoke/assets/`配下のVite asset参照を確認済みですが、iPhone Safariでの最終受入は未完了です。PR01では、CI成功前にPagesへ公開しないよう、CIが作成した同一コミットのPages成果物を、成功した`workflow_run`から受け取って公開する構成へ変更します。
+Supabaseの`public.games`にある`hakoyoke`はmanifestの説明、シェア文、スコア範囲、RPC連携対象と一致させたうえで、未完成のため`is_active=false`へ停止しています。受入確認ではハコヨケの既存スコア行とプレイ記録が0件で、実データを増やしていません。停止中は実験場のランキング一覧から除外され、`start_game_play_v1`も`game_not_available`を返します。再開前にiPhone Safari、GitHub Pagesの`/hakoyoke/`配下asset、公開版SHAをまとめて受入確認します。PR01では、CI成功前にPagesへ公開しないよう、CIが作成した同一コミットのPages成果物を、成功した`workflow_run`から受け取って公開する構成へ変更します。
 
 ## PR #1で行った削除監査（履歴）
 

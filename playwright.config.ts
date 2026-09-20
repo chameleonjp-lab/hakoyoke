@@ -8,7 +8,11 @@ export default defineConfig({
   workers: 1,
   use: { baseURL: "http://127.0.0.1:3000", headless: true },
   webServer: {
-    command: "node_modules/.bin/vite --host 127.0.0.1 --port 3000",
+    // Integration E2E keeps the ranking RPC contract covered with its local
+    // mock. The production build intentionally omits this flag while the
+    // publication is paused.
+    command:
+      "VITE_RANKING_ENABLED=true VITE_RANKING_E2E=true node_modules/.bin/vite --host 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000",
     timeout: 120_000,
     reuseExistingServer: false,
