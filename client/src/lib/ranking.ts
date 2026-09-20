@@ -4,6 +4,14 @@ import {
   SCORE_RULE_VERSION,
 } from "../game/types";
 
+const RANKING_MANIFEST_PUBLICATION_STATUS = "paused" as "paused" | "active";
+// The E2E override is development-only and is backed by a local RPC mock.
+const RANKING_BUILD_ENABLED =
+  import.meta.env.VITE_RANKING_ENABLED === "true" &&
+  (RANKING_MANIFEST_PUBLICATION_STATUS === "active" ||
+    (import.meta.env.MODE === "development" &&
+      import.meta.env.VITE_RANKING_E2E === "true"));
+
 export const RANKING_CONFIG = Object.freeze({
   gameId: "hakoyoke",
   gameSlug: "hakoyoke",
@@ -14,6 +22,8 @@ export const RANKING_CONFIG = Object.freeze({
     "https://chameleonjp-lab.github.io/chameleonjp_lab/ranking.html?game=hakoyoke",
   releaseId: "hakoyoke-20260831-01",
   clientVersion: "hakoyoke-20260831-01",
+  publicationStatus: RANKING_MANIFEST_PUBLICATION_STATUS,
+  releaseEnabled: RANKING_BUILD_ENABLED,
   playerNameStorageKey: "chameleonjp_hakoyoke_player_name",
   supabaseUrl: "https://mlpnjgezrnhdxsxolyzj.supabase.co",
   supabasePublishableKey: "sb_publishable_drzcy0v97knU6FgjqSgBHw_0A9XPdFM",
@@ -147,6 +157,7 @@ type FetchLike = (
 ) => Promise<Response>;
 
 interface RankingClientOptions {
+  enabled?: boolean;
   fetchImpl?: FetchLike;
   storage?: StorageLike | null;
   makeUuid?: () => string;
@@ -455,6 +466,7 @@ export function saveStoredPlayerName(
 }
 
 export function createRankingClient(options: RankingClientOptions = {}) {
+  const enabled = options.enabled ?? true;
   const fetchImpl = options.fetchImpl ?? defaultFetch;
   const storage =
     options.storage === undefined ? defaultStorage() : options.storage;
@@ -928,6 +940,17 @@ export function createRankingClient(options: RankingClientOptions = {}) {
     displayName: string,
     startOptions: { forceNew?: boolean } = {}
   ): Promise<StartedRankingPlay> => {
+    if (!enabled) {
+      return Promise.reject(
+        new RankingRpcError(
+          RANKING_CONFIG.startRpc,
+          "ranking publication is paused",
+          503,
+          "ranking_paused",
+          false
+        )
+      );
+    }
     const validation = validatePlayerName(displayName);
     if (!validation.ok) {
       throw new RankingRpcError(
@@ -1150,6 +1173,12 @@ export function createRankingClient(options: RankingClientOptions = {}) {
     reachedStage: number;
     score: number;
   }): Promise<SubmissionOutcome> => {
+    if (!enabled) {
+      return {
+        state: "permanent_failed",
+        message: "ランキング公開は停止中です。結果は送信されません。",
+      };
+    }
     const name = validatePlayerName(result.displayName);
     const score = Math.trunc(result.score);
     const reachedStage = Math.trunc(result.reachedStage);
@@ -1329,6 +1358,12 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   };
 
   const retryPendingCampaignResult = async (): Promise<SubmissionOutcome> => {
+    if (!enabled) {
+      return {
+        state: "permanent_failed",
+        message: "ランキング公開は停止中です。結果は送信されません。",
+      };
+    }
     const deferred = readDeferred();
     let deferredOutcome: SubmissionOutcome | null = null;
     if (deferred) {
@@ -1370,6 +1405,7 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   };
 
   const loadBestRanking = async (): Promise<RankingRow[]> => {
+    if (!enabled) return [];
     const data = await callRpc(RANKING_CONFIG.rankingRpc, {
       p_game_slug: RANKING_CONFIG.gameSlug,
       p_limit: 10,
@@ -1421,6 +1457,7 @@ export function createRankingClient(options: RankingClientOptions = {}) {
       return () => pendingListeners.delete(listener);
     },
     hasRetryablePendingCampaignResult: () =>
+      enabled &&
       Boolean(
         readDeferred() ||
           findPending(
@@ -1437,4 +1474,6 @@ export function createRankingClient(options: RankingClientOptions = {}) {
   };
 }
 
-export const rankingClient = createRankingClient();
+export const rankingClient = createRankingClient({
+  enabled: RANKING_CONFIG.releaseEnabled,
+});

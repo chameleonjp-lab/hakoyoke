@@ -12,7 +12,7 @@
 | ランキング契約 | `pnpm ranking:check`                   | manifestのJSON Schema、HTML、実装定数の一致                          | PASS                                             |
 | 書式           | `pnpm format:check`                    | client、server、E2E、script、主要設定                                | PASS                                             |
 | 型検査         | `pnpm check`                           | client、server                                                       | PASS                                             |
-| 単体・問題検査 | `pnpm test`                            | clientのゲーム規則・ランキング、serverの公開資産ポリシー             | PASS — 22ファイル / 176件                        |
+| 単体・問題検査 | `pnpm test`                            | clientのゲーム規則・ランキング、serverの公開資産ポリシー             | PASS — 22ファイル / 178件                        |
 | 本番ビルド     | `pnpm build`                           | Vite静的出力、Express bundle                                         | PASS                                             |
 | ブラウザ操作   | `pnpm test:e2e`                        | Chromium 26件、WebKit 26件                                           | 最新CIを正とする — 52件                          |
 | 本番経路       | `pnpm test:e2e:production`             | 実ビルド、Express、storage proxy                                     | PASS — 1件                                       |
@@ -20,7 +20,7 @@
 
 PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPRではChromium、`main`更新時はChromium＋WebKit＋productionへ分岐します。ローカルの個別成功だけではPRを成功扱いにしません。
 
-公開受入のBLOCKEDはコード検査の失敗ではなく、現行の`public.games`登録値・GitHub Pages設定・正式URL配下のasset経路を管理者が確認するまでの保留です。このPRでは本番データや公開設定を変更していません。
+公開受入のBLOCKEDはコード検査の失敗ではなく、ランキング停止中の現行`public.games`登録値・GitHub Pages設定・正式URL配下のasset経路を管理者が確認するまでの保留です。本番ビルドはランキング公開を明示的に無効化し、ランキング契約のE2Eだけローカルモックで有効化します。
 
 ## ビルド出力
 

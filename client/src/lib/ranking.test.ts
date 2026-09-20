@@ -122,6 +122,11 @@ beforeEach(() => {
 });
 
 describe("ranking integration contract", () => {
+  it("keeps the public ranking release gate closed by default", () => {
+    expect(RANKING_CONFIG.publicationStatus).toBe("paused");
+    expect(RANKING_CONFIG.releaseEnabled).toBe(false);
+  });
+
   it("keeps interior spaces and validates names with the server's 20-character rule", () => {
     expect(validatePlayerName("  山田 太郎  ")).toEqual({
       ok: true,
@@ -137,6 +142,33 @@ describe("ranking integration contract", () => {
     });
     expect(validatePlayerName("abc\u0000def").ok).toBe(false);
     expect(formatRankingScore(4200)).toBe("4200点");
+  });
+
+  it("does not call Supabase while the ranking client is disabled", async () => {
+    const fetchImpl = vi.fn(async () => response([]));
+    const client = createRankingClient({ enabled: false, fetchImpl });
+
+    await expect(client.startCampaignPlay("山田 太郎")).rejects.toMatchObject({
+      code: "ranking_paused",
+      retryable: false,
+    });
+    await expect(
+      client.finishAndSubmitCampaignResult({
+        displayName: "山田 太郎",
+        resultType: "game_over",
+        reachedStage: 3,
+        score: 4200,
+      })
+    ).resolves.toEqual({
+      state: "permanent_failed",
+      message: "ランキング公開は停止中です。結果は送信されません。",
+    });
+    await expect(client.retryPendingCampaignResult()).resolves.toEqual({
+      state: "permanent_failed",
+      message: "ランキング公開は停止中です。結果は送信されません。",
+    });
+    await expect(client.loadBestRanking()).resolves.toEqual([]);
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("reuses the same start_id after a retryable start failure", async () => {
