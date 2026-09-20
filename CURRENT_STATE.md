@@ -76,7 +76,7 @@ TUTORIALは本編88問とは別の`client/src/game/tutorial.ts`を正本とす�
 
 結果保存には、移動方式・得点規則・問題内容のタグを併記します。過去版のclient versionも、結果の識別子・数値・状態が検証できる限り読み取り対象から除外しません。デバッグ操作（自動解法、強制回転、足場行変更）は一度でも使うと、表示をOFFへ戻してもそのCampaignをランキング対象へ戻しません。
 
-公開受入には未完了の外部確認があります。現行のSupabase `public.games`登録値とmanifest（説明、シェア文、スコア範囲）の一致、およびGitHub Pagesの`/hakoyoke/`配下でのVite asset参照を確認する必要があります。PR01では、CI成功前にPagesへ公開しないよう、CIが作成した同一コミットのPages成果物を、成功した`workflow_run`から受け取って公開する構成へ変更します。公開・`is_active`変更は受入担当の明示承認後に行います。
+Supabaseの`public.games`にある`hakoyoke`はmanifestの説明、シェア文、スコア範囲、RPC連携対象と一致させ、`is_active=true`へ更新済みです。受入確認ではハコヨケの既存スコア行とプレイ記録が0件で、実データを増やしていません。公開URLはブラウザーでタイトル表示と`/hakoyoke/assets/`配下のVite asset参照を確認済みですが、iPhone Safariでの最終受入は未完了です。PR01では、CI成功前にPagesへ公開しないよう、CIが作成した同一コミットのPages成果物を、成功した`workflow_run`から受け取って公開する構成へ変更します。
 
 ## PR #1で行った削除監査（履歴）
 
