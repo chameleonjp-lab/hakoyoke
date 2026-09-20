@@ -116,7 +116,7 @@ PRを更新するたび、次を同じCIで通します。
 
 `/manus-storage/*`はForge資格情報がある環境では署名URLへ`307`、ない環境では安全な`503`を返します。本番E2Eは資格情報の有無に応じて期待値を切り替え、どちらの場合もページ例外と機密情報漏えいがないことを確認します。
 
-互換用のstorage proxyは、明示allowlistにある単一ファイル名だけを受け付け、encoded path traversal・ネストしたパス・不正なキーを拒否します。署名URLの解決は5秒で打ち切り、送信元IPごとの短時間rate limitを設け、redirect先はcredential-freeなHTTPS URLだけに限定します。Express経由の`path-to-regexp` high advisoryは0.1.13へ固定し、CIの本番依存監査をhigh以上で失敗させます。low／moderate advisoryとdirect toolchainの更新は別のセキュリティ作業として残ります。
+互換用のstorage proxyは、明示allowlistにある単一ファイル名だけを受け付け、encoded path traversal・ネストしたパス・不正なキーを拒否します。署名URLの解決は5秒で打ち切り、送信元IPごとの短時間rate limitを設け、redirect先はcredential-freeなHTTPS URLだけに限定します。Express経由の`path-to-regexp`は0.1.13へ、`body-parser`は1.xの修正版へ、`qs`は6.16.0へ固定し、CIの本番依存監査をlow以上で失敗させます。現行lockfileの本番依存既知脆弱性は0件です。
 
 ## 文書の扱い
 
