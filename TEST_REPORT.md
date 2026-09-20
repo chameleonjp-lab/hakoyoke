@@ -7,7 +7,7 @@
 | 区分           | コマンド                               | 検査範囲                                                             | 直前の成功実績                                   |
 | -------------- | -------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
 | リポジトリ衛生 | `pnpm repo:check`                      | ローカル設定、scaffold snapshot、埋込資格情報の再混入                | PASS                                             |
-| 依存監査       | `pnpm audit --prod --audit-level=high` | 本番依存のhigh以上の既知脆弱性（Express経由を含む）                  | PASS — high 0件（low 2件／moderate 3件は残課題） |
+| 依存監査       | `pnpm audit --prod --audit-level=low`  | 本番依存の既知脆弱性（Express経由を含む）                             | PASS — 0件                                        |
 | 問題生成物     | `pnpm puzzles:check`                   | TS正本とJSON・レポートの完全一致、全88問＋代表12問×5難易度の再生検証 | PASS — 88問＋品質ゲート                          |
 | ランキング契約 | `pnpm ranking:check`                   | manifestのJSON Schema、HTML、実装定数の一致                          | PASS                                             |
 | 書式           | `pnpm format:check`                    | client、server、E2E、script、主要設定                                | PASS                                             |

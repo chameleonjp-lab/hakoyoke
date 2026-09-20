@@ -18,7 +18,7 @@
 ## セキュリティ（最優先の後続）
 
 - [ ] 公開Git履歴に露出したForge/JWT等を失効・ローテーションし、利用ログを確認する。
-- [x] `pnpm audit --prod --audit-level=high`をCIへ追加し、Expressの`path-to-regexp`高 severity advisoryを0.1.13へ固定する（low／moderate advisoryの解消は別途）。
+- [x] `pnpm audit --prod --audit-level=low`をCIへ追加し、Expressの`path-to-regexp`、`qs`、`body-parser` advisoryを修正版へ固定する（本番依存の既知脆弱性0件）。
 - [x] Viteとpnpmのdirect toolchainを修正版へ更新する（Vite 7.1.9、pnpm 12.4.2、依存監査のhigh gateは完了）。
 - [x] Manus runtimeを許可された開発・プレビューだけに限定する。本番ビルドには実行時プラグインとデバッグ資産を含めない。
 - [x] `/manus-storage/*`を公開資産allowlistへ限定し、5秒timeout・IP単位rate limit・HTTPS redirect先検査を追加する。
