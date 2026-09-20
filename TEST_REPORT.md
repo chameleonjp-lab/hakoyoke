@@ -15,7 +15,7 @@
 | 単体・問題検査 | `pnpm test`                            | clientのゲーム規則・ランキング、serverの公開資産ポリシー             | PASS — 22ファイル / 178件                        |
 | 本番ビルド     | `pnpm build`                           | Vite静的出力、Express bundle                                         | PASS                                             |
 | ブラウザ操作   | `pnpm test:e2e`                        | Chromium 26件、WebKit 26件                                           | 最新CIを正とする — 52件                          |
-| 本番経路       | `pnpm test:e2e:production`             | 実ビルド、Express、storage proxy                                     | PASS — 1件                                       |
+| 本番経路       | `pnpm test:e2e:production`             | 実ビルド、Express、storage proxy、ランキング停止ゲート               | PASS — 2件                                       |
 | 公開受入       | iPhone Safari + Pages URL              | `/hakoyoke/` asset、manifest、Supabase登録値の突合                   | BLOCKED — 外部受入待ち                           |
 
 PR更新時の共通検査は同じ順序で実行し、ブラウザ検査はPRではChromium、`main`更新時はChromium＋WebKit＋productionへ分岐します。ローカルの個別成功だけではPRを成功扱いにしません。

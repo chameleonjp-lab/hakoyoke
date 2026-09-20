@@ -31,3 +31,31 @@ test("productionで3D盤面・HUD・外部アセットプロキシの設定済�
 
   expect(pageErrors).toEqual([]);
 });
+
+test("ランキング停止中の本番Campaignは名前なし・RPCなしで開始できる", async ({
+  page,
+}) => {
+  const rpcRequests: string[] = [];
+  page.on("request", request => {
+    if (request.url().includes("/rest/v1/rpc/"))
+      rpcRequests.push(request.url());
+  });
+
+  await page.setViewportSize({ width: 870, height: 400 });
+  await page.goto("/", { waitUntil: "networkidle" });
+  await page.evaluate(() => localStorage.clear());
+
+  await page.getByRole("button", { name: "CAMPAIGN", exact: true }).click();
+  await page.getByRole("button", { name: /CAMPAIGN STAGE 1 TO FINAL/ }).click();
+  await page.getByRole("button", { name: /CONFIGURE/ }).click();
+  await expect(
+    page.getByText(
+      "ランキング公開は準備中です。現在のプレイ結果は送信されません。",
+      { exact: true }
+    )
+  ).toBeVisible();
+  await page.getByRole("button", { name: /BEGIN ORDEAL/ }).click();
+
+  await expect(page.locator("canvas")).toBeVisible();
+  expect(rpcRequests).toEqual([]);
+});
